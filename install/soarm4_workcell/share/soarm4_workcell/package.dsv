@@ -1,0 +1,9 @@
+source;share/soarm4_workcell/hook/pythonpath.ps1
+source;share/soarm4_workcell/hook/pythonpath.dsv
+source;share/soarm4_workcell/hook/pythonpath.sh
+source;share/soarm4_workcell/hook/ament_prefix_path.ps1
+source;share/soarm4_workcell/hook/ament_prefix_path.dsv
+source;share/soarm4_workcell/hook/ament_prefix_path.sh
+source;../../build/soarm4_workcell/share/soarm4_workcell/hook/pythonpath_develop.ps1
+source;../../build/soarm4_workcell/share/soarm4_workcell/hook/pythonpath_develop.dsv
+source;../../build/soarm4_workcell/share/soarm4_workcell/hook/pythonpath_develop.sh

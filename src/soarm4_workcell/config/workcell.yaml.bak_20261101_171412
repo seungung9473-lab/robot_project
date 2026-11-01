@@ -1,0 +1,196 @@
+schema_version: 1
+table:
+  size_xy_m:
+  - 1.8
+  - 0.75
+  origin: lower-left tabletop corner, viewed from above
+  x_positive: right
+  y_positive: up in top view
+  z_positive: vertically above tabletop
+  tabletop_z_m: 0
+T_table_world:
+- - 0.0
+  - -1.0
+  - 0.0
+  - 1.3405000010430812
+- - 1.0
+  - 0.0
+  - 0.0
+  - 0.24920000308752063
+- - 0.0
+  - 0.0
+  - 1.0
+  - 0.004
+- - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+robot_registration:
+  source: User requested unchanged 0.095m CAD enclosure, entire URDF raised 0.004m;
+    enclosure lower-left bottom [1.280,0.128,0.004]m; orientation unchanged
+  j1_center_table_m:
+  - 1.322800000263846
+  - 0.23150000252977085
+  - 0.1638
+  urdf_sha256: d7914470aae6e9708915affdedb846c8fb783c0fd3442bf93a40e77105924308
+  model_sha256: aaef4a321847b758d2a2bb8c8306788ae8c3b38ed643f71c35b88854204d06d0
+  tcp_physically_validated: false
+  measured_enclosure_height_m: 0.095
+  measured_enclosure_top_z_table_m: 0.099
+  height_correction_pending: false
+  xy_contact_correction_m:
+  - 0.003
+  - 0.0035
+  xy_contact_correction_status: Provisional single-pose registration correction from
+    uncompressed cup at ID0; Z unchanged
+fixed_markers:
+  dictionary: DICT_4X4_50
+  black_edge_m: 0.07
+  centers_table_m:
+    '10':
+    - 0.948
+    - 0.154
+    - 0
+    '11':
+    - 1.2425
+    - 0.055
+    - 0
+    '7':
+    - 1.213
+    - 0.287
+    - 0
+    '8':
+    - 0.8985
+    - 0.049
+    - 0
+  canonical_top_direction: +Y
+  surface_normal: +Z
+turntable:
+  axis_point_table_m:
+  - 1.095
+  - 0.235
+  - 0.059
+  axis_direction_table:
+  - 0.0
+  - 0.0
+  - 1.0
+  diameter_m: 0.15
+  top_height_m: 0.059
+  collision_representation: conservative full cylinder under disc; actual rail and
+    motor housings not measured
+pads:
+  pad1:
+    center_table_m:
+    - 1.097805614569502
+    - 0.38441874573139295
+    - 0.059
+    diameter_m: 0.1
+    marker_id: 6
+    black_edge_m: 0.06
+    validated_for_robot_execution: false
+  pad2:
+    center_table_m:
+    - 1.0983380219417491
+    - 0.08356132162842111
+    - 0.055
+    diameter_m: 0.1
+    marker_id: 5
+    black_edge_m: 0.06
+    validated_for_robot_execution: false
+cameras:
+  cam1:
+    T_table_optical:
+    - - -0.999575340163656
+      - 0.02912687315069601
+      - -0.0008744124735087788
+      - 1.1385027391634772
+    - - 0.019393874435365138
+      - 0.6425629550081196
+      - -0.7659874192737233
+      - 0.643126450414937
+    - - -0.021748953333341203
+      - -0.7656790934273285
+      - -0.6428549672493846
+      - 0.4746633424464748
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    optical_frame: cam1_color_optical_frame
+    camera_root_frame: cam1_link
+    camera_info:
+      K:
+      - - 615.4771728515625
+        - 0.0
+        - 313.69927978515625
+      - - 0.0
+        - 615.1854248046875
+        - 241.54849243164062
+      - - 0.0
+        - 0.0
+        - 1.0
+      D:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      width: 640
+      height: 480
+      distortion_model: plumb_bob
+    source: "/home/seungung9473/\uBB38\uC11C/ChatGPT/\uB77C\uD30C \uB300\uD68C/camera_calibration/saved/20261101_140827_relocated_four_markers/cam1_table_calibration.json"
+    independently_validated: false
+  cam2:
+    T_table_optical:
+    - - -0.9998741855235196
+      - 0.015631047911902937
+      - -0.0026987895164530262
+      - 1.1391123053797378
+    - - 0.0071785959724888215
+      - 0.29418376424395587
+      - -0.9557219159437125
+      - 0.6366801641267892
+    - - -0.014144994999719301
+      - -0.9556210458107506
+      - -0.2942589606452552
+      - 0.18874572270658663
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    optical_frame: cam2_color_optical_frame
+    camera_root_frame: cam2_link
+    camera_info:
+      K:
+      - - 611.5272216796875
+        - 0.0
+        - 314.2455139160156
+      - - 0.0
+        - 611.0509033203125
+        - 240.9235382080078
+      - - 0.0
+        - 0.0
+        - 1.0
+      D:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      width: 640
+      height: 480
+      distortion_model: plumb_bob
+    source: "/home/seungung9473/\uBB38\uC11C/ChatGPT/\uB77C\uD30C \uB300\uD68C/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json"
+    independently_validated: false
+collision:
+  below_table_guard_depth_m: 0.2
+  support_contact_clearance_m: 0.001
+  note: Table is a below-surface keepout volume, not measured tabletop thickness.
+    Guard top -1mm avoids coplanar support contact. No ACM collision exemptions.
+limitations:
+- Measured placements are provisional; robot TCP and absolute camera registration
+  not physically validated
+- Pad measurements chosen by repeatability, not proven absolute 5mm accuracy
+- Camera and holder bodies, turntable rail, cables, objects and held-object geometry
+  are not registered as collision objects; dimensions not supplied
+- No motion commands; workcell registration does not enable execution

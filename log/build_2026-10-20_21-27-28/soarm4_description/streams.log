@@ -1,0 +1,5 @@
+[0.024s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+[0.077s] [0mCMake Error: The source directory "/home/seungung9473/robot_ws/src/soarm4_description" does not exist.
+[0.078s] Specify --help for usage, or press the help button on the CMake GUI.[0m
+[0.081s] gmake: *** [Makefile:226: cmake_check_build_system] Error 1
+[0.086s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8

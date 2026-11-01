@@ -1,0 +1,30 @@
+[0.693s] Invoking command in '/home/seungung9473/robot_ws/build/soarm_turntable': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_turntable/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_turntable/build --no-deps symlink_data
+[0.854s] running develop
+[0.946s] running egg_info
+[0.946s] creating soarm_turntable.egg-info
+[0.955s] writing soarm_turntable.egg-info/PKG-INFO
+[0.956s] writing dependency_links to soarm_turntable.egg-info/dependency_links.txt
+[0.956s] writing entry points to soarm_turntable.egg-info/entry_points.txt
+[0.956s] writing requirements to soarm_turntable.egg-info/requires.txt
+[0.956s] writing top-level names to soarm_turntable.egg-info/top_level.txt
+[0.956s] writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+[0.973s] reading manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+[0.973s] writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+[0.983s] running build_ext
+[0.983s] Creating /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm-turntable.egg-link (link to .)
+[0.983s] Installing turntable script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+[0.984s] Installing xl330_bridge script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+[0.984s] 
+[0.984s] Installed /home/seungung9473/robot_ws/build/soarm_turntable
+[0.984s] running symlink_data
+[0.984s] creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index
+[0.984s] creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index
+[0.984s] creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index/packages
+[0.984s] symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/resource/soarm_turntable -> /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index/packages
+[0.984s] symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/package.xml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+[0.984s] symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/README_KO.md -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+[0.984s] creating /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch
+[0.984s] symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/launch/turntable.launch.py -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch
+[0.984s] creating /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/config
+[0.984s] symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/config/turntable.yaml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/config
+[1.001s] Invoked command in '/home/seungung9473/robot_ws/build/soarm_turntable' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_turntable/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_turntable/build --no-deps symlink_data

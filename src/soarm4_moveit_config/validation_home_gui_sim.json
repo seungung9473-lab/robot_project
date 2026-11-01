@@ -1,0 +1,18 @@
+{
+  "real_ports_opened": false,
+  "RViz_HOME_button": "PASS",
+  "initial_fake_counts": [
+    2036,
+    2047,
+    2047,
+    2047
+  ],
+  "final_fake_counts": [
+    2047,
+    2047,
+    2047,
+    2047
+  ],
+  "collision_planning": "PASS",
+  "torque_hold_before_planning": true
+}

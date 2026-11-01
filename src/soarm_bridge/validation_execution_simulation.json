@@ -1,0 +1,13 @@
+{
+  "bad_initial_hold_blocks_torque_enable": "PASS",
+  "valid_small_execution": "PASS",
+  "too_fast_rejected": "PASS",
+  "oversized_rejected": "PASS",
+  "outside_limits_rejected": "PASS",
+  "duplicate_joints_rejected": "PASS",
+  "bad_time_rejected": "PASS",
+  "cancel_stops_future_commands": "PASS",
+  "stop_service_holds_without_torque_drop": "PASS",
+  "feedback_loss_aborts": "PASS",
+  "all_transmitted_goals_within_encoder_bounds": "PASS"
+}

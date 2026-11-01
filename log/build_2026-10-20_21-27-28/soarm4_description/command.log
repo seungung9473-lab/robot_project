@@ -1,0 +1,2 @@
+Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8

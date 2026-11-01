@@ -1,0 +1,1 @@
+/home/seungung9473/robot_ws/build/soarm4_description/ament_cmake_environment_hooks/local_setup.sh

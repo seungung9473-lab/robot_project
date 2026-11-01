@@ -1,0 +1,6 @@
+source;share/soarm_turntable/hook/pythonpath.ps1
+source;share/soarm_turntable/hook/pythonpath.dsv
+source;share/soarm_turntable/hook/pythonpath.sh
+source;share/soarm_turntable/hook/ament_prefix_path.ps1
+source;share/soarm_turntable/hook/ament_prefix_path.dsv
+source;share/soarm_turntable/hook/ament_prefix_path.sh

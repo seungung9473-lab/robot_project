@@ -1,0 +1,12 @@
+# UNVERIFIED legacy conversion metadata; do not treat visualization ranges as motor limits.
+# Count margins: J3 home-side bound is now count2047 (no previous 114-count margin); all other endpoints retain prior values.
+# URDF angle rad = sign * (count - center) * 2*pi/4096.
+# Home/reference count 2047 for all does not equal URDF zero for J2/J3.
+# J2/J3 endpoints at 1879/2047 come from this ZIP, not latest photo.
+# J4 centre at 2047 is unverified as URDF kinematic zero.
+# This YAML is metadata: URDF alone does not enforce servo hardware limits.
+joints:
+  joint1: {id: 1, center: 2047, sign: -1, min_count: 974, max_count: 3358, home_count: 2047}   # SAFE URDF -115.22 ~ +94.31 deg; measured [860, 3472]
+  joint2: {id: 2, center: 4095, sign: -1, min_count: 1993, max_count: 4038, home_count: 2047}   # URDF +5.01 ~ +184.75 deg; measured [1879, 4095]
+  joint3: {id: 3, center: 0, sign: -1, min_count: 114, max_count: 2047, home_count: 2047}   # URDF -179.912109375 ~ -10.02 deg; home-side margin removed by user request; measured [0, 2047]
+  joint4: {id: 4, center: 2047, sign: -1, min_count: 774, max_count: 3159, home_count: 2047}   # SAFE URDF -97.73 ~ +111.88 deg; measured [660, 3273]

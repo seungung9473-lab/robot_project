@@ -1,0 +1,37 @@
+{
+  "urdf_model_moveit_bounds_match": true,
+  "limits_degrees": {
+    "joint1": [
+      -115.22181260080856,
+      94.3088530785335
+    ],
+    "joint2": [
+      5.009765625,
+      184.74451146198265
+    ],
+    "joint3": [
+      -179.912109375,
+      -10.021031836838098
+    ],
+    "joint4": [
+      -97.73514069341583,
+      111.88719823314716
+    ]
+  },
+  "checks": {
+    "joint1_-2.011_accepted": true,
+    "joint1_1.646_accepted": true,
+    "joint1_outside_rejected": true,
+    "joint2_0.08743690490948154_accepted": true,
+    "joint2_3.2244_accepted": true,
+    "joint2_outside_rejected": true,
+    "joint3_-3.1400586728019073_accepted": true,
+    "joint3_-0.1749_accepted": true,
+    "joint3_outside_rejected": true,
+    "joint4_-1.7058_accepted": true,
+    "joint4_1.9528_accepted": true,
+    "joint4_outside_rejected": true,
+    "greater_than_5_degrees_accepted": true,
+    "speed_cap_preserved": true
+  }
+}

@@ -1,0 +1,8 @@
+xl330_turntable:
+  ros__parameters:
+    port: /dev/turntable_bus
+    baud: 57600
+    motor_id: 1
+    profile_velocity: 50
+    profile_acceleration: 10
+    read_only: true

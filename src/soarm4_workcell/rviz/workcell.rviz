@@ -1,0 +1,123 @@
+Panels:
+- Class: rviz_common/Displays
+  Help Height: 70
+  Name: Displays
+  Property Tree Widget:
+    Expanded: null
+    Splitter Ratio: 0.5
+  Tree Height: 622
+Visualization Manager:
+  Class: ''
+  Displays:
+  - Alpha: 0.5
+    Cell Size: 0.05000000074505806
+    Class: rviz_default_plugins/Grid
+    Color: 160; 160; 164
+    Enabled: false
+    Line Style:
+      Line Width: 0.029999999329447746
+      Value: Lines
+    Name: Grid
+    Normal Cell Count: 0
+    Offset:
+      X: 0
+      Y: 0
+      Z: 0
+    Plane: XY
+    Plane Cell Count: 20
+    Reference Frame: <Fixed Frame>
+    Value: true
+  - Class: moveit_rviz_plugin/MotionPlanning
+    Name: MotionPlanning
+    Enabled: true
+    Robot Description: robot_description
+    Planning Scene Topic: /soarm4_plan/monitored_planning_scene
+    Move Group Namespace: /soarm4_plan
+    Planning Request:
+      Planning Group: arm
+      Query Start State: false
+      Query Goal State: true
+      Goal State Alpha: 0.45
+    Planned Path:
+      Trajectory Topic: /soarm4_plan/display_planned_path
+      Loop Animation: false
+      State Display Time: 0.08 s
+      Robot Alpha: 0.65
+    Scene Robot:
+      Robot Alpha: 0.8
+    Scene Geometry:
+      Scene Alpha: 1.0
+  - Class: rviz_default_plugins/MarkerArray
+    Name: Workcell coordinates
+    Enabled: true
+    Queue Size: 10
+    Topic:
+      Value: /soarm4_plan/workcell_markers
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+      Depth: 5
+  - Class: rviz_default_plugins/TF
+    Name: Coordinate frames
+    Enabled: true
+    Show Arrows: true
+    Show Axes: true
+    Show Names: false
+    Marker Scale: 0.08
+    Frames:
+      All Enabled: false
+      table:
+        Value: true
+      base_link:
+        Value: true
+      cup_tip:
+        Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 235; 238; 242
+    Fixed Frame: table
+    Frame Rate: 30
+  Name: root
+  Tools:
+  - Class: rviz_default_plugins/Interact
+    Hide Inactive Objects: true
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/Select
+  - Class: rviz_default_plugins/FocusCamera
+  - Class: rviz_default_plugins/Measure
+    Line color: 128; 128; 0
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 1.1
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 1.18
+        Y: 0.34
+        Z: 0.18
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.6
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 4.2
+    Saved: null
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 900
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Width: 1300
+  X: 0
+  Y: 0

@@ -1,0 +1,18 @@
+[0.611s] Invoking command in '/home/seungung9473/robot_ws/build/soarm_bridge': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data
+[0.793s] running develop
+[0.889s] running egg_info
+[0.898s] writing soarm_bridge.egg-info/PKG-INFO
+[0.898s] writing dependency_links to soarm_bridge.egg-info/dependency_links.txt
+[0.898s] writing entry points to soarm_bridge.egg-info/entry_points.txt
+[0.898s] writing requirements to soarm_bridge.egg-info/requires.txt
+[0.898s] writing top-level names to soarm_bridge.egg-info/top_level.txt
+[0.917s] reading manifest file 'soarm_bridge.egg-info/SOURCES.txt'
+[0.918s] writing manifest file 'soarm_bridge.egg-info/SOURCES.txt'
+[0.927s] running build_ext
+[0.928s] Creating /home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages/soarm-bridge.egg-link (link to .)
+[0.928s] Installing esp32_bridge script to /home/seungung9473/robot_ws/install/soarm_bridge/lib/soarm_bridge
+[0.928s] Installing servo_bridge script to /home/seungung9473/robot_ws/install/soarm_bridge/lib/soarm_bridge
+[0.928s] 
+[0.928s] Installed /home/seungung9473/robot_ws/build/soarm_bridge
+[0.928s] running symlink_data
+[0.946s] Invoked command in '/home/seungung9473/robot_ws/build/soarm_bridge' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data

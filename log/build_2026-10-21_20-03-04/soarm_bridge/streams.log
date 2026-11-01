@@ -1,0 +1,29 @@
+[0.655s] Invoking command in '/home/seungung9473/robot_ws/build/soarm_bridge': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data
+[0.803s] running develop
+[0.885s] running egg_info
+[0.885s] creating soarm_bridge.egg-info
+[0.893s] writing soarm_bridge.egg-info/PKG-INFO
+[0.893s] writing dependency_links to soarm_bridge.egg-info/dependency_links.txt
+[0.893s] writing entry points to soarm_bridge.egg-info/entry_points.txt
+[0.893s] writing requirements to soarm_bridge.egg-info/requires.txt
+[0.893s] writing top-level names to soarm_bridge.egg-info/top_level.txt
+[0.893s] writing manifest file 'soarm_bridge.egg-info/SOURCES.txt'
+[0.909s] reading manifest file 'soarm_bridge.egg-info/SOURCES.txt'
+[0.910s] writing manifest file 'soarm_bridge.egg-info/SOURCES.txt'
+[0.919s] running build_ext
+[0.919s] Creating /home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages/soarm-bridge.egg-link (link to .)
+[0.919s] Installing esp32_bridge script to /home/seungung9473/robot_ws/install/soarm_bridge/lib/soarm_bridge
+[0.919s] Installing servo_bridge script to /home/seungung9473/robot_ws/install/soarm_bridge/lib/soarm_bridge
+[0.919s] 
+[0.919s] Installed /home/seungung9473/robot_ws/build/soarm_bridge
+[0.919s] running symlink_data
+[0.919s] creating /home/seungung9473/robot_ws/install/soarm_bridge/share/ament_index
+[0.919s] creating /home/seungung9473/robot_ws/install/soarm_bridge/share/ament_index/resource_index
+[0.919s] creating /home/seungung9473/robot_ws/install/soarm_bridge/share/ament_index/resource_index/packages
+[0.919s] symbolically linking /home/seungung9473/robot_ws/build/soarm_bridge/resource/soarm_bridge -> /home/seungung9473/robot_ws/install/soarm_bridge/share/ament_index/resource_index/packages
+[0.919s] symbolically linking /home/seungung9473/robot_ws/build/soarm_bridge/package.xml -> /home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge
+[0.919s] creating /home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/config
+[0.919s] symbolically linking /home/seungung9473/robot_ws/build/soarm_bridge/config/soarm.yaml -> /home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/config
+[0.919s] creating /home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/launch
+[0.919s] symbolically linking /home/seungung9473/robot_ws/build/soarm_bridge/launch/bringup.launch.py -> /home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/launch
+[0.934s] Invoked command in '/home/seungung9473/robot_ws/build/soarm_bridge' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data

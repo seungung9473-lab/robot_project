@@ -1,0 +1,49 @@
+[0.000000] (-) TimerEvent: {}
+[0.000266] (-) JobUnselected: {'identifier': 'soarm4_description'}
+[0.000312] (-) JobUnselected: {'identifier': 'soarm4_live'}
+[0.000327] (-) JobUnselected: {'identifier': 'soarm4_moveit_config'}
+[0.000342] (-) JobUnselected: {'identifier': 'soarm_bridge'}
+[0.000361] (soarm_turntable) JobQueued: {'identifier': 'soarm_turntable', 'dependencies': OrderedDict()}
+[0.000655] (soarm_turntable) JobStarted: {'identifier': 'soarm_turntable'}
+[0.099524] (-) TimerEvent: {}
+[0.199793] (-) TimerEvent: {}
+[0.300068] (-) TimerEvent: {}
+[0.400242] (-) TimerEvent: {}
+[0.500484] (-) TimerEvent: {}
+[0.600678] (-) TimerEvent: {}
+[0.692725] (soarm_turntable) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/seungung9473/robot_ws/build/soarm_turntable/build', '--no-deps', 'symlink_data'], 'cwd': '/home/seungung9473/robot_ws/build/soarm_turntable', 'env': OrderedDict({'CODEX_TECTONIC_PATH': '/usr/lib/chatgpt/resources/tectonic/tectonic', 'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'CODEX_SAGE_BACKFILL_TRACKER_TAB_REUSE': '1', 'CODEX_CI': '1', 'USER': 'seungung9473', 'CODEX_INTERNAL_ORIGINATOR_OVERRIDE': 'Codex Desktop', 'CODEX_SHELL': '1', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'LOG_FORMAT': 'json', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CODEX_CLI_PATH': '/usr/lib/chatgpt/resources/codex', 'HOME': '/home/seungung9473', 'CHROME_DESKTOP': 'chatgpt.desktop', 'DISABLE_AUTO_UPDATE': 'true', 'DESKTOP_SESSION': 'ubuntu', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/chatgpt.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'PAGER': 'cat', 'MANAGERPID': '1478', 'CODEX_APP_TOOLS_PIPE_PATH': '/tmp/codex-app-tools/bae1f5e5-778e-4976-b79d-ed524f71f999.sock', 'LC_CTYPE': 'C.UTF-8', 'SYSTEMD_EXEC_PID': '1742', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'NO_COLOR': '1', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': '', 'CODEX_MCP_NODE_PATH': '/usr/lib/chatgpt/resources/cua_node/bin/node', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '3217', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'CODEX_PERMISSION_PROFILE': ':workspace', 'CODEX_TOOL_CALL_ID': 'exec-e20fa7bd-3d5c-4b5a-8ccc-845bb3fabc99', 'ROS_DISTRO': 'jazzy', 'ZSH_TMUX_AUTOSTARTED': 'true', 'LOGNAME': 'seungung9473', 'JOURNAL_STREAM': '10:13974', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', 'RUST_LOG': 'warn', 'USERNAME': 'seungung9473', 'TERM': 'dumb', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'PATH': '/home/seungung9473/.codex/tmp/arg0-linux/codex-arg0VMwzGG:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources', 'SESSION_MANAGER': 'local/seungung9473-960QHA:@/tmp/.ICE-unix/1670,unix/seungung9473-960QHA:/tmp/.ICE-unix/1670', 'CODEX_VERSION': '0.163.0-alpha.11.1', 'CODEX_SESSION_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'INVOCATION_ID': 'cedbdd701a254828abdd284211f671ed', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'CODEX_SANDBOX_NETWORK_DISABLED': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'GH_PAGER': 'cat', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.D3UXX3', 'LS_COLORS': '', 'BROWSER_USE_ACCESS_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAs29vBQw+wtD6DTNZ1dcTmbeIzAoaYXemWNpuMm/7vjE=', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CODEX_THREAD_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'GJS_DEBUG_OUTPUT': 'stderr', 'CODEX_TASK_WORKSPACE_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAs29vBQw+wtD6DTNZ1dcTmbeIzAoaYXemWNpuMm/7vjE=', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'GIT_PAGER': 'cat', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/seungung9473/robot_ws/build/soarm_turntable', 'LC_ALL': 'C.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'ZSH_TMUX_AUTOSTART': 'false', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/seungung9473/robot_ws/build/soarm_turntable/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.700803] (-) TimerEvent: {}
+[0.800944] (-) TimerEvent: {}
+[0.855080] (soarm_turntable) StdoutLine: {'line': b'running develop\n'}
+[0.901049] (-) TimerEvent: {}
+[0.946511] (soarm_turntable) StdoutLine: {'line': b'running egg_info\n'}
+[0.946701] (soarm_turntable) StdoutLine: {'line': b'creating soarm_turntable.egg-info\n'}
+[0.955405] (soarm_turntable) StdoutLine: {'line': b'writing soarm_turntable.egg-info/PKG-INFO\n'}
+[0.957078] (soarm_turntable) StdoutLine: {'line': b'writing dependency_links to soarm_turntable.egg-info/dependency_links.txt\n'}
+[0.957132] (soarm_turntable) StdoutLine: {'line': b'writing entry points to soarm_turntable.egg-info/entry_points.txt\n'}
+[0.957172] (soarm_turntable) StdoutLine: {'line': b'writing requirements to soarm_turntable.egg-info/requires.txt\n'}
+[0.957210] (soarm_turntable) StdoutLine: {'line': b'writing top-level names to soarm_turntable.egg-info/top_level.txt\n'}
+[0.957251] (soarm_turntable) StdoutLine: {'line': b"writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'\n"}
+[0.973702] (soarm_turntable) StdoutLine: {'line': b"reading manifest file 'soarm_turntable.egg-info/SOURCES.txt'\n"}
+[0.974000] (soarm_turntable) StdoutLine: {'line': b"writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'\n"}
+[0.983454] (soarm_turntable) StdoutLine: {'line': b'running build_ext\n'}
+[0.983600] (soarm_turntable) StdoutLine: {'line': b'Creating /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm-turntable.egg-link (link to .)\n'}
+[0.983984] (soarm_turntable) StdoutLine: {'line': b'Installing turntable script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable\n'}
+[0.984467] (soarm_turntable) StdoutLine: {'line': b'Installing xl330_bridge script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable\n'}
+[0.984573] (soarm_turntable) StdoutLine: {'line': b'\n'}
+[0.984625] (soarm_turntable) StdoutLine: {'line': b'Installed /home/seungung9473/robot_ws/build/soarm_turntable\n'}
+[0.984671] (soarm_turntable) StdoutLine: {'line': b'running symlink_data\n'}
+[0.984717] (soarm_turntable) StdoutLine: {'line': b'creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index\n'}
+[0.984764] (soarm_turntable) StdoutLine: {'line': b'creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index\n'}
+[0.984808] (soarm_turntable) StdoutLine: {'line': b'creating /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index/packages\n'}
+[0.984872] (soarm_turntable) StdoutLine: {'line': b'symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/resource/soarm_turntable -> /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index/packages\n'}
+[0.984924] (soarm_turntable) StdoutLine: {'line': b'symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/package.xml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable\n'}
+[0.984967] (soarm_turntable) StdoutLine: {'line': b'symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/README_KO.md -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable\n'}
+[0.985008] (soarm_turntable) StdoutLine: {'line': b'creating /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch\n'}
+[0.985050] (soarm_turntable) StdoutLine: {'line': b'symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/launch/turntable.launch.py -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch\n'}
+[0.985091] (soarm_turntable) StdoutLine: {'line': b'creating /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/config\n'}
+[0.985131] (soarm_turntable) StdoutLine: {'line': b'symbolically linking /home/seungung9473/robot_ws/build/soarm_turntable/config/turntable.yaml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/config\n'}
+[1.001331] (soarm_turntable) CommandEnded: {'returncode': 0}
+[1.001717] (-) TimerEvent: {}
+[1.010225] (soarm_turntable) JobEnded: {'identifier': 'soarm_turntable', 'rc': 0}
+[1.010539] (-) EventReactorShutdown: {}

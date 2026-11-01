@@ -1,0 +1,20 @@
+{
+  "reason": "User inspected real J1 motor and confirmed pictured underside projection is absent. Remove only this feature from J1 visual/collision mesh. Other motors unchanged.",
+  "removed_triangles": 1340,
+  "removed_local_bounds_mm": [
+    [
+      -15.050000511109829,
+      -8.600009605288506,
+      121.6999962925911
+    ],
+    [
+      -13.050000183284283,
+      8.599990978837013,
+      126.69999897480011
+    ]
+  ],
+  "before_sha256": "995e97f4663cfa9f01ca30cfcd6b0decd3863a11bf860ec25248441ce3aec295",
+  "after_sha256": "82f8c4d7c6e65c531e4c5f33ab5ba9b87ab7a6b5b225a47003127165d1e1a2af",
+  "unchanged_urdf": true,
+  "unchanged_joint_limits": true
+}

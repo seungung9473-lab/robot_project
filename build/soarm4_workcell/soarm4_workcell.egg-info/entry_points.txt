@@ -1,0 +1,2 @@
+[console_scripts]
+workcell_scene = soarm4_workcell.scene:main

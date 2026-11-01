@@ -1,0 +1,137 @@
+[0.059s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--base-paths', 'src', '--symlink-install', '--packages-select', 'soarm_bridge']
+[0.059s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=8, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['src'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['soarm_bridge'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x76be13d58710>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x76be13d58500>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x76be13d58500>>, mixin_verb=('build',))
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.081s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.081s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/seungung9473/robot_ws/src'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.081s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.095s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extensions ['ignore', 'ignore_ament_install']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extension 'ignore'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extension 'ignore_ament_install'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extensions ['colcon_pkg']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extension 'colcon_pkg'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extensions ['colcon_meta']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extension 'colcon_meta'
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extensions ['ros']
+[0.096s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_description) by extension 'ros'
+[0.097s] DEBUG:colcon.colcon_core.package_identification:Package 'src/soarm4_description' with type 'ros.ament_cmake' and name 'soarm4_description'
+[0.097s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extensions ['ignore', 'ignore_ament_install']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extension 'ignore'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extension 'ignore_ament_install'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extensions ['colcon_pkg']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extension 'colcon_pkg'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extensions ['colcon_meta']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extension 'colcon_meta'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extensions ['ros']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_live) by extension 'ros'
+[0.098s] DEBUG:colcon.colcon_core.package_identification:Package 'src/soarm4_live' with type 'ros.ament_cmake' and name 'soarm4_live'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extensions ['ignore', 'ignore_ament_install']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extension 'ignore'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extension 'ignore_ament_install'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extensions ['colcon_pkg']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extension 'colcon_pkg'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extensions ['colcon_meta']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extension 'colcon_meta'
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extensions ['ros']
+[0.098s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm4_moveit_config) by extension 'ros'
+[0.099s] DEBUG:colcon.colcon_core.package_identification:Package 'src/soarm4_moveit_config' with type 'ros.ament_cmake' and name 'soarm4_moveit_config'
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extensions ['ignore', 'ignore_ament_install']
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extension 'ignore'
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extension 'ignore_ament_install'
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extensions ['colcon_pkg']
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extension 'colcon_pkg'
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extensions ['colcon_meta']
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extension 'colcon_meta'
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extensions ['ros']
+[0.099s] Level 1:colcon.colcon_core.package_identification:_identify(src/soarm_bridge) by extension 'ros'
+[0.099s] DEBUG:colcon.colcon_core.package_identification:Package 'src/soarm_bridge' with type 'ros.ament_python' and name 'soarm_bridge'
+[0.099s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.110s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'soarm4_description' in 'src/soarm4_description'
+[0.110s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'soarm4_live' in 'src/soarm4_live'
+[0.110s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'soarm4_moveit_config' in 'src/soarm4_moveit_config'
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.111s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 318 installed packages in /opt/ros/jazzy
+[0.112s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_args' from command line to 'None'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_target' from command line to 'None'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_clean_cache' from command line to 'False'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_clean_first' from command line to 'False'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'cmake_force_configure' from command line to 'False'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'ament_cmake_args' from command line to 'None'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'catkin_cmake_args' from command line to 'None'
+[0.132s] Level 5:colcon.colcon_core.verb:set package 'soarm_bridge' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.132s] DEBUG:colcon.colcon_core.verb:Building package 'soarm_bridge' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/seungung9473/robot_ws/build/soarm_bridge', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/seungung9473/robot_ws/install/soarm_bridge', 'merge_install': False, 'path': '/home/seungung9473/robot_ws/src/soarm_bridge', 'symlink_install': True, 'test_result_base': None}
+[0.132s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.133s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.133s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/seungung9473/robot_ws/src/soarm_bridge' with build type 'ament_python'
+[0.133s] Level 1:colcon.colcon_core.shell:create_environment_hook('soarm_bridge', 'ament_prefix_path')
+[0.134s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.135s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/ament_prefix_path.ps1'
+[0.135s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/ament_prefix_path.dsv'
+[0.135s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/ament_prefix_path.sh'
+[0.135s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.135s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.265s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/seungung9473/robot_ws/src/soarm_bridge'
+[0.265s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.265s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.571s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools commands: bdist_dumb, alias, easy_install, clean, install_headers, setopt, install_lib, symlink_data, saveopts, install_data, build_clib, dist_info, install, editable_wheel, build_ext, bdist_rpm, install_scripts, check, register, bdist, upload_docs, extract_messages, egg_info, upload, sdist, test, install_egg_info, rotate, build, init_catalog, build_scripts, compile_catalog, bdist_egg, update_catalog, build_py, develop
+[0.743s] DEBUG:colcon.colcon_core.task.python.build:Available setuptools 'develop' options: --record, --exclude-scripts, --force-installation-into-system-dir, --uninstall, --help, --site-dirs, --optimize, --user, --prefix, --build-directory, --always-copy, --install-dir, --install-layout, --multi-version, --local-snapshots-ok, --always-unzip, --verbose, --zip-ok, --upgrade, --egg-path, --no-user-cfg, --index-url, --script-dir, --version, --no-find-links, --no-deps, --quiet, --allow-hosts, --editable, --find-links, --dry-run
+[0.744s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/seungung9473/robot_ws/build/soarm_bridge': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data
+[1.079s] Level 1:colcon.colcon_core.shell:create_environment_hook('soarm_bridge', 'pythonpath_develop')
+[1.079s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/build/soarm_bridge/share/soarm_bridge/hook/pythonpath_develop.ps1'
+[1.080s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/seungung9473/robot_ws/build/soarm_bridge' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_bridge/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_bridge/build --no-deps symlink_data
+[1.080s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/seungung9473/robot_ws/build/soarm_bridge/share/soarm_bridge/hook/pythonpath_develop.dsv'
+[1.080s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/build/soarm_bridge/share/soarm_bridge/hook/pythonpath_develop.sh'
+[1.081s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge' for CMake module files
+[1.081s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge' for CMake config files
+[1.082s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge/lib'
+[1.082s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge/bin'
+[1.082s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge/lib/pkgconfig/soarm_bridge.pc'
+[1.082s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages'
+[1.082s] Level 1:colcon.colcon_core.shell:create_environment_hook('soarm_bridge', 'pythonpath')
+[1.082s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/pythonpath.ps1'
+[1.082s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/pythonpath.dsv'
+[1.083s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/hook/pythonpath.sh'
+[1.083s] Level 1:colcon.colcon_core.environment:checking '/home/seungung9473/robot_ws/install/soarm_bridge/bin'
+[1.083s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(soarm_bridge)
+[1.083s] INFO:colcon.colcon_core.shell:Creating package script '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/package.ps1'
+[1.084s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/package.dsv'
+[1.084s] INFO:colcon.colcon_core.shell:Creating package script '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/package.sh'
+[1.084s] INFO:colcon.colcon_core.shell:Creating package script '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/package.bash'
+[1.084s] INFO:colcon.colcon_core.shell:Creating package script '/home/seungung9473/robot_ws/install/soarm_bridge/share/soarm_bridge/package.zsh'
+[1.085s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/seungung9473/robot_ws/install/soarm_bridge/share/colcon-core/packages/soarm_bridge)
+[1.085s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.085s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.085s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[1.085s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.090s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.090s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.090s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.099s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.099s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/seungung9473/robot_ws/install/local_setup.ps1'
+[1.100s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/seungung9473/robot_ws/install/_local_setup_util_ps1.py'
+[1.101s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/seungung9473/robot_ws/install/setup.ps1'
+[1.102s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/seungung9473/robot_ws/install/local_setup.sh'
+[1.102s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/seungung9473/robot_ws/install/_local_setup_util_sh.py'
+[1.103s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/seungung9473/robot_ws/install/setup.sh'
+[1.104s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/seungung9473/robot_ws/install/local_setup.bash'
+[1.104s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/seungung9473/robot_ws/install/setup.bash'
+[1.105s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/seungung9473/robot_ws/install/local_setup.zsh'
+[1.105s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/seungung9473/robot_ws/install/setup.zsh'

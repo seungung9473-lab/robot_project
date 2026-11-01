@@ -1,0 +1,23 @@
+{
+  "link1_servo": {
+    "fit_error_m": 1.179411432822614e-08,
+    "removed_triangles": 1340,
+    "remaining_triangles": 17740
+  },
+  "link2_servo": {
+    "fit_error_m": 1.363212063459389e-08,
+    "removed_triangles": 1340,
+    "remaining_triangles": 17740
+  },
+  "link3_servo": {
+    "fit_error_m": 1.898415884899228e-08,
+    "removed_triangles": 1340,
+    "remaining_triangles": 17740
+  },
+  "geometry_validation_max_error_m": 2.8911885926038682e-08,
+  "collision_checks": {
+    "home": 0,
+    "J2_50": 6,
+    "J4_100": 6
+  }
+}

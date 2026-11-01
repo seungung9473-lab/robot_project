@@ -1,0 +1,16 @@
+running develop
+running egg_info
+writing soarm_turntable.egg-info/PKG-INFO
+writing dependency_links to soarm_turntable.egg-info/dependency_links.txt
+writing entry points to soarm_turntable.egg-info/entry_points.txt
+writing requirements to soarm_turntable.egg-info/requires.txt
+writing top-level names to soarm_turntable.egg-info/top_level.txt
+reading manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm-turntable.egg-link (link to .)
+Installing turntable script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+Installing xl330_bridge script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+
+Installed /home/seungung9473/robot_ws/build/soarm_turntable
+running symlink_data

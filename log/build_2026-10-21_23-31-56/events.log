@@ -1,0 +1,317 @@
+[0.000000] (-) TimerEvent: {}
+[0.000189] (-) JobUnselected: {'identifier': 'soarm4_description'}
+[0.000213] (-) JobUnselected: {'identifier': 'soarm4_live'}
+[0.000226] (-) JobUnselected: {'identifier': 'soarm_bridge'}
+[0.000238] (soarm4_moveit_config) JobQueued: {'identifier': 'soarm4_moveit_config', 'dependencies': OrderedDict({'soarm4_description': '/home/seungung9473/robot_ws/install/soarm4_description', 'soarm_bridge': '/home/seungung9473/robot_ws/install/soarm_bridge'})}
+[0.000553] (soarm4_moveit_config) JobStarted: {'identifier': 'soarm4_moveit_config'}
+[0.006365] (soarm4_moveit_config) JobProgress: {'identifier': 'soarm4_moveit_config', 'progress': 'cmake'}
+[0.006870] (soarm4_moveit_config) JobProgress: {'identifier': 'soarm4_moveit_config', 'progress': 'build'}
+[0.007290] (soarm4_moveit_config) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/seungung9473/robot_ws/build/soarm4_moveit_config', '--', '-j8', '-l8'], 'cwd': '/home/seungung9473/robot_ws/build/soarm4_moveit_config', 'env': OrderedDict({'CODEX_TECTONIC_PATH': '/usr/lib/chatgpt/resources/tectonic/tectonic', 'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'CODEX_SAGE_BACKFILL_TRACKER_TAB_REUSE': '1', 'CODEX_CI': '1', 'USER': 'seungung9473', 'CODEX_INTERNAL_ORIGINATOR_OVERRIDE': 'Codex Desktop', 'CODEX_SHELL': '1', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'LOG_FORMAT': 'json', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CODEX_CLI_PATH': '/usr/lib/chatgpt/resources/codex', 'HOME': '/home/seungung9473', 'CHROME_DESKTOP': 'chatgpt.desktop', 'DISABLE_AUTO_UPDATE': 'true', 'DESKTOP_SESSION': 'ubuntu', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/chatgpt.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'PAGER': 'cat', 'MANAGERPID': '1481', 'CODEX_APP_TOOLS_PIPE_PATH': '/tmp/codex-app-tools/cfde6ba8-a6be-46c9-ab7b-22c678d297bb.sock', 'LC_CTYPE': 'C.UTF-8', 'SYSTEMD_EXEC_PID': '1761', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'NO_COLOR': '1', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': '', 'CODEX_MCP_NODE_PATH': '/usr/lib/chatgpt/resources/cua_node/bin/node', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '2948', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'CODEX_PERMISSION_PROFILE': ':workspace', 'CODEX_TOOL_CALL_ID': 'exec-cf60518b-1fde-4350-8111-af19fcc7ec6e', 'ROS_DISTRO': 'jazzy', 'ZSH_TMUX_AUTOSTARTED': 'true', 'LOGNAME': 'seungung9473', 'JOURNAL_STREAM': '10:12219', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', 'RUST_LOG': 'warn', 'USERNAME': 'seungung9473', 'TERM': 'dumb', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'PATH': '/home/seungung9473/.codex/tmp/arg0-linux/codex-arg0H5hymK:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources', 'SESSION_MANAGER': 'local/seungung9473-960QHA:@/tmp/.ICE-unix/1691,unix/seungung9473-960QHA:/tmp/.ICE-unix/1691', 'CODEX_VERSION': '0.163.0-alpha.10.2', 'CODEX_SESSION_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'INVOCATION_ID': 'ce14a8e10cff418c9e77486b844aea65', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'CODEX_SANDBOX_NETWORK_DISABLED': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'GH_PAGER': 'cat', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.1XXLX3', 'LS_COLORS': '', 'BROWSER_USE_ACCESS_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAv4JtD+5FBcs5hp1D686osAUh5mpLoG5N+bX5amX9GW4=', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/seungung9473/robot_ws/install/soarm_bridge:/home/seungung9473/robot_ws/install/soarm4_description:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CODEX_THREAD_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'GJS_DEBUG_OUTPUT': 'stderr', 'CODEX_TASK_WORKSPACE_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAv4JtD+5FBcs5hp1D686osAUh5mpLoG5N+bX5amX9GW4=', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'GIT_PAGER': 'cat', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/seungung9473/robot_ws/build/soarm4_moveit_config', 'LC_ALL': 'C.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'ZSH_TMUX_AUTOSTART': 'false', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/seungung9473/robot_ws/build/soarm_bridge:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/seungung9473/robot_ws/install/soarm4_description:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.053731] (soarm4_moveit_config) StdoutLine: {'line': b'[ 50%] Building CXX object CMakeFiles/soarm4_home_panel.dir/src/home_panel.cpp.o\n'}
+[0.054806] (soarm4_moveit_config) StdoutLine: {'line': b'[ 33%] Built target soarm4_preview_controller_manager\n'}
+[0.061487] (soarm4_moveit_config) StdoutLine: {'line': b'[ 83%] Built target soarm4_fine_collision_adapter\n'}
+[0.099764] (-) TimerEvent: {}
+[0.199861] (-) TimerEvent: {}
+[0.300015] (-) TimerEvent: {}
+[0.400169] (-) TimerEvent: {}
+[0.500324] (-) TimerEvent: {}
+[0.600534] (-) TimerEvent: {}
+[0.700706] (-) TimerEvent: {}
+[0.800889] (-) TimerEvent: {}
+[0.901063] (-) TimerEvent: {}
+[1.001236] (-) TimerEvent: {}
+[1.101404] (-) TimerEvent: {}
+[1.201573] (-) TimerEvent: {}
+[1.301756] (-) TimerEvent: {}
+[1.401937] (-) TimerEvent: {}
+[1.502121] (-) TimerEvent: {}
+[1.602312] (-) TimerEvent: {}
+[1.702507] (-) TimerEvent: {}
+[1.802694] (-) TimerEvent: {}
+[1.902869] (-) TimerEvent: {}
+[2.003035] (-) TimerEvent: {}
+[2.103214] (-) TimerEvent: {}
+[2.203386] (-) TimerEvent: {}
+[2.303556] (-) TimerEvent: {}
+[2.403735] (-) TimerEvent: {}
+[2.503880] (-) TimerEvent: {}
+[2.604058] (-) TimerEvent: {}
+[2.704268] (-) TimerEvent: {}
+[2.804464] (-) TimerEvent: {}
+[2.904658] (-) TimerEvent: {}
+[3.004879] (-) TimerEvent: {}
+[3.105046] (-) TimerEvent: {}
+[3.205234] (-) TimerEvent: {}
+[3.305389] (-) TimerEvent: {}
+[3.405532] (-) TimerEvent: {}
+[3.505678] (-) TimerEvent: {}
+[3.605834] (-) TimerEvent: {}
+[3.705966] (-) TimerEvent: {}
+[3.806100] (-) TimerEvent: {}
+[3.906246] (-) TimerEvent: {}
+[4.006391] (-) TimerEvent: {}
+[4.106529] (-) TimerEvent: {}
+[4.206671] (-) TimerEvent: {}
+[4.306823] (-) TimerEvent: {}
+[4.406954] (-) TimerEvent: {}
+[4.507111] (-) TimerEvent: {}
+[4.607244] (-) TimerEvent: {}
+[4.707391] (-) TimerEvent: {}
+[4.807521] (-) TimerEvent: {}
+[4.907677] (-) TimerEvent: {}
+[5.007819] (-) TimerEvent: {}
+[5.061142] (soarm4_moveit_config) StdoutLine: {'line': b'[100%] Linking CXX shared library libsoarm4_home_panel.so\n'}
+[5.107873] (-) TimerEvent: {}
+[5.208012] (-) TimerEvent: {}
+[5.308153] (-) TimerEvent: {}
+[5.408314] (-) TimerEvent: {}
+[5.508478] (-) TimerEvent: {}
+[5.608632] (-) TimerEvent: {}
+[5.708812] (-) TimerEvent: {}
+[5.774674] (soarm4_moveit_config) StdoutLine: {'line': b'[100%] Built target soarm4_home_panel\n'}
+[5.785747] (soarm4_moveit_config) CommandEnded: {'returncode': 0}
+[5.786197] (soarm4_moveit_config) JobProgress: {'identifier': 'soarm4_moveit_config', 'progress': 'install'}
+[5.792830] (soarm4_moveit_config) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/seungung9473/robot_ws/build/soarm4_moveit_config'], 'cwd': '/home/seungung9473/robot_ws/build/soarm4_moveit_config', 'env': OrderedDict({'CODEX_TECTONIC_PATH': '/usr/lib/chatgpt/resources/tectonic/tectonic', 'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'CODEX_SAGE_BACKFILL_TRACKER_TAB_REUSE': '1', 'CODEX_CI': '1', 'USER': 'seungung9473', 'CODEX_INTERNAL_ORIGINATOR_OVERRIDE': 'Codex Desktop', 'CODEX_SHELL': '1', 'XDG_SESSION_TYPE': 'wayland', 'CLUTTER_DISABLE_MIPMAPPED_TEXT': '1', 'LOG_FORMAT': 'json', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'CODEX_CLI_PATH': '/usr/lib/chatgpt/resources/codex', 'HOME': '/home/seungung9473', 'CHROME_DESKTOP': 'chatgpt.desktop', 'DISABLE_AUTO_UPDATE': 'true', 'DESKTOP_SESSION': 'ubuntu', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/chatgpt.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'PAGER': 'cat', 'MANAGERPID': '1481', 'CODEX_APP_TOOLS_PIPE_PATH': '/tmp/codex-app-tools/cfde6ba8-a6be-46c9-ab7b-22c678d297bb.sock', 'LC_CTYPE': 'C.UTF-8', 'SYSTEMD_EXEC_PID': '1761', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'NO_COLOR': '1', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': '', 'CODEX_MCP_NODE_PATH': '/usr/lib/chatgpt/resources/cua_node/bin/node', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '2948', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'CODEX_PERMISSION_PROFILE': ':workspace', 'CODEX_TOOL_CALL_ID': 'exec-cf60518b-1fde-4350-8111-af19fcc7ec6e', 'ROS_DISTRO': 'jazzy', 'ZSH_TMUX_AUTOSTARTED': 'true', 'LOGNAME': 'seungung9473', 'JOURNAL_STREAM': '10:12219', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS': '1', 'RUST_LOG': 'warn', 'USERNAME': 'seungung9473', 'TERM': 'dumb', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'FC_FONTATIONS': '1', 'PATH': '/home/seungung9473/.codex/tmp/arg0-linux/codex-arg0H5hymK:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/seungung9473/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources', 'SESSION_MANAGER': 'local/seungung9473-960QHA:@/tmp/.ICE-unix/1691,unix/seungung9473-960QHA:/tmp/.ICE-unix/1691', 'CODEX_VERSION': '0.163.0-alpha.10.2', 'CODEX_SESSION_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'INVOCATION_ID': 'ce14a8e10cff418c9e77486b844aea65', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'CODEX_SANDBOX_NETWORK_DISABLED': '1', 'LANG': 'C.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'GH_PAGER': 'cat', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.1XXLX3', 'LS_COLORS': '', 'BROWSER_USE_ACCESS_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAv4JtD+5FBcs5hp1D686osAUh5mpLoG5N+bX5amX9GW4=', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/seungung9473/robot_ws/install/soarm_bridge:/home/seungung9473/robot_ws/install/soarm4_description:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CODEX_THREAD_ID': '01a1593e-9e2e-7ad1-a8e4-a088abac1dc7', 'GJS_DEBUG_OUTPUT': 'stderr', 'CODEX_TASK_WORKSPACE_VERIFYING_IDENTITY': 'MCowBQYDK2VwAyEAv4JtD+5FBcs5hp1D686osAUh5mpLoG5N+bX5amX9GW4=', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'GIT_PAGER': 'cat', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/seungung9473/robot_ws/build/soarm4_moveit_config', 'LC_ALL': 'C.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'ZSH_TMUX_AUTOSTART': 'false', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/seungung9473/robot_ws/build/soarm_bridge:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_math_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/seungung9473/robot_ws/install/soarm4_description:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[5.803316] (soarm4_moveit_config) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[5.803971] (soarm4_moveit_config) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[5.804808] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/hardware_controllers.yaml\n'}
+[5.805260] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/hardware_moveit.rviz\n'}
+[5.805633] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/joint_limits.yaml\n'}
+[5.805708] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/model_manifest.json\n'}
+[5.805771] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/moveit.rviz\n'}
+[5.805835] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/ompl_planning.yaml\n'}
+[5.805889] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/poses.yaml\n'}
+[5.805952] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/soarm4.srdf\n'}
+[5.806035] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/launch/hardware.launch.py\n'}
+[5.806116] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/launch/hardware_bringup.launch.py\n'}
+[5.806167] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/launch/planning.launch.py\n'}
+[5.806294] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_tools/check_collisions.py\n'}
+[5.806419] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_tools/run_scan.py\n'}
+[5.807016] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/all_servo_connector_correction.json\n'}
+[5.807150] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/base_mesh_replacement.json\n'}
+[5.807248] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/j1_connector_correction.json\n'}
+[5.807321] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/joint_limits.yaml\n'}
+[5.807392] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/model.json\n'}
+[5.807463] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/motors.yaml\n'}
+[5.807565] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/servo_map.yaml\n'}
+[5.807910] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_box_plate.stl\n'}
+[5.807998] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_box_wall.stl\n'}
+[5.808051] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_print.stl\n'}
+[5.808100] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_servo.stl\n'}
+[5.808181] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link1_print.stl\n'}
+[5.808309] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link1_servo.stl\n'}
+[5.808360] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link2_print.stl\n'}
+[5.808407] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link2_servo.stl\n'}
+[5.808442] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link3_print.stl\n'}
+[5.808476] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link3_servo.stl\n'}
+[5.808891] (-) TimerEvent: {}
+[5.809046] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_alu.stl\n'}
+[5.809288] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_cup.stl\n'}
+[5.809380] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_print.stl\n'}
+[5.809457] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/mesh_geometry.py\n'}
+[5.809535] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/rebuild_base_mesh.py\n'}
+[5.809608] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/validate_geometry.py\n'}
+[5.809703] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/validate_runtime.py\n'}
+[5.809777] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/urdf/soarm4.urdf\n'}
+[5.809870] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/urdf/soarm4_visualization.urdf\n'}
+[5.810866] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/__init__.py\n'}
+[5.810983] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/collision_data.py\n'}
+[5.811061] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.cpp\n'}
+[5.811102] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.cpython-312-x86_64-linux-gnu.so\n'}
+[5.811313] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.pyx\n'}
+[5.811355] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl_defs.pxd\n'}
+[5.811423] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/octomap_defs.pxd\n'}
+[5.811461] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/std_defs.pxd\n'}
+[5.811496] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/version.py\n'}
+[5.811531] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/INSTALLER\n'}
+[5.811630] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/METADATA\n'}
+[5.811691] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/RECORD\n'}
+[5.811775] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/REQUESTED\n'}
+[5.811807] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/WHEEL\n'}
+[5.811842] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/licenses/LICENSE\n'}
+[5.811955] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/top_level.txt\n'}
+[5.812020] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/libccd-894a431f.so.2.0\n'}
+[5.812057] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/libfcl-9f362718.so.0.7.0\n'}
+[5.812089] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/liboctomap-18b406fe.so.1.9.8\n'}
+[5.812152] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/liboctomath-7b3fdef0.so.1.9.8\n'}
+[5.812185] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/INSTALLER\n'}
+[5.812246] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/METADATA\n'}
+[5.812275] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/RECORD\n'}
+[5.812304] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/REQUESTED\n'}
+[5.812379] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/WHEEL\n'}
+[5.812437] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/entry_points.txt\n'}
+[5.812472] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/licenses/LICENSE.md\n'}
+[5.812536] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/top_level.txt\n'}
+[5.812569] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/__init__.py\n'}
+[5.812641] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/__main__.py\n'}
+[5.812671] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/base.py\n'}
+[5.812777] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/boolean.py\n'}
+[5.812832] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/bounds.py\n'}
+[5.812862] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/caching.py\n'}
+[5.812911] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/collision.py\n'}
+[5.812963] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/comparison.py\n'}
+[5.813015] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/constants.py\n'}
+[5.813063] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/convex.py\n'}
+[5.813117] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/creation.py\n'}
+[5.813187] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/curvature.py\n'}
+[5.813253] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/decomposition.py\n'}
+[5.813317] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exceptions.py\n'}
+[5.813387] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/__init__.py\n'}
+[5.813452] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/binvox.py\n'}
+[5.813512] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/cascade.py\n'}
+[5.813574] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/common.py\n'}
+[5.813640] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/dae.py\n'}
+[5.813707] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/export.py\n'}
+[5.813782] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/gltf/__init__.py\n'}
+[5.813860] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/gltf/extensions.py\n'}
+[5.813925] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/load.py\n'}
+[5.813984] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/misc.py\n'}
+[5.814043] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/obj.py\n'}
+[5.814098] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/off.py\n'}
+[5.814155] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/ply.py\n'}
+[5.814209] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/stl.py\n'}
+[5.814266] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/threedxml.py\n'}
+[5.814323] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/threemf.py\n'}
+[5.814379] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/urdf.py\n'}
+[5.814434] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/xaml.py\n'}
+[5.814491] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/xyz.py\n'}
+[5.814559] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/geometry.py\n'}
+[5.814615] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/graph.py\n'}
+[5.814670] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/grouping.py\n'}
+[5.814725] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/inertia.py\n'}
+[5.814782] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/__init__.py\n'}
+[5.814840] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/blender.py\n'}
+[5.814910] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/generic.py\n'}
+[5.814966] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/intersections.py\n'}
+[5.815023] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interval.py\n'}
+[5.815078] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/iteration.py\n'}
+[5.815132] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/nsphere.py\n'}
+[5.815188] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/parent.py\n'}
+[5.815245] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/__init__.py\n'}
+[5.815317] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/arc.py\n'}
+[5.815364] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/creation.py\n'}
+[5.815430] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/curve.py\n'}
+[5.815492] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/entities.py\n'}
+[5.815554] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/__init__.py\n'}
+[5.815613] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/dxf.py\n'}
+[5.815670] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/export.py\n'}
+[5.815727] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/load.py\n'}
+[5.815872] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/misc.py\n'}
+[5.815905] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/svg_io.py\n'}
+[5.815966] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/intersections.py\n'}
+[5.816010] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/packing.py\n'}
+[5.816058] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/path.py\n'}
+[5.816104] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/polygons.py\n'}
+[5.816148] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/raster.py\n'}
+[5.816191] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/repair.py\n'}
+[5.816248] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/segments.py\n'}
+[5.816303] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/simplify.py\n'}
+[5.816359] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/traversal.py\n'}
+[5.816415] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/util.py\n'}
+[5.816470] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/permutate.py\n'}
+[5.816538] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/points.py\n'}
+[5.816612] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/poses.py\n'}
+[5.816674] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/primitives.py\n'}
+[5.816758] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/proximity.py\n'}
+[5.816810] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/py.typed\n'}
+[5.816858] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/__init__.py\n'}
+[5.816905] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_pyembree.py\n'}
+[5.816961] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_triangle.py\n'}
+[5.817018] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_util.py\n'}
+[5.817075] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/registration.py\n'}
+[5.817130] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/remesh.py\n'}
+[5.817184] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/rendering.py\n'}
+[5.817238] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/repair.py\n'}
+[5.817292] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resolvers.py\n'}
+[5.817350] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/__init__.py\n'}
+[5.817408] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/color_map.json.gzip\n'}
+[5.817469] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/creation.json\n'}
+[5.817554] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/README.md\n'}
+[5.817677] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/gltf2.schema.zip\n'}
+[5.817747] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/box.schema.json\n'}
+[5.817810] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/capsule.schema.json\n'}
+[5.817872] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/cylinder.schema.json\n'}
+[5.817926] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/extrusion.schema.json\n'}
+[5.817977] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/primitive.schema.json\n'}
+[5.818026] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/scenegraph.schema.json\n'}
+[5.818083] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/sphere.schema.json\n'}
+[5.818186] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/transform.schema.json\n'}
+[5.818266] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/trimesh.schema.json\n'}
+[5.818359] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/wkt.polygon.schema.json\n'}
+[5.818424] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/urdf.xsd\n'}
+[5.818499] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/base.svg\n'}
+[5.818592] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/blender_boolean.py.tmpl\n'}
+[5.818674] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/blender_unwrap.py.template\n'}
+[5.818750] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/dxf.json\n'}
+[5.818817] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/path.svg\n'}
+[5.818890] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/ply.json\n'}
+[5.818962] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/viewer.zip\n'}
+[5.819024] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/units_to_inches.json\n'}
+[5.819090] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/sample.py\n'}
+[5.819169] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/__init__.py\n'}
+[5.819236] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/cameras.py\n'}
+[5.819301] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/lighting.py\n'}
+[5.819366] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/scene.py\n'}
+[5.819433] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/transforms.py\n'}
+[5.819493] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/schemas.py\n'}
+[5.819556] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/smoothing.py\n'}
+[5.819620] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/transformations.py\n'}
+[5.819683] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/triangles.py\n'}
+[5.819747] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/typed.py\n'}
+[5.819804] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/units.py\n'}
+[5.819873] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/util.py\n'}
+[5.819932] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/version.py\n'}
+[5.819996] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/__init__.py\n'}
+[5.820058] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/notebook.py\n'}
+[5.820116] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/trackball.py\n'}
+[5.820183] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/windowed.py\n'}
+[5.820253] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/__init__.py\n'}
+[5.820327] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/base.py\n'}
+[5.820402] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/color.py\n'}
+[5.820475] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/gloss.py\n'}
+[5.820540] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/material.py\n'}
+[5.820601] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/objects.py\n'}
+[5.820661] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/texture.py\n'}
+[5.820734] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/__init__.py\n'}
+[5.820800] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/base.py\n'}
+[5.820875] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/creation.py\n'}
+[5.820936] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/encoding.py\n'}
+[5.820998] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/morphology.py\n'}
+[5.821065] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/ops.py\n'}
+[5.821136] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/runlength.py\n'}
+[5.821201] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/transforms.py\n'}
+[5.821350] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/planning_state.py\n'}
+[5.821413] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/plan_joint_goal.py\n'}
+[5.821481] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/fine_collision_service.py\n'}
+[5.821545] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/home_manager.py\n'}
+[5.821608] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/go_home.py\n'}
+[5.821672] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/pick_place_manager.py\n'}
+[5.821739] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/pick_place.py\n'}
+[5.821804] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/pick_place_core.py\n'}
+[5.821925] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config//preview_controller_plugin.xml\n'}
+[5.822150] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/libsoarm4_preview_controller_manager.so\n'}
+[5.822272] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config//fine_collision_plugin.xml\n'}
+[5.822453] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/libsoarm4_fine_collision_adapter.so\n'}
+[5.822563] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config//home_panel_plugin.xml\n'}
+[5.822734] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/libsoarm4_home_panel.so\n'}
+[5.822872] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/package_run_dependencies/soarm4_moveit_config\n'}
+[5.822997] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/parent_prefix_path/soarm4_moveit_config\n'}
+[5.823086] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/ament_prefix_path.sh\n'}
+[5.823187] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/ament_prefix_path.dsv\n'}
+[5.823283] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/path.sh\n'}
+[5.823381] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/path.dsv\n'}
+[5.823466] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.bash\n'}
+[5.823556] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.sh\n'}
+[5.823646] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.zsh\n'}
+[5.823735] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.dsv\n'}
+[5.823807] (soarm4_moveit_config) StdoutLine: {'line': b'-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/package.dsv\n'}
+[5.829093] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/packages/soarm4_moveit_config\n'}
+[5.829189] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/moveit_core__pluginlib__plugin/soarm4_moveit_config\n'}
+[5.829258] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/rviz_common__pluginlib__plugin/soarm4_moveit_config\n'}
+[5.829317] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/cmake/soarm4_moveit_configConfig.cmake\n'}
+[5.829394] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/cmake/soarm4_moveit_configConfig-version.cmake\n'}
+[5.829469] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/package.xml\n'}
+[5.829560] (soarm4_moveit_config) StdoutLine: {'line': b'-- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/PICK_PLACE_KO.md\n'}
+[5.830945] (soarm4_moveit_config) CommandEnded: {'returncode': 0}
+[5.842696] (soarm4_moveit_config) JobEnded: {'identifier': 'soarm4_moveit_config', 'rc': 0}
+[5.843301] (-) EventReactorShutdown: {}

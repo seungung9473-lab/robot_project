@@ -1,0 +1,8 @@
+# servo count <-> URDF angle.  rad = sign * (count - center) * 2*pi/4096
+# directions verified on hardware (teach & play). J4 centre 2047 is still ASSUMED.
+# rest pose counts: J1 ~2066, J2 1879, J3 2047, J4 ~2258
+joints:
+  joint1: {id: 1, center: 2047, sign: -1, min_count: 860, max_count: 3472}   # URDF -125.2 ~ +104.3 deg
+  joint2: {id: 2, center: 4095, sign: -1, min_count: 1879, max_count: 4095}   # URDF +0.0 ~ +194.8 deg
+  joint3: {id: 3, center: 0, sign: -1, min_count: 0, max_count: 2047}   # URDF -179.9 ~ +0.0 deg
+  joint4: {id: 4, center: 2047, sign: -1, min_count: 660, max_count: 3273}   # URDF -107.8 ~ +121.9 deg

@@ -1,0 +1,49 @@
+[0.010s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/seungung9473/robot_ws/src/soarm4_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/seungung9473/robot_ws/install/soarm4_description
+[0.133s] -- The C compiler identification is GNU 13.3.0
+[0.229s] -- The CXX compiler identification is GNU 13.3.0
+[0.260s] -- Detecting C compiler ABI info
+[0.413s] -- Detecting C compiler ABI info - done
+[0.431s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.432s] -- Detecting C compile features
+[0.433s] -- Detecting C compile features - done
+[0.450s] -- Detecting CXX compiler ABI info
+[0.630s] -- Detecting CXX compiler ABI info - done
+[0.645s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.646s] -- Detecting CXX compile features
+[0.647s] -- Detecting CXX compile features - done
+[0.651s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.957s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.078s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.233s] -- Configuring done (1.2s)
+[1.236s] -- Generating done (0.0s)
+[1.238s] -- Build files have been written to: /home/seungung9473/robot_ws/build/soarm4_description
+[1.245s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/seungung9473/robot_ws/src/soarm4_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/seungung9473/robot_ws/install/soarm4_description
+[1.247s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+[1.320s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+[1.335s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/seungung9473/robot_ws/build/soarm4_description
+[1.347s] -- Install configuration: ""
+[1.347s] -- Execute custom install script
+[1.348s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/urdf/soarm4.urdf
+[1.369s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/fga25_cup.stl
+[1.382s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/ig1_adapter.stl
+[1.395s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/vacuum_tool_v5.stl
+[1.414s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/launch/display.launch.py
+[1.434s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/rviz/view.rviz
+[1.448s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/joint_limits.yaml
+[1.465s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/servo_map.yaml
+[1.480s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/package_run_dependencies/soarm4_description
+[1.494s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/parent_prefix_path/soarm4_description
+[1.512s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/ament_prefix_path.sh
+[1.528s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/ament_prefix_path.dsv
+[1.546s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/path.sh
+[1.561s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/path.dsv
+[1.577s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.bash
+[1.593s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.sh
+[1.601s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.zsh
+[1.613s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.dsv
+[1.629s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/package.dsv
+[1.643s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/packages/soarm4_description
+[1.660s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/cmake/soarm4_descriptionConfig.cmake
+[1.674s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/cmake/soarm4_descriptionConfig-version.cmake
+[1.692s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/package.xml
+[1.701s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/seungung9473/robot_ws/build/soarm4_description

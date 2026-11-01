@@ -1,0 +1,4 @@
+source;share/soarm4_moveit_config/local_setup.bash
+source;share/soarm4_moveit_config/local_setup.dsv
+source;share/soarm4_moveit_config/local_setup.sh
+source;share/soarm4_moveit_config/local_setup.zsh

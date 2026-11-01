@@ -1,0 +1,18 @@
+[0.569s] Invoking command in '/home/seungung9473/robot_ws/build/soarm_turntable': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_turntable/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_turntable/build --no-deps symlink_data
+[0.727s] running develop
+[0.815s] running egg_info
+[0.824s] writing soarm_turntable.egg-info/PKG-INFO
+[0.824s] writing dependency_links to soarm_turntable.egg-info/dependency_links.txt
+[0.824s] writing entry points to soarm_turntable.egg-info/entry_points.txt
+[0.824s] writing requirements to soarm_turntable.egg-info/requires.txt
+[0.824s] writing top-level names to soarm_turntable.egg-info/top_level.txt
+[0.842s] reading manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+[0.843s] writing manifest file 'soarm_turntable.egg-info/SOURCES.txt'
+[0.852s] running build_ext
+[0.852s] Creating /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm-turntable.egg-link (link to .)
+[0.853s] Installing turntable script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+[0.853s] Installing xl330_bridge script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+[0.853s] 
+[0.853s] Installed /home/seungung9473/robot_ws/build/soarm_turntable
+[0.853s] running symlink_data
+[0.869s] Invoked command in '/home/seungung9473/robot_ws/build/soarm_turntable' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/seungung9473/robot_ws/build/soarm_turntable/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm_turntable/build --no-deps symlink_data

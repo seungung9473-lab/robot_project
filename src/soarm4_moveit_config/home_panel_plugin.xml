@@ -1,0 +1,1 @@
+<library path="soarm4_home_panel"><class name="soarm4_moveit_config/HomePanel" type="soarm4_moveit_config::HomePanel" base_class_type="rviz_common::Panel"><description>Plan and execute HOME from measured state, or stop.</description></class></library>

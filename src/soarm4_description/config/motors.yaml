@@ -1,0 +1,5 @@
+joints:
+  joint1: {id: 1, model: STS3250}
+  joint2: {id: 2, model: STS3250}
+  joint3: {id: 3, model: STS3250}
+  joint4: {id: 4, model: STS3215}

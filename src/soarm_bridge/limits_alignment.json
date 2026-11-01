@@ -1,0 +1,23 @@
+{
+  "integer_encoder_limits": {
+    "joint1": [
+      974,
+      3357
+    ],
+    "joint2": [
+      1994,
+      4038
+    ],
+    "joint3": [
+      115,
+      2047
+    ],
+    "joint4": [
+      774,
+      3159
+    ]
+  },
+  "margin_applied_in_urdf": true,
+  "read_only_default": true,
+  "original_description_not_replaced": true
+}

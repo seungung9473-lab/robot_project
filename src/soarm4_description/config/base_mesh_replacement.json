@@ -1,0 +1,36 @@
+{
+  "input": "reference/J1BASE.stl",
+  "input_sha256": "9f18134f34fb716c41f37bb2edd031fa8650fb879723c8d69537731a58c75a5a",
+  "input_units": "mm",
+  "CAD_to_base_rotation": [
+    [
+      0.0,
+      0.0,
+      1.0
+    ],
+    [
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0
+    ]
+  ],
+  "CAD_to_base_translation_m": [
+    -0.0452,
+    0.0,
+    0.095
+  ],
+  "preserved_holder": "reference/retained_base_motor_holder_m.stl",
+  "retained_holder_triangles": 37540,
+  "replacement_base_triangles": 2901,
+  "replaced_component": "01_Base_SO101",
+  "kept_component": "02_Base_motor_holder_SO101",
+  "assembly_note": "Preserve original CAD registration to the motor holder; do not recenter by bounding box.",
+  "new_part_bottom_world_Z_m_before_yaw": 0.09739999985694886,
+  "original_box_top_Z_m": 0.095,
+  "bottom_difference_m": 0.002399999856948859
+}

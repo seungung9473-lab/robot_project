@@ -1,0 +1,3 @@
+from setuptools import setup
+from glob import glob
+setup(name='soarm4_workcell',version='0.1.0',packages=['soarm4_workcell'],data_files=[('share/ament_index/resource_index/packages',['resource/soarm4_workcell']),('share/soarm4_workcell',['package.xml','README_KO.md']),('share/soarm4_workcell/config',glob('config/*.yaml')),('share/soarm4_workcell/launch',glob('launch/*.py')),('share/soarm4_workcell/rviz',glob('rviz/*.rviz'))],entry_points={'console_scripts':['workcell_scene=soarm4_workcell.scene:main']},install_requires=['setuptools'],maintainer='seungung9473',maintainer_email='user@example.com',description='Measured SO-ARM4 workcell registration; no hardware control',license='Apache-2.0')

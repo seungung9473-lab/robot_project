@@ -1,0 +1,19 @@
+{
+  "home": {
+    "launch": "PASS",
+    "joint_states_and_axes_tf": "PASS",
+    "electronics_fixed_and_robot_yaw90": "PASS",
+    "all_13_visual_fixed_frames": "PASS",
+    "correct_canonical_robot_description": "PASS",
+    "initial_angle_error_rad": 0.0
+  },
+  "gui": {
+    "launch": "PASS",
+    "joint_states_and_axes_tf": "PASS",
+    "electronics_fixed_and_robot_yaw90": "PASS",
+    "all_13_visual_fixed_frames": "PASS",
+    "correct_canonical_robot_description": "PASS",
+    "initial_angle_error_rad": 8.479300182440141e-06
+  },
+  "scope_note": "Prior home/GUI runtime evidence. This revision changes only fixed mounting Y; revised placement verified against four STL mounting holes and FK/XML."
+}

@@ -1,0 +1,32 @@
+[0.666s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_workcell': AMENT_PREFIX_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config:/home/seungung9473/robot_ws/install/soarm_bridge:/home/seungung9473/robot_ws/install/soarm4_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config:/home/seungung9473/robot_ws/install/soarm4_description:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/seungung9473/robot_ws/build/soarm4_workcell/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm4_workcell/lib/python3.12/site-packages:/home/seungung9473/robot_ws/build/soarm_bridge:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm4_workcell/build --no-deps symlink_data
+[0.818s] running develop
+[0.914s] running egg_info
+[0.914s] creating soarm4_workcell.egg-info
+[0.922s] writing soarm4_workcell.egg-info/PKG-INFO
+[0.922s] writing dependency_links to soarm4_workcell.egg-info/dependency_links.txt
+[0.922s] writing entry points to soarm4_workcell.egg-info/entry_points.txt
+[0.922s] writing requirements to soarm4_workcell.egg-info/requires.txt
+[0.922s] writing top-level names to soarm4_workcell.egg-info/top_level.txt
+[0.922s] writing manifest file 'soarm4_workcell.egg-info/SOURCES.txt'
+[0.939s] reading manifest file 'soarm4_workcell.egg-info/SOURCES.txt'
+[0.939s] writing manifest file 'soarm4_workcell.egg-info/SOURCES.txt'
+[0.949s] running build_ext
+[0.949s] Creating /home/seungung9473/robot_ws/install/soarm4_workcell/lib/python3.12/site-packages/soarm4-workcell.egg-link (link to .)
+[0.949s] Installing workcell_scene script to /home/seungung9473/robot_ws/install/soarm4_workcell/lib/soarm4_workcell
+[0.949s] 
+[0.949s] Installed /home/seungung9473/robot_ws/build/soarm4_workcell
+[0.949s] running symlink_data
+[0.949s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/ament_index
+[0.949s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/ament_index/resource_index
+[0.949s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/ament_index/resource_index/packages
+[0.949s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/resource/soarm4_workcell -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/ament_index/resource_index/packages
+[0.949s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/package.xml -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell
+[0.950s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/README_KO.md -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell
+[0.950s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/config
+[0.950s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/config/workcell.yaml -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/config
+[0.950s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/launch
+[0.950s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/launch/scene.launch.py -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/launch
+[0.950s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/launch/preview.launch.py -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/launch
+[0.950s] creating /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/rviz
+[0.950s] symbolically linking /home/seungung9473/robot_ws/build/soarm4_workcell/rviz/workcell.rviz -> /home/seungung9473/robot_ws/install/soarm4_workcell/share/soarm4_workcell/rviz
+[0.965s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_workcell' returned '0': AMENT_PREFIX_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config:/home/seungung9473/robot_ws/install/soarm_bridge:/home/seungung9473/robot_ws/install/soarm4_description:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config:/home/seungung9473/robot_ws/install/soarm4_description:${CMAKE_PREFIX_PATH} DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/seungung9473/robot_ws/install/soarm4_moveit_config/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/seungung9473/robot_ws/build/soarm4_workcell/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/seungung9473/robot_ws/install/soarm4_workcell/lib/python3.12/site-packages:/home/seungung9473/robot_ws/build/soarm_bridge:/home/seungung9473/robot_ws/install/soarm_bridge/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/seungung9473/robot_ws/build/soarm4_workcell/build --no-deps symlink_data

@@ -1,0 +1,67 @@
+servo_bridge:
+  ros__parameters:
+    port: /dev/servo_bus
+    baud: 1000000
+    rate_hz: 30.0
+    action_name: arm_controller/follow_joint_trajectory
+    joint_names:
+    - joint1
+    - joint2
+    - joint3
+    - joint4
+    ids:
+    - 1
+    - 2
+    - 3
+    - 4
+    centers:
+    - 2047
+    - 4095
+    - 0
+    - 1990
+    signs:
+    - -1
+    - -1
+    - -1
+    - -1
+    min_counts:
+    - 974
+    - 1934
+    - 0
+    - 774
+    max_counts:
+    - 3357
+    - 4095
+    - 2047
+    - 3159
+    margin_lo:
+    - 0
+    - 0
+    - 0
+    - 0
+    margin_hi:
+    - 0
+    - 0
+    - 0
+    - 0
+    acc: 50
+    min_speed: 1
+    settle_speed: 30
+    max_speed: 4000
+    goal_tolerance_counts: 15
+    settle_timeout: 3.0
+    turntable_id: 0
+    turntable_speed: 600
+    read_only: false
+    feedback_timeout: 1.0
+    start_tolerance_counts: 8
+    tracking_tolerance_counts: 16
+    command_rate_hz: 50.0
+esp32_bridge:
+  ros__parameters:
+    port: /dev/esp32
+    hold_diff: -300
+    grip_diff: -400
+    release_diff: -50
+    grip_timeout: 5.0
+    release_timeout: 3.0

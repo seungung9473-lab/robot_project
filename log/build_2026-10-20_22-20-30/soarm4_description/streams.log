@@ -1,0 +1,43 @@
+[0.006s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+[0.030s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/seungung9473/robot_ws/build/soarm4_description -- -j8 -l8
+[0.035s] Invoking command in '/home/seungung9473/robot_ws/build/soarm4_description': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/seungung9473/robot_ws/build/soarm4_description
+[0.039s] -- Install configuration: ""
+[0.039s] -- Execute custom install script
+[0.039s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/urdf/soarm4.urdf
+[0.039s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/base_link_box_plate.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/base_link_box_wall.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/base_link_print.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/base_link_servo.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link1_print.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link1_servo.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link2_print.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link2_servo.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link3_print.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/link3_servo.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/tool_link_alu.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/tool_link_cup.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/meshes/tool_link_print.stl
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/launch/display.launch.py
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/rviz/view.rviz
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/geometry_fit.json
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/joint_limits.yaml
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/model.json
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/motors.yaml
+[0.040s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/config/servo_map.yaml
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/lib/soarm4_description/assembly_pose_publisher.py
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/package_run_dependencies/soarm4_description
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/parent_prefix_path/soarm4_description
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/ament_prefix_path.sh
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/ament_prefix_path.dsv
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/path.sh
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/environment/path.dsv
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.bash
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.sh
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.zsh
+[0.041s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/local_setup.dsv
+[0.041s] -- Symlinking: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/package.dsv
+[0.046s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/ament_index/resource_index/packages/soarm4_description
+[0.046s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/cmake/soarm4_descriptionConfig.cmake
+[0.046s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/cmake/soarm4_descriptionConfig-version.cmake
+[0.046s] -- Up-to-date symlink: /home/seungung9473/robot_ws/install/soarm4_description/share/soarm4_description/package.xml
+[0.047s] Invoked command in '/home/seungung9473/robot_ws/build/soarm4_description' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/seungung9473/robot_ws/build/soarm4_description

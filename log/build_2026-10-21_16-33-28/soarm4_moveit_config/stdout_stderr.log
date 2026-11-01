@@ -1,0 +1,261 @@
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found moveit_core: 2.12.4 (/opt/ros/jazzy/share/moveit_core/cmake)
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0/BoostConfig.cmake (found version "1.83.0") found components: chrono date_time filesystem iostreams program_options regex serialization system thread 
+-- Found rclcpp: 28.1.22 (/opt/ros/jazzy/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+-- Found rosidl_generator_cpp: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 7.3.4 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 8.4.4 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+-- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Found tcb_span: 1.3.2 (/opt/ros/jazzy/share/tcb_span/cmake)
+-- Found rclcpp_lifecycle: 28.1.22 (/opt/ros/jazzy/share/rclcpp_lifecycle/cmake)
+-- Found parameter_traits: 0.7.6 (/opt/ros/jazzy/share/parameter_traits/cmake)
+-- Found Eigen3: TRUE (found version "3.4.0") 
+-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+-- Configuring done (1.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/seungung9473/robot_ws/build/soarm4_moveit_config
+[ 50%] Building CXX object CMakeFiles/soarm4_preview_controller_manager.dir/src/preview_controller_manager.cpp.o
+[100%] Linking CXX shared library libsoarm4_preview_controller_manager.so
+[100%] Built target soarm4_preview_controller_manager
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/joint_limits.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/model_manifest.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/moveit.rviz
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/ompl_planning.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/poses.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/config/soarm4.srdf
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/launch/planning.launch.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_tools/check_collisions.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_tools/run_scan.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/all_servo_connector_correction.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/base_mesh_replacement.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/j1_connector_correction.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/joint_limits.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/model.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/motors.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/config/servo_map.yaml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_box_plate.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_box_wall.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_print.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/base_link_servo.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link1_print.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link1_servo.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link2_print.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link2_servo.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link3_print.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/link3_servo.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_alu.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_cup.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/meshes/tool_link_print.stl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/mesh_geometry.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/rebuild_base_mesh.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/validate_geometry.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/tools/validate_runtime.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/urdf/soarm4.urdf
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/audit_model/urdf/soarm4_visualization.urdf
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/collision_data.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.cpp
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.cpython-312-x86_64-linux-gnu.so
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl.pyx
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/fcl_defs.pxd
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/octomap_defs.pxd
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/std_defs.pxd
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/fcl/version.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/INSTALLER
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/METADATA
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/RECORD
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/REQUESTED
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/WHEEL
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/licenses/LICENSE
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl-0.7.0.11.dist-info/top_level.txt
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/libccd-894a431f.so.2.0
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/libfcl-9f362718.so.0.7.0
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/liboctomap-18b406fe.so.1.9.8
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/python_fcl.libs/liboctomath-7b3fdef0.so.1.9.8
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/INSTALLER
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/METADATA
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/RECORD
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/REQUESTED
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/WHEEL
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/entry_points.txt
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/licenses/LICENSE.md
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh-5.1.1.dist-info/top_level.txt
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/__main__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/base.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/boolean.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/bounds.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/caching.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/collision.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/comparison.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/constants.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/convex.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/creation.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/curvature.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/decomposition.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exceptions.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/binvox.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/cascade.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/common.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/dae.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/export.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/gltf/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/gltf/extensions.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/load.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/misc.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/obj.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/off.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/ply.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/stl.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/threedxml.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/threemf.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/urdf.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/xaml.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/exchange/xyz.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/geometry.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/graph.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/grouping.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/inertia.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/blender.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interfaces/generic.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/intersections.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/interval.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/iteration.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/nsphere.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/parent.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/arc.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/creation.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/curve.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/entities.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/dxf.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/export.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/load.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/misc.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/exchange/svg_io.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/intersections.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/packing.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/path.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/polygons.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/raster.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/repair.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/segments.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/simplify.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/traversal.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/path/util.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/permutate.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/points.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/poses.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/primitives.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/proximity.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/py.typed
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_pyembree.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_triangle.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/ray/ray_util.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/registration.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/remesh.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/rendering.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/repair.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resolvers.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/color_map.json.gzip
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/creation.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/README.md
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/gltf2.schema.zip
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/box.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/capsule.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/cylinder.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/extrusion.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/primitive.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/scenegraph.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/sphere.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/transform.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/trimesh.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/primitive/wkt.polygon.schema.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/schema/urdf.xsd
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/base.svg
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/blender_boolean.py.tmpl
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/blender_unwrap.py.template
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/dxf.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/path.svg
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/ply.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/templates/viewer.zip
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/resources/units_to_inches.json
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/sample.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/cameras.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/lighting.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/scene.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/scene/transforms.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/schemas.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/smoothing.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/transformations.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/triangles.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/typed.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/units.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/util.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/version.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/notebook.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/trackball.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/viewer/windowed.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/base.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/color.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/gloss.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/material.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/objects.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/visual/texture.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/__init__.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/base.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/creation.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/encoding.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/morphology.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/ops.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/runlength.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/runtime_deps/trimesh/voxel/transforms.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/planning_state.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/soarm4_moveit_config/plan_joint_goal.py
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config//preview_controller_plugin.xml
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/lib/libsoarm4_preview_controller_manager.so
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/package_run_dependencies/soarm4_moveit_config
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/parent_prefix_path/soarm4_moveit_config
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/ament_prefix_path.sh
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/ament_prefix_path.dsv
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/path.sh
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/environment/path.dsv
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.bash
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.sh
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.zsh
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/local_setup.dsv
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/package.dsv
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/packages/soarm4_moveit_config
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/ament_index/resource_index/moveit_core__pluginlib__plugin/soarm4_moveit_config
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/cmake/soarm4_moveit_configConfig.cmake
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/cmake/soarm4_moveit_configConfig-version.cmake
+-- Symlinking: /home/seungung9473/robot_ws/install/soarm4_moveit_config/share/soarm4_moveit_config/package.xml

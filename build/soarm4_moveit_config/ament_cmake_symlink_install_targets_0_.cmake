@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/seungung9473/robot_ws/build/soarm4_moveit_config/libsoarm4_preview_controller_manager.so" "TARGETS" "soarm4_preview_controller_manager" "LIBRARY_DESTINATION" "lib")

@@ -1,0 +1,1 @@
+<library path="soarm4_preview_controller_manager"><class name="soarm4_moveit_config/PreviewOnlyControllerManager" type="soarm4_moveit_config::PreviewOnlyControllerManager" base_class_type="moveit_controller_manager::MoveItControllerManager"><description>No hardware or simulated execution; planning and preview only.</description></class></library>

@@ -1,0 +1,3 @@
+[console_scripts]
+esp32_bridge = soarm_bridge.esp32_bridge:main
+servo_bridge = soarm_bridge.servo_bridge:main

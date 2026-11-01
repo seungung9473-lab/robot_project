@@ -1,0 +1,30 @@
+# Software encoder calibration; URDF joint limits unchanged.
+joints:
+  joint1:
+    id: 1
+    center: 2047
+    sign: -1
+    min_count: 974
+    max_count: 3357
+    home_count: 2047
+  joint2:
+    id: 2
+    center: 4118
+    sign: -1
+    min_count: 2017
+    max_count: 4038
+    home_count: 2070
+  joint3:
+    id: 3
+    center: 0
+    sign: -1
+    min_count: 115
+    max_count: 2047
+    home_count: 2047
+  joint4:
+    id: 4
+    center: 2001
+    sign: -1
+    min_count: 774
+    max_count: 3113
+    home_count: 2001

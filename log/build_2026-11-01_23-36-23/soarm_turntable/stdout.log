@@ -1,0 +1,59 @@
+running develop
+Removing /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm-turntable.egg-link (link to .)
+running egg_info
+writing ../../build/soarm_turntable/soarm_turntable.egg-info/PKG-INFO
+writing dependency_links to ../../build/soarm_turntable/soarm_turntable.egg-info/dependency_links.txt
+writing entry points to ../../build/soarm_turntable/soarm_turntable.egg-info/entry_points.txt
+writing requirements to ../../build/soarm_turntable/soarm_turntable.egg-info/requires.txt
+writing top-level names to ../../build/soarm_turntable/soarm_turntable.egg-info/top_level.txt
+reading manifest file '../../build/soarm_turntable/soarm_turntable.egg-info/SOURCES.txt'
+writing manifest file '../../build/soarm_turntable/soarm_turntable.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/seungung9473/robot_ws/build/soarm_turntable/build
+creating /home/seungung9473/robot_ws/build/soarm_turntable/build/lib
+creating /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/controller.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/cli.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/environment_core.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/environment_gui.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/bridge.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/__init__.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/scan_core.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+copying soarm_turntable/scan.py -> /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable
+running install
+running install_lib
+creating /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/controller.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/cli.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/environment_core.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/environment_gui.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/bridge.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/__init__.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/scan_core.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+copying /home/seungung9473/robot_ws/build/soarm_turntable/build/lib/soarm_turntable/scan.py -> /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/controller.py to controller.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/cli.py to cli.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/environment_core.py to environment_core.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/environment_gui.py to environment_gui.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/bridge.py to bridge.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/__init__.py to __init__.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/scan_core.py to scan_core.cpython-312.pyc
+byte-compiling /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable/scan.py to scan.cpython-312.pyc
+running install_data
+copying resource/soarm_turntable -> /home/seungung9473/robot_ws/install/soarm_turntable/share/ament_index/resource_index/packages
+copying package.xml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+copying README_KO.md -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+copying SCAN_KO.md -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+copying ENVIRONMENT_KO.md -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable
+copying launch/turntable.launch.py -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch
+copying launch/environment.launch.py -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/launch
+copying config/turntable.yaml -> /home/seungung9473/robot_ws/install/soarm_turntable/share/soarm_turntable/config
+running install_egg_info
+Copying ../../build/soarm_turntable/soarm_turntable.egg-info to /home/seungung9473/robot_ws/install/soarm_turntable/lib/python3.12/site-packages/soarm_turntable-0.1.0-py3.12.egg-info
+running install_scripts
+Installing environment_setup script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+Installing turntable script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+Installing turntable_scan script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+Installing xl330_bridge script to /home/seungung9473/robot_ws/install/soarm_turntable/lib/soarm_turntable
+writing list of installed files to '/home/seungung9473/robot_ws/build/soarm_turntable/install.log'
