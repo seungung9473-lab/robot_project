@@ -54,7 +54,7 @@ class WorkcellScene(Node):
                 result=self.future.result()
                 if self.phase=='apply':
                     if not result.success:raise RuntimeError('MoveIt rejected workcell')
-                    self.scene_ready=True;self.status('Applied 4 workcell collision objects; checking scene')
+                    self.scene_ready=True;self.status(f'Applied {len(self.geometry)} workcell collision objects; checking scene')
                 else:
                     objects={o.id:o for o in result.scene.world.collision_objects};good=True
                     for v in self.geometry:
@@ -65,7 +65,7 @@ class WorkcellScene(Node):
                             q=P.orientation;part=translated([P.position.x,P.position.y,P.position.z]);part[:3,:3]=rotation([q.x,q.y,q.z,q.w]);B=B@part
                         if not np.allclose(B,v['T_world_object'],atol=1e-7):good=False;break
                     self.scene_ready=good
-                    if good and not getattr(self,'confirmed',False):self.confirmed=True;self.status('Verified 4 workcell objects in MoveIt; placement provisional; execution not enabled by this node')
+                    if good and not getattr(self,'confirmed',False):self.confirmed=True;self.status(f'Verified {len(self.geometry)} workcell objects in MoveIt; placement provisional; execution not enabled by this node')
                     if not good:self.confirmed=False;self.status('Workcell objects missing or changed; reapplying')
             except Exception as e:self.scene_ready=False;self.get_logger().error(str(e))
             self.future=None;self.phase=None

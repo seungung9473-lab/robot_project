@@ -62,4 +62,8 @@ def collision_geometry(d):
         p=pad['center_table_m'];h=p[2]
         if h<=0:raise ValueError('Pad height must be positive')
         values.append(('workcell_'+name,'cylinder',[h,pad['diameter_m']/2],[p[0],p[1],h/2]))
+    for name,o in (d.get('obstacles') or {}).items():
+        lo=np.asarray(o['min_table_m'],float);hi=np.asarray(o['max_table_m'],float)
+        if lo.shape!=(3,) or np.any(hi<=lo):raise ValueError('Invalid obstacle box: '+name)
+        values.append(('workcell_'+name,'box',(hi-lo).tolist(),((lo+hi)/2).tolist()))
     return [{'id':name,'kind':kind,'dimensions':dims,'T_world_object':(T@translated(p)).tolist()} for name,kind,dims,p in values]

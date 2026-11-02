@@ -8,15 +8,16 @@ table:
   y_positive: up in top view
   z_positive: vertically above tabletop
   tabletop_z_m: 0
+  z_reference: Z=0 is plywood top (table +6.5 mm)
 T_table_world:
 - - 0.0
   - -1.0
   - 0.0
-  - 1.3405000010430812
+  - 1.4855
 - - 1.0
   - 0.0
   - 0.0
-  - 0.24920000308752063
+  - 0.5397
 - - 0.0
   - 0.0
   - 1.0
@@ -26,12 +27,13 @@ T_table_world:
   - 0.0
   - 1.0
 robot_registration:
-  source: Enclosure reference corner XY [1.280,0.128]m plus retained XY registration
-    correction; original CAD height0.095m; entire enclosure/robot elevated by0.001m
-    silicone pad
+  source: '2026-11-03 relocation: enclosure lower-left corner measured at table XY
+    [1.428,0.422] m (box 0.17 X x 0.20 Y, parallel to table, robot front -X as before);
+    same 0.001 m silicone lift; previous provisional XY contact correction [0.003,0.0035]
+    NOT carried over (re-validate)'
   j1_center_table_m:
-  - 1.322800000263846
-  - 0.23150000252977085
+  - 1.4678
+  - 0.522
   - 0.1608
   urdf_sha256: e308ec47016140aa2a115560530aa25817f3bdb612db52174680fa84e7119611
   model_sha256: e5eeeab4b3e0a9b457bc611349e66559cb8f5c9d390be2066cb02d5a182e72f2
@@ -40,10 +42,10 @@ robot_registration:
   measured_enclosure_top_z_table_m: 0.096
   height_correction_pending: false
   xy_contact_correction_m:
-  - 0.003
-  - 0.0035
-  xy_contact_correction_status: Provisional single-pose registration correction from
-    uncompressed cup at ID0; Z unchanged
+  - 0.0
+  - 0.0
+  xy_contact_correction_status: Cleared at 2026-11-03 relocation; previous [0.003,0.0035]
+    was from old placement single-pose check; re-measure with cup at ID0
   global_z_lift_m: 0.001
   tcp_calibration:
     status: provisional, downward cup orientation only
@@ -59,32 +61,36 @@ robot_registration:
   silicone_pad_thickness_m: 0.001
   silicone_pad_use: Under entire electronics enclosure; same installation at competition
     per user
+  enclosure_corner_table_m:
+  - 1.428
+  - 0.422
+  - 0.0
 fixed_markers:
   dictionary: DICT_4X4_50
   black_edge_m: 0.07
   centers_table_m:
     '10':
-    - 0.948
-    - 0.154
+    - 1.095
+    - 0.61
     - 0
     '11':
-    - 1.2425
-    - 0.055
+    - 1.0
+    - 0.7
     - 0
     '7':
-    - 1.213
-    - 0.287
+    - 1.377
+    - 0.507
     - 0
     '8':
-    - 0.8985
-    - 0.049
+    - 1.147
+    - 0.432
     - 0
   canonical_top_direction: +Y
   surface_normal: +Z
 turntable:
   axis_point_table_m:
-  - 1.095
-  - 0.235
+  - 1.25
+  - 0.515
   - 0.059
   axis_direction_table:
   - 0.0
@@ -94,40 +100,44 @@ turntable:
   top_height_m: 0.059
   collision_representation: conservative full cylinder under disc; actual rail and
     motor housings not measured
+  marker_id: 0
+  marker_black_edge_m: 0.1
 pads:
   pad1:
     center_table_m:
-    - 1.097805614569502
-    - 0.38441874573139295
-    - 0.059
+    - 1.25
+    - 0.665
+    - 0.0575
     diameter_m: 0.1
     marker_id: 6
     black_edge_m: 0.06
     validated_for_robot_execution: false
+    note: inner (wall side), small objects
   pad2:
     center_table_m:
-    - 1.0983380219417491
-    - 0.08356132162842111
-    - 0.0575
+    - 1.25
+    - 0.365
+    - 0.059
     diameter_m: 0.1
     marker_id: 5
     black_edge_m: 0.06
     validated_for_robot_execution: false
+    note: front (camera side), large objects
 cameras:
   cam1:
     T_table_optical:
-    - - -0.999575340163656
-      - 0.02912687315069601
-      - -0.0008744124735087788
-      - 1.1385027391634772
-    - - 0.019393874435365138
-      - 0.6425629550081196
-      - -0.7659874192737233
-      - 0.643126450414937
-    - - -0.021748953333341203
-      - -0.7656790934273285
-      - -0.6428549672493846
-      - 0.4746633424464748
+    - - 0.9998432990322229
+      - -0.01636199497514282
+      - -0.006757403406136687
+      - 1.2084343948798673
+    - - -0.005443266225470751
+      - -0.6473857074575705
+      - 0.7621431077117075
+      - 0.11168972544733484
+    - - -0.01684482808337669
+      - -0.7619868968034123
+      - -0.6473733241853168
+      - 0.47319594264105247
     - - 0.0
       - 0.0
       - 0.0
@@ -154,22 +164,27 @@ cameras:
       width: 640
       height: 480
       distortion_model: plumb_bob
-    source: "/home/seungung9473/\uBB38\uC11C/ChatGPT/\uB77C\uD30C \uB300\uD68C/camera_calibration/saved/20261101_140827_relocated_four_markers/cam1_table_calibration.json"
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
+      ..
     independently_validated: false
+    check_markers_mm:
+      '0': 3.0
+      '6': 5.5
+      '5': 3.4
   cam2:
     T_table_optical:
-    - - -0.9998741855235196
-      - 0.015631047911902937
-      - -0.0026987895164530262
-      - 1.1391123053797378
-    - - 0.0071785959724888215
-      - 0.29418376424395587
-      - -0.9557219159437125
-      - 0.6366801641267892
-    - - -0.014144994999719301
-      - -0.9556210458107506
-      - -0.2942589606452552
-      - 0.18874572270658663
+    - - 0.9997186619727132
+      - -0.019536512929781757
+      - -0.013450708755725533
+      - 1.2112403902796958
+    - - 0.007681152984437424
+      - -0.2698666167199819
+      - 0.962867077570388
+      - 0.11703389542857927
+    - - -0.022440962375008554
+      - -0.9626995033979474
+      - -0.2696406300338074
+      - 0.2045334881930284
     - - 0.0
       - 0.0
       - 0.0
@@ -196,8 +211,12 @@ cameras:
       width: 640
       height: 480
       distortion_model: plumb_bob
-    source: "/home/seungung9473/\uBB38\uC11C/ChatGPT/\uB77C\uD30C \uB300\uD68C/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json"
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
+      ..
     independently_validated: false
+    check_markers_mm:
+      '0': 1.1
+      '5': 6.1
 collision:
   below_table_guard_depth_m: 0.2
   support_contact_clearance_m: 0.001
@@ -210,3 +229,16 @@ limitations:
 - Camera and holder bodies, turntable rail, cables, objects and held-object geometry
   are not registered as collision objects; dimensions not supplied
 - No motion commands; workcell registration does not enable execution
+- 2026-11-03 relocation values are tape-measured by user; robot XY registration correction
+  cleared
+obstacles:
+  power_box:
+    min_table_m:
+    - 1.65
+    - -0.15
+    - 0.0
+    max_table_m:
+    - 1.9
+    - 0.4
+    - 0.3
+    note: 220V power box; arm hits it when J2 tilts back

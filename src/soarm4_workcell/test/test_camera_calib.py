@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import cv2
 from soarm4_workcell.core import load, matrix
-from soarm4_workcell.camera_calib import table_markers, solve, compare, detect, gate
+from soarm4_workcell.camera_calib import table_markers, solve, compare, detect, gate, solve_robust, validate, check_markers
 
 P = Path(__file__).resolve().parents[1] / 'config/workcell.yaml'
 
@@ -81,6 +81,18 @@ class CameraCalibTests(unittest.TestCase):
         m = dict(self.markers); m[99] = self.markers[10]
         ok, bad = gate(f, m, T, K)
         self.assertIn(99, bad); self.assertEqual(set(ok), set(self.markers))
+
+    def test_robust_solve_drops_misplaced_marker(self):
+        T, K, frames = self.synth('cam1', noise=0.2); wrong = dict(self.markers); wrong[7] = self.markers[7] + [0.03, 0, 0]  # 3 cm 잘못 붙인 마커
+        Tn, q, dropped = solve_robust(frames, wrong, K)
+        self.assertEqual(dropped, [7]); self.assertLess(compare(Tn, T)['shift_norm_mm'], 5.0)
+
+    def test_validate_reports_check_marker_offset(self):
+        T, K, _ = self.synth('cam1'); i, (ctr, size) = next(iter(check_markers(self.wc).items()))
+        from soarm4_workcell.camera_calib import marker_corners
+        uv, _ = project(T, K, marker_corners(ctr + [0.004, 0, 0], size))  # 실제는 x로 4 mm 옆
+        v = validate(T, K, [{i: uv}], self.wc)[i]
+        self.assertAlmostEqual(v['dx_mm'], 4.0, delta=0.3); self.assertAlmostEqual(v['dy_mm'], 0.0, delta=0.3)
 
 
 if __name__ == '__main__':
