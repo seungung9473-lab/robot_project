@@ -126,7 +126,7 @@ pads:
       white sticker edges)
   pad2:
     center_table_m:
-    - 1.252
+    - 1.251
     - 0.367
     - 0.059
     diameter_m: 0.1
