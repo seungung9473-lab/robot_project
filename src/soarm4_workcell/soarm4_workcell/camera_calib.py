@@ -112,7 +112,6 @@ def main(argv=None):
         used = sorted({i for f in gated for i in f})
         if len(used) < 2: print(f'  → 쓸 수 있는 마커가 {len(used)}개뿐이라 계산하지 않습니다 (2개 이상 필요, 4개 권장).'); continue
         T, q = solve(gated, markers, K, init_T_table_optical=old); cmp_ = compare(T, old); print(f'  사용한 마커 ID {used}')
-        old = matrix(wc['cameras'][cam]['T_table_optical']); T, q = solve(frames, markers, K, init_T_table_optical=old); cmp_ = compare(T, old)
         dz_old = table_depth_check(old, K, depth) if depth is not None else None; dz_new = table_depth_check(T, K, depth) if depth is not None else None
         print(f"  재투영 오차 rms {q['reproj_rms_px']:.2f}px (최대 {q['reproj_max_px']:.2f}px, 모서리 {q['corners']}개)")
         print(f"  저장값과 차이: 카메라 위치 {cmp_['shift_mm']} mm (크기 {cmp_['shift_norm_mm']} mm), 방향 {cmp_['rotation_deg']}°")
