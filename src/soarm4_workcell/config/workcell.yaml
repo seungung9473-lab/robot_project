@@ -105,7 +105,7 @@ turntable:
 pads:
   pad1:
     center_table_m:
-    - 1.25
+    - 1.244
     - 0.665
     - 0.0575
     diameter_m: 0.1
@@ -116,7 +116,7 @@ pads:
   pad2:
     center_table_m:
     - 1.25
-    - 0.365
+    - 0.3685
     - 0.059
     diameter_m: 0.1
     marker_id: 5
@@ -166,11 +166,11 @@ cameras:
       distortion_model: plumb_bob
     source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
       ..
-    independently_validated: false
+    independently_validated: true
     check_markers_mm:
       '0': 3.0
-      '6': 5.5
-      '5': 3.4
+      '6': 0.8
+      '5': 0.8
   cam2:
     T_table_optical:
     - - 0.9997186619727132
@@ -213,10 +213,10 @@ cameras:
       distortion_model: plumb_bob
     source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
       ..
-    independently_validated: false
+    independently_validated: true
     check_markers_mm:
       '0': 1.1
-      '5': 6.1
+      '5': 2.7
 collision:
   below_table_guard_depth_m: 0.2
   support_contact_clearance_m: 0.001
