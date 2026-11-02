@@ -17,7 +17,7 @@ class WorkcellTests(unittest.TestCase):
             np.testing.assert_allclose(rotation(quaternion(R)),R,atol=1e-12)
     def test_scene_geometry_uses_inverse_world_transform(self):
         g={v['id']:v for v in collision_geometry(self.d)};self.assertEqual(len(g),5)
-        for name,center,radius,height in [('workcell_turntable',[1.251,.514],.075,.059),('workcell_pad1',[1.246,.667],.05,.0575),('workcell_pad2',[1.251,.367],.05,.059)]:
+        for name,center,radius,height in [('workcell_turntable',[1.251,.514],.075,.059),('workcell_pad1',[1.246,.667],.05,.0575),('workcell_pad2',[1.252,.367],.05,.059)]:
             v=g[name];np.testing.assert_allclose(v['dimensions'],[height,radius],atol=1e-8);p=self.T@np.array(v['T_world_object']);np.testing.assert_allclose(p[:3,3],[*center,height/2],atol=1e-8)
         box=g['workcell_power_box'];np.testing.assert_allclose(box['dimensions'],[.25,.55,.3],atol=1e-9);np.testing.assert_allclose((self.T@np.array(box['T_world_object']))[:3,3],[1.775,.125,.15],atol=1e-9)
         table=g['workcell_table_guard'];top=(self.T@np.array(table['T_world_object']))[2,3]+table['dimensions'][2]/2;self.assertAlmostEqual(top,-.001)

@@ -125,7 +125,7 @@ pads:
       tightening
   pad2:
     center_table_m:
-    - 1.251
+    - 1.252
     - 0.367
     - 0.059
     diameter_m: 0.1
@@ -134,10 +134,10 @@ pads:
     validated_for_robot_execution: false
     note: front (camera side), large objects
     marker_offset_from_center_m:
-    - 0.001
     - 0.0
-    center_measured: 2026-11-03 disc center (edge midpoints), re-measured after base
-      tightening
+    - 0.0
+    center_measured: 2026-11-03 white sticker center (disc center 1.251 + sticker
+      offset +1 mm X); robot target and cup checks use sticker edges
 cameras:
   cam1:
     T_table_optical:
