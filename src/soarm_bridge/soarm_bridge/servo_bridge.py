@@ -66,7 +66,7 @@ class ServoBridge(Node):
         self.tol = p('goal_tolerance_counts', 15).value
         self.settle = p('settle_timeout', 3.0).value
         # 도착 후 미세 보정: 데드밴드 때문에 모자라게 선 관절에 모자란 만큼 더 보내기 (0회 = 끔)
-        self.fine_iters = p('fine_correction_iterations', 3).value
+        p('fine_correction_iterations', 3)
         self.fine_tol = p('fine_tolerance_counts', 2).value
         self.fine_max = p('fine_max_counts', 20).value
         rate = p('rate_hz', 30.0).value
@@ -351,7 +351,7 @@ class ServoBridge(Node):
         """도착 후 데드밴드로 모자라게 선 관절에 '목표 + 모자란 만큼'을 다시 보내 목표에 맞춘다.
         취소/정지면 hold 후 False (gh 상태는 여기서 정함)."""
         cmd = list(final)
-        for _ in range(self.fine_iters):
+        for _ in range(self.get_parameter('fine_correction_iterations').value):  # 실행 중 ros2 param set 으로 바꿀 수 있음
             if not self.wait_still(gh):break
             goals = fine_goals(final, [self.pos[i] for i in idx], cmd, [self.cmin[i] for i in idx], [self.cmax[i] for i in idx], self.fine_tol, self.fine_max)
             if goals is None:return True

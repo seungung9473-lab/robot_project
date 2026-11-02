@@ -13,7 +13,7 @@ T_table_world:
 - - 0.0
   - -1.0
   - 0.0
-  - 1.4885
+  - 1.4855
 - - 1.0
   - 0.0
   - 0.0
@@ -29,9 +29,9 @@ T_table_world:
 robot_registration:
   source: '2026-11-03 relocation: enclosure lower-left corner measured at table XY
     [1.428,0.422] m (box 0.17 X x 0.20 Y, parallel to table, robot front -X as before);
-    same 0.001 m silicone lift; XY contact correction [0.003,0] from 3-point cup check'
+    same 0.001 m silicone lift; XY contact correction cleared (restart)'
   j1_center_table_m:
-  - 1.4708
+  - 1.4678
   - 0.522
   - 0.1608
   urdf_sha256: e308ec47016140aa2a115560530aa25817f3bdb612db52174680fa84e7119611
@@ -41,12 +41,11 @@ robot_registration:
   measured_enclosure_top_z_table_m: 0.096
   height_correction_pending: false
   xy_contact_correction_m:
-  - 0.003
   - 0.0
-  xy_contact_correction_status: '2026-11-03 cup hover 5 mm over ID0/ID5/ID6 measured
-    from disc edges: robot-minus-model X +3.4/+2.5/+3.2 mm (mean +3.0), Y -1.9/+1.7/-0.8
-    mm (mean -0.3, within ruler noise, not applied). J1 stops 0.5-0.65 deg short (dead
-    band), separate issue'
+  - 0.0
+  xy_contact_correction_status: Cleared 2026-11-03 to restart calibration from scratch
+    after base tightening and robot re-alignment (previous 3-point check gave X +3
+    mm, but base had play); keep sag_compensation only
   global_z_lift_m: 0.001
   tcp_calibration:
     status: provisional, downward cup orientation only
@@ -98,8 +97,8 @@ fixed_markers:
   surface_normal: +Z
 turntable:
   axis_point_table_m:
-  - 1.25
-  - 0.515
+  - 1.251
+  - 0.514
   - 0.059
   axis_direction_table:
   - 0.0
@@ -114,39 +113,46 @@ turntable:
 pads:
   pad1:
     center_table_m:
-    - 1.244
-    - 0.665
+    - 1.246
+    - 0.667
     - 0.0575
     diameter_m: 0.1
     marker_id: 6
     black_edge_m: 0.06
     validated_for_robot_execution: false
     note: inner (wall side), small objects
+    center_measured: 2026-11-03 disc center (edge midpoints), re-measured after base
+      tightening
   pad2:
     center_table_m:
-    - 1.25
-    - 0.3685
+    - 1.251
+    - 0.367
     - 0.059
     diameter_m: 0.1
     marker_id: 5
     black_edge_m: 0.06
     validated_for_robot_execution: false
     note: front (camera side), large objects
+    marker_offset_from_center_m:
+    - 0.001
+    - 0.0
+    center_measured: 2026-11-03 disc center (edge midpoints), re-measured after base
+      tightening
 cameras:
   cam1:
     T_table_optical:
-    - - 0.9998432990322229
-      - -0.01636199497514282
-      - -0.006757403406136687
-      - 1.2084343948798673
-    - - -0.005443266225470751
-      - -0.6473857074575705
-      - 0.7621431077117075
-      - 0.11168972544733484
-    - - -0.01684482808337669
-      - -0.7619868968034123
-      - -0.6473733241853168
-      - 0.47319594264105247
+    - - 0.9997421739099057
+      - -0.020851609497612663
+      - -0.008988664375423451
+      - 1.2099483119787238
+    - - -0.006625152168770262
+      - -0.6465069437531995
+      - 0.7628793345199737
+      - 0.1110047760770419
+    - - -0.02171849591098739
+      - -0.7626230930546597
+      - -0.6464784024815586
+      - 0.47300607822819296
     - - 0.0
       - 0.0
       - 0.0
@@ -173,27 +179,26 @@ cameras:
       width: 640
       height: 480
       distortion_model: plumb_bob
-    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_061800/view_000
       ..
     independently_validated: true
     check_markers_mm:
-      '0': 3.0
-      '6': 0.8
-      '5': 0.8
+      '0': 4.4
+      '5': 1.0
   cam2:
     T_table_optical:
-    - - 0.9997186619727132
-      - -0.019536512929781757
-      - -0.013450708755725533
-      - 1.2112403902796958
-    - - 0.007681152984437424
-      - -0.2698666167199819
-      - 0.962867077570388
-      - 0.11703389542857927
-    - - -0.022440962375008554
-      - -0.9626995033979474
-      - -0.2696406300338074
-      - 0.2045334881930284
+    - - 0.9997276809873623
+      - -0.019914371000614866
+      - -0.012164772718012725
+      - 1.211095715779565
+    - - 0.006368274624583989
+      - -0.26868335313842345
+      - 0.9632075066280366
+      - 0.11692286929406143
+    - - -0.022450143561610392
+      - -0.9630226755242803
+      - -0.26848336536947676
+      - 0.20407806886424495
     - - 0.0
       - 0.0
       - 0.0
@@ -220,12 +225,12 @@ cameras:
       width: 640
       height: 480
       distortion_model: plumb_bob
-    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_042933/view_000
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_061800/view_000
       ..
     independently_validated: true
     check_markers_mm:
-      '0': 1.1
-      '5': 2.7
+      '0': 2.0
+      '5': 3.2
 collision:
   below_table_guard_depth_m: 0.2
   support_contact_clearance_m: 0.001

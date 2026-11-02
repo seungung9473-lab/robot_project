@@ -103,7 +103,8 @@ def solve_robust(frames, markers, K, init_T_table_optical=None, max_marker_px=4.
 def check_markers(wc):
     """보정에 안 쓰는 확인용 마커: id → (측정 중심 xyz, 한 변 길이)."""
     t = wc['turntable']; out = {int(t.get('marker_id', 0)): (np.asarray(t['axis_point_table_m'], float), float(t.get('marker_black_edge_m', 0.1)))}
-    for p in wc['pads'].values(): out[int(p['marker_id'])] = (np.asarray(p['center_table_m'], float), float(p['black_edge_m']))
+    for p in wc['pads'].values():  # 스티커가 원판 중심에서 벗어나 붙었으면 그만큼 옮긴 위치가 마커 중심
+        c = np.asarray(p['center_table_m'], float).copy(); c[:2] += p.get('marker_offset_from_center_m', [0.0, 0.0]); out[int(p['marker_id'])] = (c, float(p['black_edge_m']))
     return out
 
 
