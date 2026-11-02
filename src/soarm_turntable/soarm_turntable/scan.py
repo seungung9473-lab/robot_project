@@ -13,7 +13,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from control_msgs.action import FollowJointTrajectory
 from cv_bridge import CvBridge
 from rosidl_runtime_py.convert import message_to_ordereddict
-from .scan_core import preflight_angles,stable_states,select_bundle
+from .scan_core import preflight_angles,stable_states,stability_problem,select_bundle
 from .environment_core import load_environment,foreground,calibration_key
 
 def write_json(path,value):
@@ -89,7 +89,12 @@ class Scanner(Node):
         self.wait_stable();after=self.get_clock().now().nanoseconds;end=time.monotonic()+10
         while True:
             self.spin();state=self.state()
-            if not stable_states(list(self.states),time.monotonic()):raise RuntimeError('촬영 대기 중 턴테이블 움직임 감지')
+            problem=stability_problem(list(self.states),time.monotonic())
+            # 표본 부족/지연은 움직임 증거가 아니므로 기다리고, 실제 움직임·오류 증거만 즉시 중단
+            if problem and problem[0]=='motion':raise RuntimeError('촬영 대기 중 턴테이블 움직임 감지: '+problem[1])
+            if problem:
+                if time.monotonic()>end:raise RuntimeError('촬영 대기 중 턴테이블 상태 불안정: '+problem[1])
+                continue
             bundle=select_bundle(self.buffers,after,time.monotonic())
             if bundle and self.states[-1][0]>=max(t for t,_ in bundle.values()):break
             if time.monotonic()>end:raise RuntimeError('두 카메라의 최신 컬러/정렬깊이/내부행렬 동기화 실패')
@@ -142,6 +147,8 @@ def main():
         angles=a.angles if a.command=='scan' else [None]
         if a.command=='scan':
             preflight_angles(n.state(),list(angles)+[0.0])
+            deadline=time.monotonic()+5
+            while (n.arm is None or time.monotonic()-n.arm[0]>1) and time.monotonic()<deadline:n.spin()
             if n.arm is None or time.monotonic()-n.arm[0]>1:raise RuntimeError('회전 스캔에는 로봇팔 정지 감시용 /joint_states가 필요합니다')
             n.arm_reference=list(n.arm[1]);n.reference_zero=n.state()['zero_count'];n.reference_stop=n.state()['stop_generation'];n.guard_arm()
         manifest['status']='recording';write_json(session/'session.json',manifest)
