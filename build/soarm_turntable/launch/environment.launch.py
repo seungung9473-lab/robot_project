@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm_turntable/launch/environment.launch.py

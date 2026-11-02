@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm4_moveit_config/audit_model/tools/rebuild_base_mesh.py

@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: soarm-turntable
-Version: 0.1.0
-Summary: Independent XL330 turntable; no robot-arm serial access
-Maintainer: seungung9473
-Maintainer-email: user@example.com
-License: Apache-2.0

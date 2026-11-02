@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm4_moveit_config/scripts/plan_joint_goal.py

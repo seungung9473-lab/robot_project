@@ -1,9 +1,0 @@
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/uninstall.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/soarm4_description_uninstall.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/test.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/edit_cache.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/rebuild_cache.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/list_install_components.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/install.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/install/local.dir
-/home/seungung9473/robot_ws/build/soarm4_description/CMakeFiles/install/strip.dir
