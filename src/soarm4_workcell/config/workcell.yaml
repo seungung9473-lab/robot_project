@@ -110,6 +110,7 @@ turntable:
     motor housings not measured
   marker_id: 0
   marker_black_edge_m: 0.1
+  center_measured: 2026-11-03 white sticker center
 pads:
   pad1:
     center_table_m:
@@ -121,8 +122,8 @@ pads:
     black_edge_m: 0.06
     validated_for_robot_execution: false
     note: inner (wall side), small objects
-    center_measured: 2026-11-03 disc center (edge midpoints), re-measured after base
-      tightening
+    center_measured: 2026-11-03 white sticker center (cup checks also measured from
+      white sticker edges)
   pad2:
     center_table_m:
     - 1.252
@@ -134,10 +135,12 @@ pads:
     validated_for_robot_execution: false
     note: front (camera side), large objects
     marker_offset_from_center_m:
+    - 0.001
     - 0.0
-    - 0.0
-    center_measured: 2026-11-03 white sticker center (disc center 1.251 + sticker
-      offset +1 mm X); robot target and cup checks use sticker edges
+    center_measured: 2026-11-03 white sticker center (cup checks also measured from
+      white sticker edges)
+    marker_offset_note: black ArUco square sits +1 mm X inside the white sticker;
+      used only by camera_calib check
 cameras:
   cam1:
     T_table_optical:
