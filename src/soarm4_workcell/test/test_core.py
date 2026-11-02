@@ -8,7 +8,7 @@ class WorkcellTests(unittest.TestCase):
     def test_reference_corner_matches_stl_bounds(self):
         # Model's +90deg orientation: world(+x,-y) lower enclosure corner maps table min/min.
         corner=np.array([-.1177,.0575,0.,1.]);actual=self.T@corner
-        np.testing.assert_allclose(actual[:3],[*self.d['robot_registration']['enclosure_corner_table_m'][:2],self.d['robot_registration']['global_z_lift_m']],atol=1e-7)
+        r=self.d['robot_registration'];np.testing.assert_allclose(actual[:3],[*(np.add(r['enclosure_corner_table_m'][:2],r['xy_contact_correction_m'])),r['global_z_lift_m']],atol=1e-7)
     def test_j1_offset_is_retained(self):
         p=np.array([-.0177,.0177,.1598,1.]);np.testing.assert_allclose((self.T@p)[:3],self.d['robot_registration']['j1_center_table_m'],atol=1e-7)
     def test_rotation_quaternion_roundtrip(self):

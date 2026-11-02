@@ -13,7 +13,7 @@ T_table_world:
 - - 0.0
   - -1.0
   - 0.0
-  - 1.4855
+  - 1.4885
 - - 1.0
   - 0.0
   - 0.0
@@ -29,10 +29,9 @@ T_table_world:
 robot_registration:
   source: '2026-11-03 relocation: enclosure lower-left corner measured at table XY
     [1.428,0.422] m (box 0.17 X x 0.20 Y, parallel to table, robot front -X as before);
-    same 0.001 m silicone lift; previous provisional XY contact correction [0.003,0.0035]
-    NOT carried over (re-validate)'
+    same 0.001 m silicone lift; XY contact correction [0.003,0] from 3-point cup check'
   j1_center_table_m:
-  - 1.4678
+  - 1.4708
   - 0.522
   - 0.1608
   urdf_sha256: e308ec47016140aa2a115560530aa25817f3bdb612db52174680fa84e7119611
@@ -42,10 +41,12 @@ robot_registration:
   measured_enclosure_top_z_table_m: 0.096
   height_correction_pending: false
   xy_contact_correction_m:
+  - 0.003
   - 0.0
-  - 0.0
-  xy_contact_correction_status: Cleared at 2026-11-03 relocation; previous [0.003,0.0035]
-    was from old placement single-pose check; re-measure with cup at ID0
+  xy_contact_correction_status: '2026-11-03 cup hover 5 mm over ID0/ID5/ID6 measured
+    from disc edges: robot-minus-model X +3.4/+2.5/+3.2 mm (mean +3.0), Y -1.9/+1.7/-0.8
+    mm (mean -0.3, within ruler noise, not applied). J1 stops 0.5-0.65 deg short (dead
+    band), separate issue'
   global_z_lift_m: 0.001
   tcp_calibration:
     status: provisional, downward cup orientation only
