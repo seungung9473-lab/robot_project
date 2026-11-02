@@ -32,6 +32,18 @@ from soarm_bridge.trajectory_speed import planned_speed
 C2R = 2 * math.pi / 4096
 
 
+def fine_goals(final, pos, cmd, cmin, cmax, tol, max_extra):
+    """도착 후 미세 보정 목표(count). 모든 관절이 final에서 tol 이내면 None.
+    모자란 관절은 '지난 명령 + 모자란 만큼'(final에서 최대 max_extra까지), 나머지는 지난 명령 유지."""
+    err = [f - p for f, p in zip(final, pos)]
+    if all(abs(e) <= tol for e in err):return None
+    out = []
+    for f, e, c, lo, hi in zip(final, err, cmd, cmin, cmax):
+        g = c + e if abs(e) > tol else c
+        out.append(int(round(min(max(g, f - max_extra, lo), f + max_extra, hi))))
+    return out
+
+
 class ServoBridge(Node):
     def __init__(self):
         super().__init__('servo_bridge')
@@ -53,6 +65,10 @@ class ServoBridge(Node):
         if not (1<=self.vmin<=self.vmax and 1<=self.settle_speed<=self.vmax):raise ValueError('Invalid speed bounds')
         self.tol = p('goal_tolerance_counts', 15).value
         self.settle = p('settle_timeout', 3.0).value
+        # 도착 후 미세 보정: 데드밴드 때문에 모자라게 선 관절에 모자란 만큼 더 보내기 (0회 = 끔)
+        self.fine_iters = p('fine_correction_iterations', 3).value
+        self.fine_tol = p('fine_tolerance_counts', 2).value
+        self.fine_max = p('fine_max_counts', 20).value
         rate = p('rate_hz', 30.0).value
         self.stream_hz = p('stream_hz', 50.0).value          # 궤적 따라갈 때 목표 보내는 주기
         self.lookahead = p('lookahead', 0.15).value          # 목표를 이만큼(초) 앞선 지점으로 → 서보가 중간에 안 멈춤
@@ -309,6 +325,8 @@ class ServoBridge(Node):
                 if not self.feedback_fresh():
                     gh.abort();result.error_code=FollowJointTrajectory.Result.PATH_TOLERANCE_VIOLATED;return result
                 if all(abs(self.pos[i] - final[j]) <= self.tol for j, i in enumerate(idx)):
+                    if not self.fine_correct(idx, final, gh):
+                        result.error_code=0;return result
                     gh.succeed()
                     result.error_code = FollowJointTrajectory.Result.SUCCESSFUL
                     return result
@@ -318,6 +336,35 @@ class ServoBridge(Node):
             result.error_string = '목표 위치 도착 못 함 (걸림/과부하/전원 확인)'
             self.get_logger().error(result.error_string)
             return result
+
+    def wait_still(self, gh, timeout=1.5, window=0.25):
+        """엔코더가 window초 동안 안 변하면 True. 취소/정지면 False."""
+        end = time.monotonic() + timeout; last = list(self.pos); since = time.monotonic()
+        while time.monotonic() < end:
+            if gh.is_cancel_requested or self.stop_event.is_set() or not self.feedback_fresh():return False
+            time.sleep(0.03)
+            if self.pos != last:last = list(self.pos); since = time.monotonic()
+            elif time.monotonic() - since >= window:return True
+        return True
+
+    def fine_correct(self, idx, final, gh):
+        """도착 후 데드밴드로 모자라게 선 관절에 '목표 + 모자란 만큼'을 다시 보내 목표에 맞춘다.
+        취소/정지면 hold 후 False (gh 상태는 여기서 정함)."""
+        cmd = list(final)
+        for _ in range(self.fine_iters):
+            if not self.wait_still(gh):break
+            goals = fine_goals(final, [self.pos[i] for i in idx], cmd, [self.cmin[i] for i in idx], [self.cmax[i] for i in idx], self.fine_tol, self.fine_max)
+            if goals is None:return True
+            cmd = goals
+            self.bus.sync_goal({self.ids[i]: (cmd[j], self.settle_speed) for j, i in enumerate(idx)}, self.acc)
+        else:
+            self.wait_still(gh);return True
+        if gh.is_cancel_requested or self.stop_event.is_set():
+            self.hold_here()
+            if gh.is_cancel_requested:gh.canceled()
+            else:gh.abort()
+            return False
+        return True
 
     def hold_here(self):
         if not self.feedback_fresh():return
