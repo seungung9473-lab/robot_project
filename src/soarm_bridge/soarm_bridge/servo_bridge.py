@@ -58,6 +58,8 @@ class ServoBridge(Node):
         self.cmax = list(p('max_counts', [3472, 4095, 2047, 3273]).value)
         self.mlo = list(p('margin_lo', [40, 10, 40, 40]).value)
         self.mhi = list(p('margin_hi', [40, 40, 10, 40]).value)
+        # 관절이 + 쪽에서 실제로 덜 도는 비율 (튜브·케이블 당김+유격 보정). 0 = 보정 없음
+        self.pos_gain = list(p('positive_gain', [0.0, 0.0, 0.0, 0.0]).value)
         self.acc = p('acc', 50).value
         self.vmin = p('min_speed', 1).value
         self.settle_speed = p('settle_speed', 30).value
@@ -114,9 +116,11 @@ class ServoBridge(Node):
 
     # ---------------- 변환
     def c2r(self, i, c):
-        return self.sign[i] * (c - self.center[i]) * C2R
+        r = self.sign[i] * (c - self.center[i]) * C2R
+        return r / (1 + self.pos_gain[i]) if r > 0 else r          # 모터가 더 돈 만큼 실제 팔 각도로 환산
 
     def r2c(self, i, r):
+        if r > 0:r = r * (1 + self.pos_gain[i])                   # + 쪽에서 팔이 덜 도는 만큼 모터를 더 돌림
         c = self.center[i] + self.sign[i] * r / C2R
         lo, hi = self.cmin[i] + self.mlo[i], self.cmax[i] - self.mhi[i]
         return int(round(min(max(c, lo), hi))), (c < lo - 1 or c > hi + 1)

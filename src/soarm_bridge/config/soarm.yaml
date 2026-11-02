@@ -44,6 +44,12 @@ servo_bridge:
     - 0
     - 0
     - 0
+    # J1이 + 쪽(ID5 방향)으로 갈 때 실제로 덜 도는 비율. 11/3 ID5(+35.7°)에서 1.5° 덜 돎 → 0.043
+    positive_gain:
+    - 0.043
+    - 0.0
+    - 0.0
+    - 0.0
     acc: 50
     min_speed: 1
     settle_speed: 30
