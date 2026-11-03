@@ -260,3 +260,20 @@ obstacles:
     - 0.4
     - 0.3
     note: 220V power box; arm hits it when J2 tilts back
+place_correction_m:
+  pad_ID5:
+  - 0.001
+  - -0.0054
+  turntable:
+  - 0.0017
+  - 0.0083
+  note: "2026-11-03 \uBE14\uB85D \uB4E4\uACE0 \uB193\uC744 \uB54C \uBC18\uBCF5\uD574\
+    \uC11C \uAC19\uC740 \uCABD\uC73C\uB85C \uCE58\uC6B0\uCE5C \uD3C9\uADE0(ID5 dx\
+    \ -1.0 dy +5.4, \uD134\uD14C\uC774\uBE14 dx -1.7 dy -8.3, \uAC01 4\uBC88, \uBC30\
+    \uC728 0.3)\uC744 \uBE80 \uAC12. \uC6D0\uC778 \uBBF8\uD655\uC815 (\uC758\uC2EC\
+    : \uB450 \uCE74\uBA54\uB77C\uAC00 \uBE14\uB85D \uC717\uBA74 \uC911\uC2EC\uC744\
+    \ 8~14 mm \uB2E4\uB974\uAC8C \uBD04). \uCE74\uBA54\uB77C \uCE21\uC815 \uBC29\uC2DD\
+    \xB7\uBE14\uB85D\xB7\uD558\uC911\uC774 \uBC14\uB00C\uBA74 \uB2E4\uC2DC \uAD6C\uD560\
+    \ \uAC83. pickplace_cycle\uC774 \uB193\uC744 \uBAA9\uD45C\uC5D0 \uB354\uD574 \uC500\
+    . ID6\uC740 \uC544\uC9C1 \uCE21\uC815 \uC548 \uD568 \u2192 \uBCF4\uC815 \uC5C6\
+    \uC74C"

@@ -45,6 +45,11 @@ class Cycle(Node):
         self.scene_srv = self.create_client(ApplyPlanningScene, '/apply_planning_scene'); self.srv = {k: self.create_client(Trigger, v) for k, v in
                                                                                                         {'grip': '/vacuum/grip', 'release': '/vacuum/release', 'off': '/vacuum/off', 'stop': '/servo/stop'}.items()}
         self.spin_thread = threading.Thread(target=lambda: rclpy.spin(self), daemon=True); self.spin_thread.start()
+        # 연결(발견)이 끝나기 전에 부르면 첫 호출이 시간 초과로 실패할 수 있어서, 시작할 때 전부 기다린다
+        for name, c in (('MoveGroup(/move_action)', self.mg), ('ExecuteTrajectory(/execute_trajectory)', self.ex)):
+            if not c.wait_for_server(timeout_sec=20): raise RuntimeError(name + ' 연결 안 됨')
+        for name, c in [('/apply_planning_scene', self.scene_srv)] + [(k, v) for k, v in self.srv.items()]:
+            if not c.wait_for_service(timeout_sec=20): raise RuntimeError(str(name) + ' 서비스 연결 안 됨')
         t = time.time()
         while (self.q is None or self.diff is None) and time.time() - t < 10: time.sleep(0.05)
         if self.q is None or self.diff is None: raise RuntimeError('/joint_states 또는 /vacuum/diff 신호가 없습니다')
@@ -55,16 +60,16 @@ class Cycle(Node):
         self.diff = m.data
         if self.carrying and m.data > LOST and not self.lost: self.lost = True; self.get_logger().error(f'흡착 풀림 감지 diff={m.data} → 팔 정지'); self.srv['stop'].call_async(Trigger.Request())
 
-    def wait(self, fut, timeout):
+    def wait(self, fut, timeout, what=''):
         t = time.time()
         while not fut.done():
-            if time.time() - t > timeout: raise RuntimeError('응답 시간 초과')
+            if time.time() - t > timeout: raise RuntimeError('응답 시간 초과' + (' (' + what + ')' if what else ''))
             time.sleep(0.01)
         return fut.result()
 
     # ---------- 장면
     def apply(self, scene):
-        r = ApplyPlanningScene.Request(); r.scene = scene; r.scene.is_diff = True; return self.wait(self.scene_srv.call_async(r), 15).success
+        r = ApplyPlanningScene.Request(); r.scene = scene; r.scene.is_diff = True; return self.wait(self.scene_srv.call_async(r), 15, '장면 갱신').success
 
     def block_box(self, on, xy=None, ztop=None, side=0.074):
         o = CollisionObject(); o.id = 'scanned_block'; o.header.frame_id = 'world'
@@ -105,15 +110,15 @@ class Cycle(Node):
             r.max_velocity_scaling_factor = self.scale; r.max_acceleration_scaling_factor = self.scale; r.start_state.is_diff = True; cs = Constraints()
             for n, v in zip(NAMES, goal): cs.joint_constraints.append(JointConstraint(joint_name=n, position=math.radians(v), tolerance_above=0.002, tolerance_below=0.002, weight=1.0))
             r.goal_constraints = [cs]; g.planning_options.plan_only = True; start = list(self.q)
-            h = self.wait(self.mg.send_goal_async(g), 20)
+            h = self.wait(self.mg.send_goal_async(g), 20, label + ' 계획 요청')
             if not h.accepted: raise RuntimeError(label + ': 계획 요청 거부')
-            res = self.wait(h.get_result_async(), 60).result
+            res = self.wait(h.get_result_async(), 60, label + ' 계획 결과').result
             if res.error_code.val != MoveItErrorCodes.SUCCESS: raise RuntimeError(f'{label}: 계획 실패 (코드 {res.error_code.val})')
             tr = res.planned_trajectory; t_plan = time.time() - t0
             if self.use_cache: (self.cache_dir / (self._key(goal) + '.json')).write_text(json.dumps({'start': start, 'goal': goal, 'scale': self.scale, 'scene': self.scene, 'trajectory': message_to_ordereddict(tr)}))
-        t1 = time.time(); e = ExecuteTrajectory.Goal(); e.trajectory = tr; h = self.wait(self.ex.send_goal_async(e), 20)
+        t1 = time.time(); e = ExecuteTrajectory.Goal(); e.trajectory = tr; h = self.wait(self.ex.send_goal_async(e), 20, label + ' 실행 요청')
         if not h.accepted: raise RuntimeError(label + ': 실행 요청 거부')
-        er = self.wait(h.get_result_async(), 120).result
+        er = self.wait(h.get_result_async(), 120, label + ' 실행 결과').result
         if er.error_code.val != MoveItErrorCodes.SUCCESS: raise RuntimeError(f'{label}: 실행 실패 (코드 {er.error_code.val})')
         self.timing.append({'move': label, 'cached': cached, 'plan_s': round(t_plan, 1), 'exec_s': round(time.time() - t1, 1)}); return self.timing[-1]
 
@@ -145,7 +150,7 @@ class Cycle(Node):
             if log: log.add(trial, 'S3_grip', first_diff=first, success=ok, message=g.message)
             if not ok: raise RuntimeError('흡착 실패 ' + g.message)
             self.carrying = True; self.move(self.goal_for(pick, 0.03), '3cm 들어올리기')
-            self.scene = 'carry'; self.attach(True); pt = targets[place_name]; place_top = [pt[0], pt[1], top + h]; dmin = []
+            self.scene = 'carry'; self.attach(True); pt = targets[place_name]; corr = wc.get('place_correction_m', {}).get(place_name, [0.0, 0.0]); place_top = [pt[0] + corr[0], pt[1] + corr[1], top + h]; dmin = []  # 목표(pt)는 그대로, 보내는 위치에만 보정
             self.move(self.goal_for(place_top, 0.03), '놓을 곳 위로 운반'); dmin.append(self.diff)
             self.attach(False); self.scene = 'free'; self.move(self.goal_for(place_top, 0.001), '내려놓기'); dmin.append(self.diff)
             if log: log.add(trial, 'S4_carry', diff_at_place=self.diff, diff_after_carry=dmin[0], lost_grip=self.lost)
@@ -156,7 +161,7 @@ class Cycle(Node):
         m1 = measure_now(str(Path.home() / 'robot_ws/data/block_measure_tmp')); total = round(time.time() - T0, 1)
         moves = sum(t['plan_s'] + t['exec_s'] for t in self.timing)
         if log:
-            log.add(trial, 'S5_place', target_xy_m=[round(float(pt[0]), 5), round(float(pt[1]), 5)], placed_xy_m=m1['xy_m'] if m1 else None, cam_gap_mm=(m1 or {}).get('cam_gap_mm'), block_yaw_deg=(m1 or {}).get('yaw_deg'), released_diff=released)
+            log.add(trial, 'S5_place', correction_m=[round(float(c), 5) for c in corr], target_xy_m=[round(float(pt[0]), 5), round(float(pt[1]), 5)], placed_xy_m=m1['xy_m'] if m1 else None, cam_gap_mm=(m1 or {}).get('cam_gap_mm'), block_yaw_deg=(m1 or {}).get('yaw_deg'), released_diff=released)
             log.add(trial, 'S6_cycle', success=bool(m1) and not self.lost, total_s=total, moves_s=round(moves, 1), n_moves=len(self.timing), cached_moves=sum(t['cached'] for t in self.timing), timing=self.timing, scale=self.scale)
         return {'trial': trial, 'total_s': total, 'moves_s': round(moves, 1), 'placed': m1, 'target': [float(pt[0]), float(pt[1])], 'timing': self.timing}
 

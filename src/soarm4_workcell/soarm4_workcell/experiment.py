@@ -37,7 +37,7 @@ def config_snapshot(repo=REPO):
         snap.update(j1_center=s['centers'][0], positive_gain=s.get('positive_gain'), fine_correction_iterations=s.get('fine_correction_iterations', 3),
                     grip_diff=v['grip_diff'], hold_diff=v['hold_diff'], release_diff=v['release_diff'])
         w = yaml.safe_load((repo / 'src/soarm4_workcell/config/workcell.yaml').read_text()); r = w['robot_registration']
-        snap.update(sag_tilt_deg=r.get('sag_compensation', {}).get('tool_tilt_away_from_j1_deg'), xy_correction_m=r.get('xy_contact_correction_m'),
+        snap.update(sag_tilt_deg=r.get('sag_compensation', {}).get('tool_tilt_away_from_j1_deg'), xy_correction_m=r.get('xy_contact_correction_m'), place_correction_m={k: v for k, v in w.get('place_correction_m', {}).items() if k != 'note'},
                     cam_sources={k: Path(c.get('source', '')).parent.name for k, c in w['cameras'].items()},
                     workcell_sha=hashlib.sha256((repo / 'src/soarm4_workcell/config/workcell.yaml').read_bytes()).hexdigest()[:10])
     except Exception as e:
