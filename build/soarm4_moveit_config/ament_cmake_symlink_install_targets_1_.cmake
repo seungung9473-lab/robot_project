@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/seungung9473/robot_ws/build/soarm4_moveit_config/libsoarm4_fine_collision_adapter.so" "TARGETS" "soarm4_fine_collision_adapter" "LIBRARY_DESTINATION" "lib")

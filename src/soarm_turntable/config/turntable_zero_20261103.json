@@ -1,0 +1,10 @@
+{
+ "zero_count": 1,
+ "calibration": {
+  "port": "/dev/turntable_bus",
+  "id": 1,
+  "model": 1200,
+  "drive_mode": 0
+ },
+ "note": "2026-11-03 송완재 노트북 기준. 사용: cp 이 파일 ~/.ros/soarm4/turntable_zero.json"
+}

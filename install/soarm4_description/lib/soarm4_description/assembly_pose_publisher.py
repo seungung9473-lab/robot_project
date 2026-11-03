@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm4_description/scripts/assembly_pose_publisher.py

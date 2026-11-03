@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm_bridge/launch/bringup.launch.py

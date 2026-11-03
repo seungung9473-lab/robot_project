@@ -1,1 +1,0 @@
-moveit_core:moveit_msgs:moveit_planners_ompl:moveit_ros_move_group:moveit_ros_visualization:moveit_simple_controller_manager:pluginlib:python3-yaml:rclcpp:rclpy:robot_state_publisher:rosidl_runtime_py:rviz_common:soarm4_description:soarm_bridge:std_msgs:std_srvs

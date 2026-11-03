@@ -1,5 +1,0 @@
-[console_scripts]
-environment_setup = soarm_turntable.environment_gui:main
-turntable = soarm_turntable.cli:main
-turntable_scan = soarm_turntable.scan:main
-xl330_bridge = soarm_turntable.bridge:main

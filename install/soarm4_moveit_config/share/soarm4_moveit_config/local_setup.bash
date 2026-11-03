@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/build/soarm4_moveit_config/ament_cmake_environment_hooks/local_setup.bash

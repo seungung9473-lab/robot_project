@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/src/soarm4_moveit_config/scripts/pick_place_manager.py

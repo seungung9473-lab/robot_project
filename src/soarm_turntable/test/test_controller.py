@@ -8,7 +8,7 @@ class FakeBus:
         for addr,size,value in [(0,2,1200),(6,1,53),(11,1,3),(44,4,445),(48,4,4095),(108,4,10),(112,4,50),(132,4,2047),(144,2,50)]:self.mem[addr:addr+size]=value.to_bytes(size,'little')
     def read_block(self,a,n):return bytes(self.mem[a:a+n])
     def read(self,a,n):return int.from_bytes(self.read_block(a,n),'little')
-    def write(self,a,n,v):self.writes.append((a,n,v));self.mem[a:a+n]=v.to_bytes(n,'little');
+    def write(self,a,n,v,tolerance=0):self.writes.append((a,n,v));self.mem[a:a+n]=v.to_bytes(n,'little');
     def close(self):pass
 class Tests(unittest.TestCase):
     def test_readonly_no_writes(self):

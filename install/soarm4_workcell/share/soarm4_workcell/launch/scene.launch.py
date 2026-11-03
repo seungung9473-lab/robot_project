@@ -1,1 +1,0 @@
-/home/seungung9473/robot_ws/build/soarm4_workcell/launch/scene.launch.py

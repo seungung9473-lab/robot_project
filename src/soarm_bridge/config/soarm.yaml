@@ -15,7 +15,7 @@ servo_bridge:
     - 3
     - 4
     centers:
-    - 2047
+    - 2078   # J1 영점 11/3 재측정: 원래 2047, 컵 실측(턴테이블·ID6)으로 +31 count(2.72°)
     - 4095
     - 0
     - 1990
@@ -44,6 +44,12 @@ servo_bridge:
     - 0
     - 0
     - 0
+    # J1이 + 쪽(ID5 방향)으로 갈 때 실제로 덜 도는 비율. 11/3 ID5(+35.7°)에서 1.5° 덜 돎 → 0.043
+    positive_gain:
+    - 0.043
+    - 0.0
+    - 0.0
+    - 0.0
     acc: 50
     min_speed: 1
     settle_speed: 30
@@ -61,7 +67,7 @@ esp32_bridge:
   ros__parameters:
     port: /dev/esp32
     hold_diff: -300
-    grip_diff: -400
+    grip_diff: -300   # 11/3 -400 → -300 (실물 흡착 시 -404까지 내려갔고 운반 중 -446 이상 유지됨)
     release_diff: -50
     grip_timeout: 5.0
     release_timeout: 3.0

@@ -49,7 +49,7 @@ class Controller:
                 if state['moving']:raise RuntimeError('움직이는 중에는 토크를 켤 수 없습니다')
                 if info['drive_mode']&8:raise RuntimeError('Goal Update 자동 토크 ON 설정입니다. 초기 목표 전송 전 수동 설정 확인이 필요합니다')
                 if not info['min_position']<=state['position_count']<=info['max_position']:raise RuntimeError('현재 엔코더가 단회전 범위 밖입니다')
-                self.bus.write(116,4,state['position_count'])
+                self.bus.write(116,4,state['position_count'],tolerance=2)
             self.bus.write(64,1,int(on))
             if bool(self.bus.read(64,1))!=on:raise RuntimeError('토크 쓰기 확인 실패')
     def stop(self):
@@ -76,8 +76,10 @@ class SDKBus:
         if comm!=0 or error or len(data)!=size:raise RuntimeError(f'DYNAMIXEL 읽기 실패 addr={addr}, comm={comm}, error={error}')
         return bytes(data)
     def read(self,addr,size):return int.from_bytes(self.read_block(addr,size),'little')
-    def write(self,addr,size,value):
+    def write(self,addr,size,value,tolerance=0):
         fn=getattr(self.packet,f'write{size}ByteTxRx');comm,error=fn(self.port,self.motor_id,addr,value&((1<<(size*8))-1))
         if comm!=0 or error:raise RuntimeError(f'DYNAMIXEL 쓰기 실패 addr={addr}, comm={comm}, error={error}')
-        if self.read(addr,size)!=value&((1<<(size*8))-1):raise RuntimeError(f'쓰기 검증 실패 addr={addr}')
+        mask=(1<<(size*8))-1
+        # tolerance>0: 토크 OFF의 Goal Position은 쓰기를 무시하고 현재 위치(±1 count 흔들림)를 따라가므로 허용 오차만 확인
+        if abs(signed(self.read(addr,size),size*8)-signed(value&mask,size*8))>tolerance:raise RuntimeError(f'쓰기 검증 실패 addr={addr}')
     def close(self):self.port.closePort()
