@@ -137,7 +137,11 @@ def capture(out_dir, count=5, gap_s=0.3, timeout_s=15.0):
     from rclpy.qos import qos_profile_sensor_data
     from sensor_msgs.msg import Image, CameraInfo
     from rosidl_runtime_py import message_to_ordereddict
-    rclpy.init(); n = rclpy.create_node('camera_calib_capture'); last = {}
+    own = not rclpy.ok()  # 이미 ROS가 켜진 프로세스 안에서 부르면 그대로 쓰고 끄지 않는다
+    if own: rclpy.init()
+    n = rclpy.create_node('camera_calib_capture'); last = {}
+    from rclpy.executors import SingleThreadedExecutor
+    ex = SingleThreadedExecutor(); ex.add_node(n)  # 전용 실행기: 다른 곳에서 기본 실행기를 돌리고 있어도 안전
     for c in CAMERAS:
         for kind, typ, topic in (('color', Image, 'color/image_raw'), ('depth', Image, 'aligned_depth_to_color/image_raw'), ('info', CameraInfo, 'color/camera_info')):
             n.create_subscription(typ, f'/camera/{c}/{topic}', lambda m, k=(c, kind): last.__setitem__(k, m), qos_profile_sensor_data)
@@ -147,7 +151,7 @@ def capture(out_dir, count=5, gap_s=0.3, timeout_s=15.0):
             for k in list(last): del last[k]
             end = time.monotonic() + timeout_s
             while len(last) < 6:
-                rclpy.spin_once(n, timeout_sec=0.05)
+                ex.spin_once(timeout_sec=0.05)
                 if time.monotonic() > end: raise RuntimeError('카메라 영상이 안 들어옵니다 (없는 것: ' + str(sorted({(c, k) for c in CAMERAS for k in ('color', 'depth', 'info')} - set(last))) + ')')
             d = out / f'view_{v:03d}'; d.mkdir(exist_ok=True); meta = {'cameras': {}}
             for c in CAMERAS:
@@ -157,7 +161,8 @@ def capture(out_dir, count=5, gap_s=0.3, timeout_s=15.0):
                 meta['cameras'][c] = {'color_file': f'{c}_color.png', 'depth_file': f'{c}_depth_mm.png', 'depth_encoding': z.encoding, 'camera_info': message_to_ordereddict(last[(c, 'info')])}
             (d / 'metadata.json').write_text(json.dumps(meta, indent=1)); views.append(d); time.sleep(gap_s)
     finally:
-        n.destroy_node(); rclpy.try_shutdown()
+        n.destroy_node()
+        if own: rclpy.try_shutdown()
     return views
 
 
