@@ -67,7 +67,7 @@ esp32_bridge:
   ros__parameters:
     port: /dev/esp32
     hold_diff: -300
-    grip_diff: -400
+    grip_diff: -300   # 11/3 -400 → -300 (실물 흡착 시 -404까지 내려갔고 운반 중 -446 이상 유지됨)
     release_diff: -50
     grip_timeout: 5.0
     release_timeout: 3.0
