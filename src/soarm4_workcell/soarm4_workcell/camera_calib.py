@@ -195,6 +195,7 @@ def main(argv=None):
     ap.add_argument('--workcell', default=str(CONFIG)); ap.add_argument('--use-pads', action='store_true'); ap.add_argument('--json')
     ap.add_argument('--fresh', action='store_true', help='카메라를 옮겨서 저장값을 거르기·초기값으로 쓰지 않음')
     ap.add_argument('--write', action='store_true', help='결과를 workcell.yaml 카메라 값에 반영')
+    ap.add_argument('--cams', nargs='+', choices=CAMERAS, default=list(CAMERAS), help='반영할 카메라 (기본: 둘 다)')
     ap.add_argument('--warn-mm', type=float, default=5.0, help='이 값 넘게 어긋나면 경고')
     a = ap.parse_args(argv); wc = load(Path(a.workcell)); markers = table_markers(wc, a.use_pads); result = {}; Ks = {}
     sessions = [str(v) for v in capture(a.capture, a.frames)] if a.capture else a.sessions
@@ -236,7 +237,7 @@ def main(argv=None):
         result[cam] = {'T_table_optical': T.tolist(), **q, **cmp_, 'dz_new_mm': dz_new, 'check': chk, 'check_ok': bool(chk) and not bad_chk and q['reproj_rms_px'] <= 3.0, 'dropped': dropped}
     if a.json: Path(a.json).write_text(json.dumps(result, indent=1, ensure_ascii=False)); print('저장:', a.json)
     if a.write:
-        good = {c: r for c, r in result.items() if r['reproj_rms_px'] <= 3.0}
+        good = {c: r for c, r in result.items() if c in a.cams and r['reproj_rms_px'] <= 3.0}
         if good: write_workcell(a.workcell, good, Ks, f'camera_calib fixed markers {sorted(markers)}; views {sessions[0]} ..'); print('workcell.yaml 반영:', sorted(good))
         else: print('반영할 결과가 없습니다 (재투영 오차 큼 또는 마커 부족)')
     return 0
