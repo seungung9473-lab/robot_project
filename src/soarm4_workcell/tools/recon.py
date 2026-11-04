@@ -6,11 +6,14 @@ session, npz, out = sys.argv[1:4]
 wc = yaml.safe_load(open(os.path.expanduser('~/robot_ws/src/soarm4_workcell/config/workcell.yaml')))
 axis = np.array(wc['turntable']['axis_point_table_m'][:2]); top_z = wc['turntable']['top_height_m']
 masks = np.load(npz); sess = json.load(open(f'{session}/session.json')); views = [v for v in sess['views']]
+raw_colors = {}
 def cloud(view, cam):
     meta = json.load(open(f"{session}/{view['path']}/metadata.json"))['cameras'][cam]; K = np.array(meta['camera_info']['k']).reshape(3, 3)
     dep = cv2.imread(f"{session}/{view['path']}/{meta['depth_file']}", cv2.IMREAD_UNCHANGED).astype(np.float32) * 1e-3
     m = masks[f"{view['path']}_{cam}"]; m = ndimage.binary_erosion(m, iterations=3)
     vs, us = np.nonzero(m & (dep > 0.2) & (dep < 1.5)); z = dep[vs, us]
+    img = cv2.imread(f"{session}/{view['path']}/{meta['color_file']}")
+    raw_colors[(view['path'], cam)] = img[vs, us, ::-1]
     P = np.stack([(us - K[0, 2]) * z / K[0, 0], (vs - K[1, 2]) * z / K[1, 1], z], 1)
     T = np.array(wc['cameras'][cam]['T_table_optical']); return (T[:3, :3] @ P.T).T + T[:3, 3]
 def rot(P, deg):
@@ -45,7 +48,9 @@ for dx in np.arange(-0.012, 0.0121, 0.002):
         if a < best[0]: best = (a, (dx, dy))
 print('윗면 겹침 면적: 저장된 축 %.1f cm², 최적 이동 %s mm → %.1f cm²' % (base * 1e4, np.round(np.array(best[1]) * 1e3, 1), best[0] * 1e4))
 P = fuse(sign, ax_shift=best[1]) if best[0] < base * 0.97 else fuse(sign)
-P = P[(P[:, 2] > top_z + 0.003) & (P[:, 2] < 0.2)]
-c = np.median(P[:, :2], 0); d = np.linalg.norm(P[:, :2] - c, axis=1); P = P[d < np.percentile(d, 99.5)]
-np.savez_compressed(out, points=P, sign=sign, axis_shift=np.array(best[1]) if best[0] < base * 0.97 else np.zeros(2))
+C = np.vstack([raw_colors[key] for key in raw])
+keep = (P[:, 2] > top_z + 0.003) & (P[:, 2] < 0.2)
+P, C = P[keep], C[keep]
+c = np.median(P[:, :2], 0); d = np.linalg.norm(P[:, :2] - c, axis=1); keep = d < np.percentile(d, 99.5); P, C = P[keep], C[keep]
+np.savez_compressed(out, points=P, colors_rgb=C, sign=sign, axis_shift=np.array(best[1]) if best[0] < base * 0.97 else np.zeros(2))
 print('융합 점 수', len(P), ' x', P[:, 0].min().round(4), P[:, 0].max().round(4), ' y', P[:, 1].min().round(4), P[:, 1].max().round(4), ' z', P[:, 2].min().round(4), P[:, 2].max().round(4))

@@ -18,7 +18,21 @@ CUP_R = 0.0125
 class PickupMarkers(Node):
     def __init__(self, cloud, result, max_points=9000):
         super().__init__('pickup_markers'); self.result = result
-        P = np.load(cloud)['points']; step = max(1, len(P) // max_points); self.P = P[::step]
+        data = np.load(cloud)
+        P = data['points']; step = max(1, len(P) // max_points); self.P = P[::step]
+        self.rgb = None
+        if 'colors_rgb' in data:
+            rgb = np.asarray(data['colors_rgb'], dtype=float)
+            if rgb.shape != P.shape or not np.isfinite(rgb).all():
+                raise ValueError('colors_rgb must match finite Nx3 points')
+            self.rgb = np.clip(rgb[::step] / 255.0, 0.0, 1.0)
+        else:
+            from pathlib import Path
+            color_file = Path(cloud).with_name('color_classification.json')
+            if color_file.exists():
+                stats = json.loads(color_file.read_text())
+                samples = [v['median_rgb'] for c in stats['cameras'] for v in c['views']]
+                self.rgb = np.tile(np.median(samples, axis=0) / 255.0, (len(self.P), 1))
         qos = QoSProfile(depth=5, durability=DurabilityPolicy.TRANSIENT_LOCAL, reliability=ReliabilityPolicy.RELIABLE)
         self.pub = self.create_publisher(MarkerArray, 'workcell_markers', qos); self.create_timer(1.0, self.publish); self.publish()
 
@@ -39,9 +53,10 @@ class PickupMarkers(Node):
         cloud = self.marker('pickup_cloud', 0, Marker.POINTS, (0.85, 0.2, 0.2, 1.0), (0.0025, 0.0025, 0.0))
         zs = self.P[:, 2]; shade = (zs - zs.min()) / max(1e-6, np.ptp(zs))
         from std_msgs.msg import ColorRGBA
-        for p, s in zip(self.P, shade):
+        for idx, (p, s) in enumerate(zip(self.P, shade)):
             cloud.points.append(Point(x=float(p[0]), y=float(p[1]), z=float(p[2])))
-            cloud.colors.append(ColorRGBA(r=float(0.45 + 0.5 * s), g=float(0.1 + 0.3 * s), b=0.1, a=1.0))
+            rgb = self.rgb[idx] if self.rgb is not None else (0.6, 0.6, 0.6)
+            cloud.colors.append(ColorRGBA(r=float(rgb[0]), g=float(rgb[1]), b=float(rgb[2]), a=1.0))
         arr.markers.append(cloud)
         for i, (lbl, c) in enumerate(r['candidates'].items()):
             ok = r['valid'].get(lbl, False); chosen = lbl == r['candidate']

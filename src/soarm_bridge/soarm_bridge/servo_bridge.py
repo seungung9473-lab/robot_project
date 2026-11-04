@@ -48,6 +48,7 @@ class ServoBridge(Node):
     def __init__(self):
         super().__init__('servo_bridge')
         p = self.declare_parameter
+        self.read_only = bool(p('read_only', False).value)
         port = p('port', '/dev/servo_bus').value
         baud = p('baud', 1_000_000).value
         self.names = list(p('joint_names', ['joint1', 'joint2', 'joint3', 'joint4']).value)
@@ -166,6 +167,7 @@ class ServoBridge(Node):
 
     # ---------------- 토크
     def set_torque(self, on):
+        if self.read_only:raise RuntimeError('Read-only bridge')
         if on and None not in self.pos:
             # 힘 주기 전에 목표 = 현재 위치 (예전 목표값으로 갑자기 튀는 것 방지)
             self.bus.sync_goal({sid: (self.pos[i], self.vmin) for i, sid in enumerate(self.ids)}, self.acc)
@@ -175,6 +177,8 @@ class ServoBridge(Node):
         self.torque_on = on
 
     def srv_torque(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         if not req.data and self.exec_lock.locked():
             res.success, res.message = False, '궤적 실행 중에는 토크를 끌 수 없음'
             return res
@@ -228,6 +232,7 @@ class ServoBridge(Node):
 
     # ---------------- 궤적 실행
     def on_goal(self, goal):
+        if self.read_only:return GoalResponse.REJECT
         names = list(goal.trajectory.joint_names)
         if not set(names) <= set(self.names) or not goal.trajectory.points:
             self.get_logger().warn(f'거절: 모르는 관절 {names}')
@@ -371,11 +376,13 @@ class ServoBridge(Node):
         return True
 
     def hold_here(self):
+        if self.read_only:return
         if not self.feedback_fresh():return
         self.bus.sync_goal({sid: (self.pos[i], self.vmin) for i, sid in enumerate(self.ids)}, self.acc)
 
     # ---------------- 턴테이블 (STS3215, ID = turntable_id)
     def on_tt_goto(self, msg):
+        if self.read_only:return
         deg = msg.data % 360.0
         c = int(round(deg * 4096 / 360.0)) % 4096
         self.bus.torque(self.tt_id, True)

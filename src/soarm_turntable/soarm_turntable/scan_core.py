@@ -28,9 +28,26 @@ def stability_problem(states,now,seconds=.5):
 def stable_states(states,now,seconds=.5):
     return stability_problem(states,now,seconds) is None
 
-def select_bundle(buffers,after_ns,now,max_skew_ns=100_000_000):
+class StationaryCaptureGate:
+    """Require an uninterrupted stationary interval before accepting new frames."""
+    def __init__(self,seconds=0.5):
+        if not math.isfinite(seconds) or not .2<=seconds<=10:
+            raise ValueError('정지 후 대기는 0.2~10초여야 합니다')
+        self.seconds=float(seconds);self.since=None
+
+    def update(self,problem,now):
+        if problem:
+            self.since=None
+            # Residual motion invalidates the dwell; wait for a fresh full stop.
+            # Hardware faults, stale state, zero/STOP changes remain guarded by Scanner.state().
+            return False
+        if self.since is None:self.since=now
+        return now-self.since>=self.seconds
+
+
+def select_bundle(buffers,after_ns,now,max_skew_ns=100_000_000,received_after=None):
     # Choose a near-time bundle, not an arbitrary latest frame from each camera.
-    candidates={k:[(received,msg) for received,msg in items if now-received<=.5 and msg.header.stamp.sec*10**9+msg.header.stamp.nanosec>=after_ns] for k,items in buffers.items()}
+    candidates={k:[(received,msg) for received,msg in items if now-received<=.5 and (received_after is None or received>=received_after) and msg.header.stamp.sec*10**9+msg.header.stamp.nanosec>=after_ns] for k,items in buffers.items()}
     if any(not values for values in candidates.values()):return None
     def stamp(item):return item[1].header.stamp.sec*10**9+item[1].header.stamp.nanosec
     for anchor in reversed(candidates['cam1_color']):

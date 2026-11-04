@@ -13,14 +13,16 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from control_msgs.action import FollowJointTrajectory
 from cv_bridge import CvBridge
 from rosidl_runtime_py.convert import message_to_ordereddict
-from .scan_core import preflight_angles,stable_states,stability_problem,select_bundle
+from .scan_core import preflight_angles,stable_states,stability_problem,select_bundle,StationaryCaptureGate
 from .environment_core import load_environment,foreground,calibration_key
 
 def write_json(path,value):
     tmp=path.with_suffix('.tmp');tmp.write_text(json.dumps(value,ensure_ascii=False,indent=2,allow_nan=False));os.replace(tmp,path)
 
 class Scanner(Node):
-    def __init__(self,environment=None):
+    def __init__(self,environment=None,settle_seconds=0.5):
+        if settle_seconds!=0.5:raise ValueError('정지 확인 후 추가 대기는 0.5초로 고정됩니다')
+        self.settle_seconds=StationaryCaptureGate(0.5).seconds
         self.environment,self.environment_path=load_environment(environment) if environment else (None,None)
         super().__init__('soarm_turntable_scan');self.buffers={};self.states=collections.deque(maxlen=25);self.arm=None;self.arm_reference=None;self.reference_zero=None;self.reference_stop=None;self.goal_handle=None;self.bridge=CvBridge()
         for camera in ('cam1','cam2'):
@@ -86,19 +88,27 @@ class Scanner(Node):
             if stable_states(list(self.states),time.monotonic()):return
             if time.monotonic()>end:raise RuntimeError('턴테이블 정지 안정화 시간 초과')
     def capture(self,session,index,target=None):
-        self.wait_stable();after=self.get_clock().now().nanoseconds;end=time.monotonic()+10
+        self.wait_stable();gate=StationaryCaptureGate(self.settle_seconds)
+        end=time.monotonic()+max(10.,self.settle_seconds+8.);after=None;received_after=None;position_at_barrier=None
         while True:
-            self.spin();state=self.state()
-            problem=stability_problem(list(self.states),time.monotonic())
-            # 표본 부족/지연은 움직임 증거가 아니므로 기다리고, 실제 움직임·오류 증거만 즉시 중단
-            if problem and problem[0]=='motion':raise RuntimeError('촬영 대기 중 턴테이블 움직임 감지: '+problem[1])
-            if problem:
-                if time.monotonic()>end:raise RuntimeError('촬영 대기 중 턴테이블 상태 불안정: '+problem[1])
-                continue
-            bundle=select_bundle(self.buffers,after,time.monotonic())
-            if bundle and self.states[-1][0]>=max(t for t,_ in bundle.values()):break
-            if time.monotonic()>end:raise RuntimeError('두 카메라의 최신 컬러/정렬깊이/내부행렬 동기화 실패')
-        tmp=session/('.pending-'+uuid.uuid4().hex);tmp.mkdir();meta={'index':index,'requested_angle_deg':target,'turntable':state,'camera_to_robot_transform':None,'rotation_axis_calibration':None,'cameras':{}}
+            self.spin();state=self.state();now=time.monotonic()
+            problem=stability_problem(list(self.states),now)
+            ready=gate.update(problem,now)
+            if not ready:
+                # A status gap invalidates the exposure barrier as well as the dwell.
+                after=None;received_after=None;position_at_barrier=None
+            elif after is None:
+                # Discard frames captured/received during rotation or settling.
+                for buffer in self.buffers.values():buffer.clear()
+                after=self.get_clock().now().nanoseconds;received_after=now
+                position_at_barrier=state['position_count']
+            else:
+                if abs(state['position_count']-position_at_barrier)>2:
+                    raise RuntimeError('정지 확인 후 촬영 중 위치가 2 count 넘게 바뀌었습니다')
+                bundle=select_bundle(self.buffers,after,now,received_after=received_after)
+                if bundle and self.states[-1][0]>=max(t for t,_ in bundle.values()):break
+            if now>end:raise RuntimeError('정지 후 새 RGB/깊이 영상 동기화 시간 초과')
+        tmp=session/('.pending-'+uuid.uuid4().hex);tmp.mkdir();meta={'index':index,'requested_angle_deg':target,'turntable':state,'camera_to_robot_transform':None,'rotation_axis_calibration':None,'cameras':{},'capture_timing':{'mode':'stop-settle-flush-fresh-capture','extra_settle_seconds':self.settle_seconds,'continuous_stationary_since_monotonic':gate.since,'frame_not_before_ros_ns':after,'frame_received_not_before_monotonic':received_after,'state_received_monotonic':self.states[-1][0],'state_position_count_at_barrier':position_at_barrier,'state_position_count_at_capture':state['position_count']}}
         stamps=[]
         for camera in ('cam1','cam2'):
             color=bundle[camera+'_color'][1];depth=bundle[camera+'_depth'][1];info=bundle[camera+'_info'][1]
@@ -126,13 +136,13 @@ class Scanner(Node):
         write_json(tmp/'metadata.json',meta);dst=session/f'view_{index:03d}';os.replace(tmp,dst);return dst,meta
 
 def main():
-    p=argparse.ArgumentParser(description='두 D415와 실제 턴테이블 각도 저장');p.add_argument('command',choices=['capture','scan']);p.add_argument('--environment',help='환경 설정 environment.json 또는 active.json');p.add_argument('--angles',nargs='+',type=float);p.add_argument('--output',default=str(Path.home()/'robot_ws/data/turntable_scans'));p.add_argument('--timeout',type=int,default=30);a=p.parse_args()
+    p=argparse.ArgumentParser(description='두 D415와 실제 턴테이블 각도 저장');p.add_argument('command',choices=['capture','scan']);p.add_argument('--environment',help='환경 설정 environment.json 또는 active.json');p.add_argument('--angles',nargs='+',type=float);p.add_argument('--output',default=str(Path.home()/'robot_ws/data/turntable_scans'));p.add_argument('--timeout',type=int,default=30);p.add_argument('--settle-seconds',type=float,default=0.5,choices=[0.5],help='정지 확인 후 추가 대기 0.5초 고정');a=p.parse_args()
     if a.command=='scan' and (not a.angles or not all(math.isfinite(x) for x in a.angles)):p.error('scan에는 --angles 0 30 60 처럼 각도를 지정하세요')
     if not 1<=a.timeout<=120:p.error('timeout은 1~120초')
     root=Path(a.output).expanduser();root.mkdir(parents=True,exist_ok=True)
     if shutil.disk_usage(root).free<100*1024**2:raise RuntimeError('저장 공간이 부족합니다')
     session=root/(datetime.datetime.now().strftime('%Y%m%d_%H%M%S')+'_'+uuid.uuid4().hex[:6]);session.mkdir();manifest={'version':1,'status':'initializing','command':a.command,'angles':a.angles,'views':[],'calibrated':False,'scope':'raw RGB-D and measured angle only; no reconstruction or suction planning'};write_json(session/'session.json',manifest)
-    rclpy.init();n=Scanner(environment=a.environment);moving=False
+    rclpy.init();n=Scanner(environment=a.environment,settle_seconds=a.settle_seconds);moving=False
     try:
         deadline=time.monotonic()+10
         while not n.states:

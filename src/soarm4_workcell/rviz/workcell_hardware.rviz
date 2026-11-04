@@ -317,6 +317,7 @@ Visualization Manager:
         fixed_markers: true
         labels: true
         table_grid: true
+        reconstructed_pair_rgb: true
       Topic:
         Depth: 5
         Durability Policy: Transient Local

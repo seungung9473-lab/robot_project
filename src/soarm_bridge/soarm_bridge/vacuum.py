@@ -17,7 +17,8 @@ LINE = re.compile(r'raw:\s*(-?\d+)\s+diff:\s*(-?\d+)')
 
 
 class Vacuum:
-    def __init__(self, port='/dev/esp32', baud=115200, hold_diff=-300, release_diff=-50, grip_diff=-400):
+    def __init__(self, port='/dev/esp32', baud=115200, hold_diff=-300, release_diff=-50, grip_diff=-400, observe_only=False):
+        self.observe_only = bool(observe_only)
         self.ser = serial.Serial(port, baud, timeout=0.1)
         self.hold_diff = hold_diff
         self.grip_diff = grip_diff
@@ -30,6 +31,7 @@ class Vacuum:
         self._wlock = threading.Lock()
         self._th = threading.Thread(target=self._reader, daemon=True)
         self._th.start()
+        if self.observe_only:return
         time.sleep(2.0)                 # 포트 열 때 보드가 리셋될 수 있음
         self.send('o'); self.send('c')
         if not self.wait_fresh(1.0):    # 출력이 꺼져 있으면 켜기
@@ -56,6 +58,7 @@ class Vacuum:
                     self.extra_lines = (self.extra_lines + [s])[-20:]
 
     def send(self, ch):
+        if self.observe_only:raise RuntimeError('Read-only vacuum monitor')
         with self._wlock:
             if self.ser.write(ch.encode()) != len(ch.encode()):raise IOError('ESP32 command write incomplete')
 
@@ -74,6 +77,10 @@ class Vacuum:
     @property
     def holding(self):
         return self.diff is not None and self.online and self.diff <= self.hold_diff
+
+    def pump_on(self):
+        """Close valve and start pump immediately; no sensor check or wait."""
+        self.send('c'); self.send('p')
 
     def grip(self, timeout=2.0):
         """밸브 닫고 펌프 ON → diff 가 grip_diff 이하로 떨어지면 성공"""
@@ -118,7 +125,7 @@ class Vacuum:
 
     def close(self):
         try:
-            self.off()
+            if not self.observe_only:self.off()
         finally:
             self._stop = True
             time.sleep(0.15)

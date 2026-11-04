@@ -26,6 +26,7 @@ class ESP32Bridge(Node):
     def __init__(self):
         super().__init__('esp32_bridge')
         p = self.declare_parameter
+        self.read_only=bool(p('read_only',False).value)
         port = p('port', '/dev/esp32').value
         self.command_lock = threading.Lock()
         self.grip_wait = float(p('sensorless_grip_wait',1.0).value)
@@ -34,10 +35,11 @@ class ESP32Bridge(Node):
         self.grip_timeout = p('grip_timeout', 2.0).value
         self.release_timeout = float(p('release_timeout',3.0).value)
         if not 0<self.release_timeout<=30:raise ValueError('release_timeout must be in (0,30]')
-        self.vac = Vacuum(port, 115200, p('hold_diff', -300).value, p('release_diff', -50).value, grip_diff=p('grip_diff', -400).value)
+        self.vac = Vacuum(port, 115200, p('hold_diff', -300).value, p('release_diff', -50).value, grip_diff=p('grip_diff', -400).value, observe_only=self.read_only)
         cb = ReentrantCallbackGroup()
         self.pub_diff = self.create_publisher(Int32, 'vacuum/diff', 10)
         self.pub_hold = self.create_publisher(Bool, 'vacuum/holding', 10)
+        self.create_service(Trigger, 'vacuum/pump_on', self.srv_pump_on, callback_group=cb)
         self.create_service(Trigger, 'vacuum/grip', self.srv_grip, callback_group=cb)
         self.create_service(Trigger, 'vacuum/release', self.srv_release, callback_group=cb)
         self.create_service(Trigger, 'vacuum/zero', self.srv_zero, callback_group=cb)
@@ -58,31 +60,52 @@ class ESP32Bridge(Node):
         self.pub_diff.publish(Int32(data=int(self.vac.diff)))
         self.pub_hold.publish(Bool(data=self.vac.holding))
 
+    def srv_pump_on(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
+        with self.command_lock:
+            try:
+                self.vac.pump_on()
+                res.success, res.message = True, '펌프 ON 명령 전송 · 압력 판정/대기 없음'
+            except Exception as exc:
+                res.success, res.message = False, '펌프 명령 전송 실패: ' + str(exc)
+            return res
+
     def srv_grip(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         with self.command_lock:
             ok, d = self.vac.grip(self.grip_timeout)
             res.success, res.message = ok, f'diff={d}'
             return res
 
     def srv_release(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         with self.command_lock:
             ok, d = self.vac.release(self.release_timeout)
             res.success, res.message = ok, f'diff={d}'
             return res
 
     def srv_zero(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         with self.command_lock:
             self.vac.zero()
             res.success, res.message = True, 'zero'
             return res
 
     def srv_off(self, req, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         with self.command_lock:
             self.vac.off()
             res.success, res.message = True, 'pump/valve off'
             return res
 
     def timed(self, command, res):
+        if self.read_only:
+            res.success=False;res.message='읽기 전용 연결 점검 중';return res
         if not self.command_lock.acquire(blocking=False):
             res.success=False;res.message='다른 진공 명령 처리 중';return res
         try:
