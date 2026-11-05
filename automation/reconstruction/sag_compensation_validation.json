@@ -1,0 +1,28 @@
+{
+  "offline_ik_pass": true,
+  "position_error_mm": 2.84503272096073e-07,
+  "axis_error_deg": 2.2588727439225506e-06,
+  "joint_goal_deg": [
+    -0.7910156251074997,
+    62.155495542953446,
+    -94.49830873670965,
+    -56.657188826811314
+  ],
+  "axis": {
+    "enabled": true,
+    "pitch_offset_deg": 1.0,
+    "axis_table": [
+      0.013805388528111466,
+      0.9999047010828521,
+      7.815471360339051e-16
+    ],
+    "target_tool_axis_table": [
+      -0.017450743241848417,
+      0.0002409372516172124,
+      -0.9998476951563913
+    ],
+    "physically_validated": false
+  },
+  "repeat_application_does_not_accumulate": true,
+  "physical_execution_performed": false
+}

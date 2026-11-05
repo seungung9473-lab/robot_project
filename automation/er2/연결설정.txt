@@ -1,0 +1,19 @@
+ER2 연결 확인 — 로봇·영상 전송 없음
+
+1. https://aistudio.google.com/apikey 에 로그인해 본인 프로젝트의 Gemini API 키를 생성.
+2. 별도 터미널에서 다음 명령 실행:
+python3 '/home/seungung9473/문서/ChatGPT/라파 대회/er2/check_connection.py' --setup-key
+3. 키를 입력하고 Enter. 입력값은 화면과 명령 기록에 표시되지 않음.
+4. 실제 gemini-robotics-er-2-preview 모델 조회와 텍스트 생성 응답을 확인.
+
+키는 ~/.config/soarm4/gemini.json 에 권한600으로 저장. 채팅에 붙여넣을 필요 없음.
+이미 GOOGLE_API_KEY/GEMINI_API_KEY 환경변수가 있으면 환경변수가 우선됨.
+확인만 다시 실행:
+python3 '/home/seungung9473/문서/ChatGPT/라파 대회/er2/check_connection.py'
+
+결과파일: connection_status.json (키 포함 안 됨).
+API키가 없어 현재는 실제 계정의 모델 접근/호출 성공을 확인하지 못한 상태.
+이 단계는 텍스트만 Google로 전송하며, 카메라 영상과 로봇 제어는 연결하지 않음.
+공식 문서:
+https://ai.google.dev/gemini-api/docs/api-key
+https://ai.google.dev/gemini-api/docs/generate-content/robotics-overview

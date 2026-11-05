@@ -1,0 +1,9 @@
+{
+  "fix_current": "PASS",
+  "toggle_off": "PASS",
+  "toggle_on": "PASS",
+  "moving_rejected": "PASS",
+  "mixed_releases_all": "PASS",
+  "bad_hold_blocks_enable": "PASS",
+  "unknown_state_rejected": "PASS"
+}

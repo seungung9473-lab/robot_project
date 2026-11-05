@@ -1,0 +1,15 @@
+{
+  "moved": [
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/active.json",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/cam1_table_calibration.json",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/cam2_table_calibration.json",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/marker7_validation_prediction.json",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/two_marker_refinement_review.json",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved",
+    "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/turntable_marker",
+    "/home/seungung9473/.ros/soarm4/environment"
+  ],
+  "preserved_physical_layout": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/marker_layout.json",
+  "closed_environment_windows": []
+}

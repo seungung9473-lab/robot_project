@@ -1,0 +1,42 @@
+{
+  "status": "diagnostic_only_no_calibration_replaced",
+  "cameras": {
+    "cam1": {
+      "source": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191714_cam1_fixed/measurement.json",
+      "marker_ids": [
+        8,
+        10,
+        11
+      ],
+      "frames": 45,
+      "position_delta_mm": [
+        4.083033326271579,
+        1.0703894389951785,
+        -0.8835482653783422
+      ],
+      "position_delta_norm_mm": 4.312487939903119,
+      "rotation_delta_deg": 0.2628607364485044,
+      "sample_max_deviation_mm": 11.55861002536987,
+      "reprojection_rms_px": 0.8368235305361581
+    },
+    "cam2": {
+      "source": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191639_cam2_fixed/measurement.json",
+      "marker_ids": [
+        7,
+        8,
+        10,
+        11
+      ],
+      "frames": 45,
+      "position_delta_mm": [
+        -2.1749923251372927,
+        1.1222879280694542,
+        -0.9306367846614594
+      ],
+      "position_delta_norm_mm": 2.6184359134532156,
+      "rotation_delta_deg": 0.3042983251854888,
+      "sample_max_deviation_mm": 0.1421098214120518,
+      "reprojection_rms_px": 1.2805081039056736
+    }
+  }
+}

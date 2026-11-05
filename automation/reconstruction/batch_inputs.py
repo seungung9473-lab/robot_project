@@ -1,0 +1,12 @@
+"""Detect configuration/scan changes between full planning and execution."""
+import hashlib
+from pathlib import Path
+ROOT=Path(__file__).resolve().parent
+
+def fingerprints(session):
+ paths=[Path(session)/name for name in ['session.json','workcell_snapshot.yaml','inclined_pick_plan.json','color_sort_plan.json']]
+ paths += [Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml',Path.home()/'robot_ws/src/soarm4_description/config/model.json',Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml']
+ paths += [ROOT/name for name in ['verified_place_left.py','check_inclined_motion.py','execute_pick_batch.py','run_inclined_pick.py']]
+ paths += [ROOT/name for name in ['expiry_policy.py','expiry_sort_policy.json','trash_destination.py','batch_search.py','read_numeric_dates.py','read_expiry_labels.py','payload_placement.py','date_crops.py','identity_routing.py','apply_sam2.py','sam2_shared.py','shared_observations.py','inclined_geometry.py','plan_inclined_pick.py','process_three_color_objects.py','reconstruct.py']]
+ paths += [p for p in [Path.home()/'robot_ws/src/soarm4_workcell/config/named_poses.yaml',Path(session)/'expiry_route_report.json',Path(session)/'expiry_observations.json'] if p.exists()]
+ return {str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}

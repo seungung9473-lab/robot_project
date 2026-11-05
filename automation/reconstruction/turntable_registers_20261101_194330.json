@@ -1,0 +1,18 @@
+{
+  "model": 1200,
+  "firmware": 53,
+  "drive_mode": 0,
+  "operating_mode": 3,
+  "homing_offset": -4070,
+  "min_position": 0,
+  "max_position": 4095,
+  "torque": 0,
+  "hardware_error": 0,
+  "profile_acceleration": 0,
+  "profile_velocity": 0,
+  "goal_position": 4095,
+  "present_position": 4095,
+  "voltage_raw": 51,
+  "bulk_goal_position": 4095,
+  "bulk_present_position": 4095
+}

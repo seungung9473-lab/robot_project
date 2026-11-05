@@ -1,0 +1,36 @@
+{
+  "urdf_sha256": "e308ec47016140aa2a115560530aa25817f3bdb612db52174680fa84e7119611",
+  "meshes": {
+    "base_link_print.stl": "c9ddeb6559f12b796695b47aa50c87ef8de58ff901af5042cce633a1c8c36b9e",
+    "base_link_servo.stl": "82f8c4d7c6e65c531e4c5f33ab5ba9b87ab7a6b5b225a47003127165d1e1a2af",
+    "base_link_box_plate.stl": "a91cd832d1e646a67b30078eafc8696c0ac912cb8f25590b952173d28fc4c425",
+    "base_link_box_wall.stl": "2f7446a615c1e27659da8ea7f6cc01220c0635b6c2c077ccdb854919db57b1b2",
+    "link1_servo.stl": "7866cfb8bdf534b13d54e70eac65172f710e7dcc7ec1b73834d1796f0ed297ff",
+    "link1_print.stl": "67072542100b1998272bd528b6d19b9cc98edc3b8ce574d0f36cc61ee4f263c5",
+    "link2_servo.stl": "0e99e37130671bb830d420dab75c58f6271daaeb4f4d03edd385db89220dd573",
+    "link2_print.stl": "c6a7f3537d9701173b53bd6432c1c44312da71d642add30ca9b63340def46949",
+    "link3_print.stl": "c93cce050332eaefef09726b239d785fda1db53cfaf1772242c3232e81fd4207",
+    "link3_servo.stl": "f8a5215bef5c94d603f39156db280b54b37a37eb951b39d9fc698b722b5b139b",
+    "tool_link_print.stl": "6bb76a39f7728a17b9d16bdd5f6db98b0104e3b4f0749d2a7868d2f8eb83eb91",
+    "tool_link_alu.stl": "0cc6fcb63b65a351dd911e27b9c98ba9cb1db97716a60c165fdcba10f5ea6fe4",
+    "tool_link_cup.stl": "0739e32214f8625662c8b265bcccf4b8b7ce5fffa1134d5a1b32fe1a6f3d000f"
+  },
+  "mating_pairs_requiring_postcheck": [
+    [
+      "base_link_servo",
+      "link1_print"
+    ],
+    [
+      "link1_servo",
+      "link2_print"
+    ],
+    [
+      "link2_servo",
+      "link3_print"
+    ],
+    [
+      "link3_servo",
+      "tool_link_print"
+    ]
+  ]
+}

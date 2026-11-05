@@ -1,0 +1,21 @@
+{
+  "timezone": "Asia/Seoul",
+  "reference_date": "today",
+  "qr_format": "one type letter + YYMMDD",
+  "qr_year_base": 2000,
+  "minimum_matching_observations": 2,
+  "expired_destination": "trash_drop",
+  "closer_nonexpired_pad_id": 5,
+  "farther_nonexpired_pad_id": 6,
+  "valid_on_expiry_date": true,
+  "equal_reference_distances": "both ID5; reserve nonoverlapping slots",
+  "more_than_two_distinct_nonexpired_dates": "stop; require grouping rule",
+  "unreadable_or_conflicting_qr": "do_not_move",
+  "date_reading_order": [
+    "printed_numeric",
+    "qr_fallback"
+  ],
+  "yearless_numeric_labels": "execution_year",
+  "minimum_matching_numeric_observations": 2,
+  "minimum_numeric_confidence": 0.9
+}

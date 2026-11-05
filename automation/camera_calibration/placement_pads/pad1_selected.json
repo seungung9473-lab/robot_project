@@ -1,0 +1,36 @@
+{
+  "pad_id": "pad1",
+  "marker_id": 6,
+  "black_edge_m": 0.06,
+  "frame_id": "table",
+  "placement_center_table_m": [
+    1.097805614569502,
+    0.38441874573139295,
+    0.059
+  ],
+  "height_source": "user supplied physical pad surface height",
+  "chosen_camera": "cam2",
+  "accepted_measurements": {
+    "cam2": {
+      "camera": "cam2",
+      "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_143530_cam2_pad6/measurement.json",
+      "calibration": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json",
+      "measured_center_table_m": [
+        1.097805614569502,
+        0.38441874573139295,
+        0.060096650798444784
+      ],
+      "max_position_sample_deviation_mm": 0.10606832108927731,
+      "height_discrepancy_mm": 1.096650798444787
+    }
+  },
+  "excluded_measurements": {},
+  "selection_criteria": {
+    "max_position_sample_deviation_mm": 5,
+    "max_height_discrepancy_mm": 5
+  },
+  "absolute_xy_accuracy_verified": false,
+  "validated_for_robot_execution": false,
+  "source_pad_record": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/placement_pads/pad1_id6_20261101_143557.json",
+  "pad_diameter_m": 0.1
+}

@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "units": "m",
+  "table": {
+    "size_xy_m": [
+      1.8,
+      0.75
+    ],
+    "origin": "lower-left tabletop corner, viewed from above",
+    "x_positive": "right",
+    "y_positive": "up in top view",
+    "z_positive": "vertically above tabletop",
+    "tabletop_z_m": 0
+  },
+  "fixed_markers": {
+    "dictionary": "DICT_4X4_50",
+    "black_edge_m": 0.07,
+    "centers_table_m": {
+      "10": [
+        0.948,
+        0.154,
+        0
+      ],
+      "11": [
+        1.2425,
+        0.055,
+        0
+      ],
+      "7": [
+        1.213,
+        0.287,
+        0
+      ],
+      "8": [
+        0.8985,
+        0.049,
+        0
+      ]
+    },
+    "canonical_top_direction": "+Y",
+    "surface_normal": "+Z"
+  },
+  "turntable_marker": {
+    "dictionary": "DICT_4X4_50",
+    "id": 0,
+    "black_edge_m": 0.1,
+    "center_aligned_to_axis": true
+  },
+  "turntable_mechanical_reference": {
+    "axis_point_table_m": [
+      1.095,
+      0.235,
+      0.059
+    ],
+    "axis_direction_table": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "source": "user physical measurements and confirmed vertical axis; retained independently of cameras",
+    "uncertainty": "height approximately 5.9cm; manual alignment precision unspecified",
+    "plate_diameter_m": 0.15
+  },
+  "camera_calibrations_available": false,
+  "camera_environment_available": false,
+  "note": "Physical marker layout preserved; camera measurements and derived rotation-axis fits invalid after camera relocation.",
+  "placement_pad_diameters_m": {
+    "pad1": 0.1,
+    "pad2": 0.1
+  }
+}

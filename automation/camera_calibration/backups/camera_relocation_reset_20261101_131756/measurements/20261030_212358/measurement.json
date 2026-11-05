@@ -1,0 +1,10 @@
+{
+  "marker_dictionary": "DICT_4X4_50",
+  "id": 10,
+  "black_edge_m": 0.07,
+  "scope": "camera optical frame only; no table or robot transform applied",
+  "detected_ids": [
+    11
+  ],
+  "samples": []
+}

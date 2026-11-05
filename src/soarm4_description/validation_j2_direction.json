@@ -1,0 +1,14 @@
+{
+  "joint2_axis": [
+    0,
+    -1,
+    0
+  ],
+  "zero_elbow_height_m": 0.18600000014829998,
+  "positive10deg_elbow_height_m": 0.2059729584098622,
+  "previous_positive10deg_elbow_height_m": 0.1668778077121565,
+  "positive_J2_lifts_upper_arm": "PASS",
+  "other_joints_and_all_numerical_limits_unchanged": "PASS",
+  "source_zero_and_rest_geometry": "PASS",
+  "legacy_encoder_metadata": "UNCHANGED / UNVERIFIED"
+}

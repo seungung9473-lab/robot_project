@@ -1,0 +1,19 @@
+{
+  "readonly_rejects_torque_and_motion": true,
+  "missing_feedback_stops_fresh_state_publication": true,
+  "feedback_recovers": true,
+  "encoder_bounds": [
+    [
+      974,
+      1994,
+      115,
+      774
+    ],
+    [
+      3357,
+      4038,
+      2047,
+      3159
+    ]
+  ]
+}

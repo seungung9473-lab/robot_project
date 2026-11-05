@@ -1,0 +1,50 @@
+{
+  "version": "0.5.7",
+  "robot_Y_translation_delta_mm": 17.7,
+  "mount_xyz_m": [
+    -0.0177,
+    0.0177,
+    0.0
+  ],
+  "enclosure_unchanged": "PASS",
+  "X_Z_orientations_meshes_and_all_joint_settings_unchanged": "PASS",
+  "four_mounting_holes_XY_match": "PASS",
+  "max_fitted_XY_error_mm": 0.0004825261742441804,
+  "plate_hole_centers_world_mm": [
+    [
+      17.29999999999991,
+      -17.499999999999936
+    ],
+    [
+      17.29999999999197,
+      17.500000000006132
+    ],
+    [
+      -52.70000000000003,
+      -17.4999999999999
+    ],
+    [
+      -52.699999999992215,
+      17.500000000006132
+    ]
+  ],
+  "robot_hole_centers_world_mm": [
+    [
+      17.300006674750442,
+      -17.500482480005868
+    ],
+    [
+      17.300006674741812,
+      17.499517520000712
+    ],
+    [
+      -52.69999332524959,
+      -17.500482480005825
+    ],
+    [
+      -52.69999332524214,
+      17.499517519999767
+    ]
+  ],
+  "Z_registration": "UNCHANGED (Y-only adjustment)"
+}

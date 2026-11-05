@@ -1,0 +1,14 @@
+{
+  "marker_id": 5,
+  "model_tcp_table_m": [
+    1.0980506512796848,
+    0.08585190272486481,
+    0.0716198689439339
+  ],
+  "pad_surface_z_m": 0.0575,
+  "user_measured_gap_m": 0.001,
+  "actual_tcp_z_from_measurement_m": 0.0585,
+  "model_minus_actual_z_m": 0.013119868943933903,
+  "xy_physical_error": "not measured at this pose",
+  "status": "Single pose height discrepancy; cause not isolated; no correction applied"
+}

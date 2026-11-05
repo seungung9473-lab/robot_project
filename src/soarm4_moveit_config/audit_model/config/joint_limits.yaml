@@ -1,0 +1,26 @@
+# MoveIt2 joint limits (rad/s, rad/s^2)
+# conversion: speed register x 0.001534 = rad/s, acc register x 0.1534 = rad/s^2
+# everyday values (stable): J1 1536/46, J2 1200/30, J3 1536/46, J4 1500/46
+default_velocity_scaling_factor: 0.5
+default_acceleration_scaling_factor: 0.5
+joint_limits:
+  joint1:
+    has_velocity_limits: true
+    max_velocity: 2.36
+    has_acceleration_limits: true
+    max_acceleration: 7.06
+  joint2:
+    has_velocity_limits: true
+    max_velocity: 1.84
+    has_acceleration_limits: true
+    max_acceleration: 4.60
+  joint3:
+    has_velocity_limits: true
+    max_velocity: 2.36
+    has_acceleration_limits: true
+    max_acceleration: 7.06
+  joint4:
+    has_velocity_limits: true
+    max_velocity: 2.30
+    has_acceleration_limits: true
+    max_acceleration: 7.06

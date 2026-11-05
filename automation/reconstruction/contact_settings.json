@@ -1,0 +1,8 @@
+{
+  "contact_z_offset_m": -0.002,
+  "coordinate_frame": "table",
+  "meaning": "Apply once to nominal contact Z, not current encoder position",
+  "approach_clearance_m": 0.03,
+  "read_velocity_acceleration_from_rviz": true,
+  "offset_is_not_force_control": true
+}

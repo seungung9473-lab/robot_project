@@ -1,0 +1,29 @@
+{
+  "camera": "cam1",
+  "samples": 30,
+  "target_bbox_xyxy": [
+    474,
+    170,
+    535,
+    236
+  ],
+  "object_valid_depth_fraction": 0.9498057962354347,
+  "table_plane_inliers": 2588,
+  "table_plane_rms_mm": 0.9842505038830266,
+  "measured_height_mm": 60.52730215768559,
+  "expected_height_mm": 60.0,
+  "height_error_mm": 0.5273021576855896,
+  "height_repeat_std_mm": 0.3427195422626208,
+  "visible_top_extent_mm": [
+    43.98319125175476,
+    47.06957936286926
+  ],
+  "extent_note": "Visible valid depth extent only, not a verified full box dimension",
+  "top_surface_pixels": 860,
+  "table_plane_camera": [
+    -0.019055237931094537,
+    -0.7742958351727989,
+    -0.6325368428332432,
+    0.4713633402942425
+  ]
+}

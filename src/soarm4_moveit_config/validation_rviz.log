@@ -1,0 +1,21 @@
+[INFO] [1792567820.148735902] [rviz2]: Stereo is NOT SUPPORTED
+[INFO] [1792567820.148797519] [rviz2]: OpenGl version: 4.5 (GLSL 4.5)
+[INFO] [1792567820.170735210] [rviz2]: Stereo is NOT SUPPORTED
+Warning: class_loader.impl: SEVERE WARNING!!! A namespace collision has occurred with plugin factory for class rviz_default_plugins::displays::InteractiveMarkerDisplay. New factory will OVERWRITE existing one. This situation occurs when libraries containing plugins are directly linked against an executable (the one running right now generating this message). Please separate plugins out into their own library or just don't link against the library and use either class_loader::ClassLoader/MultiLibraryClassLoader to open.
+         at line 321 in /opt/ros/jazzy/include/class_loader/class_loader/class_loader_core.hpp
+[ERROR] [1792567823.226612275] [soarm4_plan.moveit_2041786068.moveit.ros.motion_planning_frame]: Action server: /recognize_objects not available
+[INFO] [1792567823.333137121] [soarm4_plan.moveit_2041786068.moveit.ros.rdf_loader]: Loaded robot model in 0.0407349 seconds
+[INFO] [1792567823.333219900] [soarm4_plan.moveit_2041786068.moveit.core.robot_model]: Loading robot model 'soarm4_checked_v5_7'...
+[INFO] [1792567823.333234451] [soarm4_plan.moveit_2041786068.moveit.core.robot_model]: No root/virtual joint specified in SRDF. Assuming fixed joint
+[WARN] [1792567823.473413138] [soarm4_plan.moveit_2041786068.moveit.ros.robot_model_loader]: No kinematics plugins defined. Fill and load kinematics.yaml!
+[INFO] [1792567823.990128640] [soarm4_plan.moveit_2041786068.moveit.ros.planning_scene_monitor]: Starting planning scene monitor
+[INFO] [1792567823.991679637] [soarm4_plan.moveit_2041786068.moveit.ros.planning_scene_monitor]: Listening to '/soarm4_plan/monitored_planning_scene'
+[INFO] [1792567824.188694661] [soarm4_plan.interactive_marker_display_109421329745088]: Connected on namespace: /soarm4_plan/rviz_moveit_motion_planning_display/robot_interaction_interactive_marker_topic
+[INFO] [1792567824.190187502] [soarm4_plan.moveit_2041786068.moveit.ros.robot_interaction]: No active joints or end effectors found for group 'arm'. Make sure that kinematics.yaml is loaded in this node's namespace.
+[INFO] [1792567824.192887622] [soarm4_plan.moveit_2041786068.moveit.ros.motion_planning_frame]: group arm
+[INFO] [1792567824.192915004] [soarm4_plan.moveit_2041786068.moveit.ros.motion_planning_frame]: Constructing new MoveGroup connection for group 'arm' in namespace '/soarm4_plan'
+[INFO] [1792567824.197116171] [soarm4_plan.moveit_2041786068.moveit.ros.move_group_interface]: Ready to take commands for planning group arm.
+[INFO] [1792567824.228634401] [soarm4_plan.interactive_marker_display_109421329745088]: Sending request for interactive markers
+[INFO] [1792567824.261714171] [soarm4_plan.interactive_marker_display_109421329745088]: Service response received for initialization
+[INFO] [1792567835.610460752] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ros2run]: Process exited with failure 1

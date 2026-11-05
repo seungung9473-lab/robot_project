@@ -1,0 +1,18 @@
+{
+  "hardware_ports_opened": false,
+  "RViz_Plan_Execute_to_FollowJointTrajectory": "PASS",
+  "measured_joint_feedback_reflected": true,
+  "fake_motor_final_counts": [
+    2036,
+    2047,
+    2047,
+    2047
+  ],
+  "fake_torque": {
+    "1": 1,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "command_count": 44
+}

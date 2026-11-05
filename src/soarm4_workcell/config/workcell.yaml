@@ -1,0 +1,279 @@
+schema_version: 1
+table:
+  size_xy_m:
+  - 1.8
+  - 0.75
+  origin: lower-left tabletop corner, viewed from above
+  x_positive: right
+  y_positive: up in top view
+  z_positive: vertically above tabletop
+  tabletop_z_m: 0
+  z_reference: Z=0 is plywood top (table +6.5 mm)
+T_table_world:
+- - 0.0
+  - -1.0
+  - 0.0
+  - 1.4855
+- - 1.0
+  - 0.0
+  - 0.0
+  - 0.5397
+- - 0.0
+  - 0.0
+  - 1.0
+  - 0.001
+- - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+robot_registration:
+  source: '2026-11-03 relocation: enclosure lower-left corner measured at table XY
+    [1.428,0.422] m (box 0.17 X x 0.20 Y, parallel to table, robot front -X as before);
+    same 0.001 m silicone lift; XY contact correction cleared (restart)'
+  j1_center_table_m:
+  - 1.4678
+  - 0.522
+  - 0.1608
+  urdf_sha256: e308ec47016140aa2a115560530aa25817f3bdb612db52174680fa84e7119611
+  model_sha256: e5eeeab4b3e0a9b457bc611349e66559cb8f5c9d390be2066cb02d5a182e72f2
+  tcp_physically_validated: false
+  measured_enclosure_height_m: 0.095
+  measured_enclosure_top_z_table_m: 0.096
+  height_correction_pending: false
+  xy_contact_correction_m:
+  - 0.0
+  - 0.0
+  xy_contact_correction_status: Cleared 2026-11-03 to restart calibration from scratch
+    after base tightening and robot re-alignment (previous 3-point check gave X +3
+    mm, but base had play); keep sag_compensation only
+  global_z_lift_m: 0.001
+  tcp_calibration:
+    status: provisional, downward cup orientation only
+    previous_tcp_xyz_m:
+    - 0.104
+    - -0.0004756
+    - 0.0
+    delta_tool_x_m: 0.0117
+    basis: ID5 model-minus-actual Z 13.12mm; ID6 13.01mm; cause not isolated; visual
+      meshes unchanged
+    refinement: User measured 1.3mm clearance over centered 60mm object on turntable;
+      shortened TCP by 1.3mm; contact validation pending
+    height_check_20261103: 'Encoder FK tip z 59.0 mm at turntable top 59 mm: user
+      saw cup just touching, not compressed -> TCP length OK'
+  silicone_pad_thickness_m: 0.001
+  silicone_pad_use: Under entire electronics enclosure; same installation at competition
+    per user
+  enclosure_corner_table_m:
+  - 1.428
+  - 0.422
+  - 0.0
+  sag_compensation:
+    tool_tilt_away_from_j1_deg: 3.0
+    status: '2026-11-03 verified at turntable only (photo + user): cup looks vertical,
+      center 2.8 mm from disc center; not yet used by pick_place code'
+    method: IK target tool axis tilted 3 deg away from J1 (tip outward) with TCP position
+      unchanged
+fixed_markers:
+  dictionary: DICT_4X4_50
+  black_edge_m: 0.07
+  centers_table_m:
+    '10':
+    - 1.095
+    - 0.61
+    - 0
+    '11':
+    - 1.0
+    - 0.7
+    - 0
+    '7':
+    - 1.377
+    - 0.507
+    - 0
+    '8':
+    - 1.147
+    - 0.432
+    - 0
+  canonical_top_direction: +Y
+  surface_normal: +Z
+turntable:
+  axis_point_table_m:
+  - 1.251
+  - 0.514
+  - 0.059
+  axis_direction_table:
+  - 0.0
+  - 0.0
+  - 1.0
+  diameter_m: 0.15
+  top_height_m: 0.059
+  collision_representation: conservative full cylinder under disc; actual rail and
+    motor housings not measured
+  marker_id: 0
+  marker_black_edge_m: 0.1
+  center_measured: 2026-11-03 white sticker center
+pads:
+  pad1:
+    center_table_m:
+    - 1.246
+    - 0.667
+    - 0.0575
+    diameter_m: 0.1
+    marker_id: 6
+    black_edge_m: 0.06
+    validated_for_robot_execution: false
+    note: inner (wall side), small objects
+    center_measured: 2026-11-03 white sticker center (cup checks also measured from
+      white sticker edges)
+  pad2:
+    center_table_m:
+    - 1.251
+    - 0.367
+    - 0.059
+    diameter_m: 0.1
+    marker_id: 5
+    black_edge_m: 0.06
+    validated_for_robot_execution: false
+    note: front (camera side), large objects
+    marker_offset_from_center_m:
+    - 0.001
+    - 0.0
+    center_measured: 2026-11-03 white sticker center (cup checks also measured from
+      white sticker edges)
+    marker_offset_note: black ArUco square sits +1 mm X inside the white sticker;
+      used only by camera_calib check
+cameras:
+  cam1:
+    T_table_optical:
+    - - 0.9997065736048799
+      - -0.021107799393690386
+      - -0.011883917533664906
+      - 1.2105128226466333
+    - - -0.005310224138438489
+      - -0.6696346883711745
+      - 0.7426716539963267
+      - 0.10574642133115228
+    - - -0.023634047702219132
+      - -0.7423906282643897
+      - -0.669550287024368
+      - 0.46641753510132883
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    optical_frame: cam1_color_optical_frame
+    camera_root_frame: cam1_link
+    camera_info:
+      K:
+      - - 615.4771728515625
+        - 0.0
+        - 313.69927978515625
+      - - 0.0
+        - 615.1854248046875
+        - 241.54849243164062
+      - - 0.0
+        - 0.0
+        - 1.0
+      D:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      width: 640
+      height: 480
+      distortion_model: plumb_bob
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_143457_cam1adj2/view_000
+      ..
+    independently_validated: true
+    check_markers_mm:
+      '0': 3.5
+      '6': 2.3
+      '5': 1.8
+  cam2:
+    T_table_optical:
+    - - 0.9997276809873623
+      - -0.019914371000614866
+      - -0.012164772718012725
+      - 1.211095715779565
+    - - 0.006368274624583989
+      - -0.26868335313842345
+      - 0.9632075066280366
+      - 0.11692286929406143
+    - - -0.022450143561610392
+      - -0.9630226755242803
+      - -0.26848336536947676
+      - 0.20407806886424495
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+    optical_frame: cam2_color_optical_frame
+    camera_root_frame: cam2_link
+    camera_info:
+      K:
+      - - 611.5272216796875
+        - 0.0
+        - 314.2455139160156
+      - - 0.0
+        - 611.0509033203125
+        - 240.9235382080078
+      - - 0.0
+        - 0.0
+        - 1.0
+      D:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      width: 640
+      height: 480
+      distortion_model: plumb_bob
+    source: camera_calib fixed markers [7, 8, 10, 11]; views /home/wanjae/robot_ws/data/calib/20261103_061800/view_000
+      ..
+    independently_validated: true
+    check_markers_mm:
+      '0': 2.0
+      '5': 3.2
+collision:
+  below_table_guard_depth_m: 0.2
+  support_contact_clearance_m: 0.001
+  note: Table is a below-surface keepout volume, not measured tabletop thickness.
+    Guard top -1mm avoids coplanar support contact. No ACM collision exemptions.
+limitations:
+- Measured placements are provisional; robot TCP and absolute camera registration
+  not physically validated
+- Pad measurements chosen by repeatability, not proven absolute 5mm accuracy
+- Camera and holder bodies, turntable rail, cables, objects and held-object geometry
+  are not registered as collision objects; dimensions not supplied
+- No motion commands; workcell registration does not enable execution
+- 2026-11-03 relocation values are tape-measured by user; robot XY registration correction
+  cleared
+obstacles:
+  power_box:
+    min_table_m:
+    - 1.65
+    - -0.15
+    - 0.0
+    max_table_m:
+    - 1.9
+    - 0.4
+    - 0.3
+    note: 220V power box; arm hits it when J2 tilts back
+place_correction_m:
+  pad_ID5:
+  - 0.001
+  - -0.0054
+  turntable:
+  - 0.0017
+  - 0.0083
+  note: "2026-11-03 \uBE14\uB85D \uB4E4\uACE0 \uB193\uC744 \uB54C \uBC18\uBCF5\uD574\
+    \uC11C \uAC19\uC740 \uCABD\uC73C\uB85C \uCE58\uC6B0\uCE5C \uD3C9\uADE0(ID5 dx\
+    \ -1.0 dy +5.4, \uD134\uD14C\uC774\uBE14 dx -1.7 dy -8.3, \uAC01 4\uBC88, \uBC30\
+    \uC728 0.3)\uC744 \uBE80 \uAC12. \uC6D0\uC778 \uBBF8\uD655\uC815 (\uC758\uC2EC\
+    : \uB450 \uCE74\uBA54\uB77C\uAC00 \uBE14\uB85D \uC717\uBA74 \uC911\uC2EC\uC744\
+    \ 8~14 mm \uB2E4\uB974\uAC8C \uBD04). \uCE74\uBA54\uB77C \uCE21\uC815 \uBC29\uC2DD\
+    \xB7\uBE14\uB85D\xB7\uD558\uC911\uC774 \uBC14\uB00C\uBA74 \uB2E4\uC2DC \uAD6C\uD560\
+    \ \uAC83. pickplace_cycle\uC774 \uB193\uC744 \uBAA9\uD45C\uC5D0 \uB354\uD574 \uC500\
+    . ID6\uC740 \uC544\uC9C1 \uCE21\uC815 \uC548 \uD568 \u2192 \uBCF4\uC815 \uC5C6\
+    \uC74C"

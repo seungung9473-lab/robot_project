@@ -1,0 +1,8 @@
+{
+  "calibrations": {
+    "cam1": "/home/seungung9473/robot_ws/automation/camera_calibration/saved/20261101_140827_relocated_four_markers/cam1_table_calibration.json",
+    "cam2": "/home/seungung9473/robot_ws/automation/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json"
+  },
+  "independently_validated": false,
+  "note": "New placement calibration, turntable excluded"
+}

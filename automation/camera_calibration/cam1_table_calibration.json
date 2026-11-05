@@ -1,0 +1,96 @@
+{
+  "parent_frame": "table",
+  "child_frame": "cam1_color_optical_frame",
+  "transform_convention": "p_table = T_table_cam1_color_optical @ p_cam1_color_optical",
+  "T_table_cam1_color_optical": [
+    [
+      -0.999575340163656,
+      0.02912687315069601,
+      -0.0008744124735087788,
+      1.1385027391634772
+    ],
+    [
+      0.019393874435365138,
+      0.6425629550081196,
+      -0.7659874192737233,
+      0.643126450414937
+    ],
+    [
+      -0.021748953333341203,
+      -0.7656790934273285,
+      -0.6428549672493846,
+      0.4746633424464748
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "markers": {
+    "dictionary": "DICT_4X4_50",
+    "black_edge_m": 0.07,
+    "centers_table_m": {
+      "10": [
+        0.948,
+        0.154,
+        0
+      ],
+      "11": [
+        1.2425,
+        0.055,
+        0
+      ],
+      "7": [
+        1.213,
+        0.287,
+        0
+      ],
+      "8": [
+        0.8985,
+        0.049,
+        0
+      ]
+    },
+    "canonical_top_direction": "+Y",
+    "surface_normal": "+Z"
+  },
+  "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_140812_cam1_fixed/measurement.json",
+  "samples": 45,
+  "median_reprojection_rms_px": 1.1009372457729478,
+  "camera_position_sample_max_deviation_mm": 0.2993224437206932,
+  "camera_info": {
+    "K": [
+      [
+        615.4771728515625,
+        0.0,
+        313.69927978515625
+      ],
+      [
+        0.0,
+        615.1854248046875,
+        241.54849243164062
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "D": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "width": 640,
+    "height": 480,
+    "distortion_model": "plumb_bob"
+  },
+  "independently_validated": false,
+  "validated_for_robot_execution": false,
+  "robot_transform_available": false,
+  "note": "New camera placement; fixed markers 7,8,10,11 only; turntable marker excluded; no prior camera transforms reused"
+}

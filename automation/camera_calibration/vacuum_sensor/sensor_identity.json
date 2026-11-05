@@ -1,0 +1,24 @@
+{
+  "model_family": "XGZP6847A",
+  "signal_gpio": 10,
+  "interface": "analog ADC",
+  "full_part_number": null,
+  "pressure_range_kpa": null,
+  "supply_voltage_v": "existing documentation 5V, actual not measured",
+  "input_divider": "existing documentation says divided, ratio not verified",
+  "last_observed_raw_range": [
+    1770,
+    1775
+  ],
+  "last_observed_diff_range": [
+    26,
+    31
+  ],
+  "pressure_response_verified": true,
+  "kpa_conversion_enabled": false,
+  "datasheet": "https://cfsensor.com/wp-content/uploads/2022/11/XGZP6847A-Pressure-Sensor-V2.7.pdf",
+  "hold_diff": -400,
+  "release_diff": -50,
+  "grip_timeout_s": 5.0,
+  "threshold_status": "provisional from repeated manual suction tests; not kPa calibrated"
+}

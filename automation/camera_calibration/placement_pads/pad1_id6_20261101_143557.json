@@ -1,0 +1,31 @@
+{
+  "pad_id": "pad1",
+  "marker": {
+    "dictionary": "DICT_4X4_50",
+    "id": 6,
+    "black_edge_m": 0.06,
+    "center_is_placement_center": true
+  },
+  "frame_id": "table",
+  "measured_marker_center_table_m": [
+    1.097805614569502,
+    0.38441874573139295,
+    0.060096650798444784
+  ],
+  "placement_center_table_m": [
+    1.097805614569502,
+    0.38441874573139295,
+    0.059
+  ],
+  "placement_height_source": "user specified pad top is 5.9cm above tabletop",
+  "camera_calibration": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json",
+  "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_143530_cam2_pad6/measurement.json",
+  "samples": 45,
+  "cam1_observed": false,
+  "cam1_measurement_source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_143546_cam1_pad6/measurement.json",
+  "camera_position_sample_max_deviation_mm": 0.10606832108927731,
+  "measured_height_minus_supplied_height_mm": 1.096650798444787,
+  "status": "provisional single-camera measurement; not independently validated",
+  "validated_for_robot_execution": false,
+  "note": "Placement center is pad surface contact reference, not robot TCP release pose; object geometry and approach offset not set"
+}

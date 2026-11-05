@@ -1,0 +1,1 @@
+<library path="soarm4_fine_collision_adapter"><class name="soarm4_moveit_config/FineCollisionAdapter" type="soarm4_moveit_config::FineCollisionAdapter" base_class_type="planning_interface::PlanningResponseAdapter"><description>Fine mating zone checks for all planned trajectories, including RViz Plan.</description></class></library>

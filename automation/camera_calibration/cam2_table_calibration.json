@@ -1,0 +1,96 @@
+{
+  "parent_frame": "table",
+  "child_frame": "cam2_color_optical_frame",
+  "transform_convention": "p_table = T_table_cam2_color_optical @ p_cam2_color_optical",
+  "T_table_cam2_color_optical": [
+    [
+      -0.9998741855235196,
+      0.015631047911902937,
+      -0.0026987895164530262,
+      1.1391123053797378
+    ],
+    [
+      0.0071785959724888215,
+      0.29418376424395587,
+      -0.9557219159437125,
+      0.6366801641267892
+    ],
+    [
+      -0.014144994999719301,
+      -0.9556210458107506,
+      -0.2942589606452552,
+      0.18874572270658663
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "markers": {
+    "dictionary": "DICT_4X4_50",
+    "black_edge_m": 0.07,
+    "centers_table_m": {
+      "10": [
+        0.948,
+        0.154,
+        0
+      ],
+      "11": [
+        1.2425,
+        0.055,
+        0
+      ],
+      "7": [
+        1.213,
+        0.287,
+        0
+      ],
+      "8": [
+        0.8985,
+        0.049,
+        0
+      ]
+    },
+    "canonical_top_direction": "+Y",
+    "surface_normal": "+Z"
+  },
+  "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_140818_cam2_fixed/measurement.json",
+  "samples": 45,
+  "median_reprojection_rms_px": 1.5835918281235677,
+  "camera_position_sample_max_deviation_mm": 3.0039146422617953,
+  "camera_info": {
+    "K": [
+      [
+        611.5272216796875,
+        0.0,
+        314.2455139160156
+      ],
+      [
+        0.0,
+        611.0509033203125,
+        240.9235382080078
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "D": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "width": 640,
+    "height": 480,
+    "distortion_model": "plumb_bob"
+  },
+  "independently_validated": false,
+  "validated_for_robot_execution": false,
+  "robot_transform_available": false,
+  "note": "New camera placement; fixed markers 7,8,10,11 only; turntable marker excluded; no prior camera transforms reused"
+}

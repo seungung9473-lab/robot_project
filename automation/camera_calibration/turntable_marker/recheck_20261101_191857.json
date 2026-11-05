@@ -1,0 +1,49 @@
+{
+  "status": "diagnostic only; no active calibration updated",
+  "current_angle_deg": null,
+  "cameras": {
+    "cam1": {
+      "fixed_ids": [
+        8,
+        10,
+        11
+      ],
+      "fixed_camera_position_delta_mm": 3.860966644910476,
+      "fixed_camera_rotation_delta_deg": 0.29027611701574013,
+      "fixed_sample_spread_mm": 11.83860789486456,
+      "id0_frames": 45,
+      "id0_center_table_m": [
+        1.0943760896150587,
+        0.23152844460662753,
+        0.05807496379520222
+      ],
+      "id0_center_spread_mm": 17.112976306639798,
+      "sources": [
+        "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191843_cam1_fixed/measurement.json",
+        "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191827_cam1_turntable/measurement.json"
+      ]
+    },
+    "cam2": {
+      "fixed_ids": [
+        7,
+        8,
+        10,
+        11
+      ],
+      "fixed_camera_position_delta_mm": 2.9027711393409383,
+      "fixed_camera_rotation_delta_deg": 0.3468077894153943,
+      "fixed_sample_spread_mm": 1.386076138977788,
+      "id0_frames": 45,
+      "id0_center_table_m": [
+        1.095730535755227,
+        0.23346814121526865,
+        0.058747834505531255
+      ],
+      "id0_center_spread_mm": 0.2069464235323013,
+      "sources": [
+        "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191827_cam2_fixed/measurement.json",
+        "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/measurements/20261101_191828_cam2_turntable/measurement.json"
+      ]
+    }
+  }
+}

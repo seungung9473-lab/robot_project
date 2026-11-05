@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "pitch_offset_deg": 2.0,
+  "max_abs_pitch_deg": 2.0,
+  "nominal_tool_axis_table": [
+    0.0,
+    0.0,
+    -1.0
+  ],
+  "estimated_relative_sag_pitch_deg": 2.035005919023997,
+  "uncontrolled_lateral_component_deg": 2.136769206226465,
+  "source": "suction_diagnosis/press10_20261101_205717/analysis/pose_results.json",
+  "scope": "execute_contact.py only; same box, cup and placement; not a general payload model",
+  "physically_validated": false,
+  "applied_once_from_nominal_axis": true,
+  "tcp_xyz_preserved_by_ik": true,
+  "last_physical_trial": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/reconstruction/suction_diagnosis/sag2deg_20261101_211131",
+  "trial_execution_completed": true,
+  "validation_status": "2deg physical trial completed; residual held tilt estimate2.9deg; no confirmed improvement versus1.5deg",
+  "last_comparison_report": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/reconstruction/suction_diagnosis/sag2deg_20261101_211131/comparison.json"
+}

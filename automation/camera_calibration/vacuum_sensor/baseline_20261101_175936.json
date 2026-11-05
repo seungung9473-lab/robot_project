@@ -1,0 +1,250 @@
+{
+  "mode": "passive only, no commands written",
+  "samples": 37,
+  "rows": [
+    {
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1778,
+      "diff": 34,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1775,
+      "diff": 31,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1774,
+      "diff": 30,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1780,
+      "diff": 36,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1775,
+      "diff": 31,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1768,
+      "diff": 24,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1764,
+      "diff": 20,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1769,
+      "diff": 25,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1768,
+      "diff": 24,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1767,
+      "diff": 23,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    }
+  ],
+  "summary": {
+    "raw": {
+      "min": 1764,
+      "max": 1780,
+      "mean": 1771.1081081081081
+    },
+    "diff": {
+      "min": 20,
+      "max": 36,
+      "mean": 27.10810810810811
+    },
+    "pump": {
+      "min": 0,
+      "max": 0,
+      "mean": 0
+    },
+    "valve": {
+      "min": 0,
+      "max": 0,
+      "mean": 0
+    }
+  }
+}

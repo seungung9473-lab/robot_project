@@ -1,0 +1,78 @@
+{
+  "object_nominal_dimensions_mm": [
+    50,
+    50,
+    60
+  ],
+  "method": "30 fresh RGB-aligned depth frames per camera; local tabletop plane fitted without camera extrinsics; top-plane distance compared to nominal height",
+  "camera_results": {
+    "cam1": {
+      "camera": "cam1",
+      "samples": 30,
+      "target_bbox_xyxy": [
+        474,
+        170,
+        535,
+        236
+      ],
+      "object_valid_depth_fraction": 0.9498057962354347,
+      "table_plane_inliers": 2588,
+      "table_plane_rms_mm": 0.9842505038830266,
+      "measured_height_mm": 60.52730215768559,
+      "expected_height_mm": 60.0,
+      "height_error_mm": 0.5273021576855896,
+      "height_repeat_std_mm": 0.3427195422626208,
+      "visible_top_extent_mm": [
+        43.98319125175476,
+        47.06957936286926
+      ],
+      "extent_note": "Visible valid depth extent only, not a verified full box dimension",
+      "top_surface_pixels": 860,
+      "table_plane_camera": [
+        -0.019055237931094537,
+        -0.7742958351727989,
+        -0.6325368428332432,
+        0.4713633402942425
+      ]
+    },
+    "cam2": {
+      "camera": "cam2",
+      "samples": 30,
+      "target_bbox_xyxy": [
+        509,
+        182,
+        583,
+        256
+      ],
+      "object_valid_depth_fraction": 0.9496108152396558,
+      "table_plane_inliers": 2366,
+      "table_plane_rms_mm": 0.6252395693670992,
+      "measured_height_mm": 60.91703259180262,
+      "expected_height_mm": 60.0,
+      "height_error_mm": 0.9170325918026165,
+      "height_repeat_std_mm": 0.3017866205632754,
+      "visible_top_extent_mm": [
+        31.39656037092209,
+        45.690812170505524
+      ],
+      "extent_note": "Visible valid depth extent only, not a verified full box dimension",
+      "top_surface_pixels": 559,
+      "table_plane_camera": [
+        -0.019513064316361264,
+        -0.9584417954141623,
+        -0.2846200364068956,
+        0.186915559310179
+      ]
+    }
+  },
+  "limits": [
+    "Single object position, not whole workspace accuracy validation",
+    "Visible valid top surface extents are not verified object width/length",
+    "30 frames per camera, not 30-second stability test",
+    "Camera-to-table and robot transforms not validated by this height test"
+  ],
+  "current_streams": {
+    "cam1": "color only",
+    "cam2": "color plus aligned depth 640x480x6"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "pads": {
+    "pad1": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/placement_pads/pad1_selected.json",
+    "pad2": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/placement_pads/pad2_selected.json"
+  },
+  "absolute_xy_accuracy_verified": false,
+  "validated_for_robot_execution": false
+}

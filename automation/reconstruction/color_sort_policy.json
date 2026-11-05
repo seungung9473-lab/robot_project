@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "requested_object_count": 3,
+  "identity_source": "Gemini image detection + measured RGB-D association + SAM2 masks",
+  "routes": {
+    "red": {
+      "robot_side": "right",
+      "pad_id": 6
+    },
+    "green": {
+      "robot_side": "left",
+      "pad_id": 5
+    },
+    "gray": {
+      "robot_side": "right",
+      "pad_id": 6
+    }
+  },
+  "unknown_color": "stop; no guessing",
+  "same_color_instances": "keep separate object identities",
+  "occupied_destination": "jointly reserve non-overlapping positions for all same-destination objects before first pick; verify remaining region before each placement; do not stack",
+  "grip_diff": -200,
+  "retry_limit": 3,
+  "retry_step_m": 0.001,
+  "max_face_tilt_deg": 90,
+  "require_fresh_contact_verification": false,
+  "require_collision_checked_motion": true,
+  "supported_object_count": {
+    "min": 1,
+    "max": 8
+  },
+  "obstacle_padding_m": 0.001,
+  "plane_inlier_tolerance_mm": 2.5,
+  "patch_rms_limit_mm": 2.5,
+  "cup_edge_margin_mm": 3.0,
+  "destination_layout": {
+    "plan_all_objects_before_first_pick": true,
+    "same_color_all_to_assigned_pad": true,
+    "stacking": false,
+    "pad_edge_margin_m": 0.002,
+    "between_objects_gap_m": 0.002,
+    "planner": "pad_packing.py",
+    "executor_plan_argument": "--placement-plan",
+    "executor_identity_argument": "--placement-object"
+  },
+  "contact_execution_mode": "precomputed_prediction_only",
+  "post_rotation_camera_verification": false,
+  "post_rotation_surface_refit": false,
+  "require_pre_rotation_geometry_verification": true,
+  "hold_diff": -200
+}

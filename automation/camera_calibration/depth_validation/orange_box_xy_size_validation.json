@@ -1,0 +1,54 @@
+{
+  "nominal_box_mm": [
+    50,
+    50,
+    60
+  ],
+  "results": {
+    "cam1": {
+      "source_capture": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/depth_validation/20261101_145243_cam1",
+      "method": "Minimum-area rectangle of observed valid depth points near fitted visible top plane; no nominal size constraint, no depth-hole filling",
+      "visible_depth_extent_mm": [
+        47.56159335374832,
+        50.26596784591675
+      ],
+      "nominal_size_mm": [
+        50,
+        50
+      ],
+      "extent_difference_from_nominal_mm": [
+        -2.4384066462516785,
+        0.26596784591674805
+      ],
+      "full_boundary_verified": false,
+      "interpretation": "Visible top depth extent agrees within 2.5mm, but missing edge data can underestimate full width",
+      "size_validation_status": "partial agreement, full edges unverified",
+      "top_plane_fit_data": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/depth_validation/20261101_145243_cam1/top_size_points.npz"
+    },
+    "cam2": {
+      "source_capture": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/depth_validation/20261101_145225_cam2",
+      "method": "Minimum-area rectangle of observed valid depth points near fitted visible top plane; no nominal size constraint, no depth-hole filling",
+      "visible_depth_extent_mm": [
+        29.76086176931858,
+        67.03546643257141
+      ],
+      "nominal_size_mm": [
+        50,
+        50
+      ],
+      "extent_difference_from_nominal_mm": [
+        -20.23913823068142,
+        17.03546643257141
+      ],
+      "full_boundary_verified": false,
+      "interpretation": "Extent inconsistent with nominal object; partial grazing-view depth and edge artefacts prevent reliable size validation",
+      "size_validation_status": "not validated",
+      "top_plane_fit_data": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/depth_validation/20261101_145225_cam2/top_size_points.npz"
+    }
+  },
+  "limitations": [
+    "Results are from stored captures at the turntable position",
+    "Only visible valid depth points used; full boundary and absolute scale across workspace not independently verified",
+    "No camera or motor settings changed"
+  ]
+}

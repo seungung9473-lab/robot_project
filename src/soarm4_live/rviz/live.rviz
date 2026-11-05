@@ -1,0 +1,213 @@
+Panels:
+- Class: rviz_common/Displays
+  Help Height: 70
+  Name: Displays
+  Property Tree Widget:
+    Expanded: null
+    Splitter Ratio: 0.5
+  Tree Height: 815
+Visualization Manager:
+  Class: ''
+  Displays:
+  - Alpha: 0.5
+    Cell Size: 0.05000000074505806
+    Class: rviz_default_plugins/Grid
+    Color: 160; 160; 164
+    Enabled: true
+    Line Style:
+      Line Width: 0.029999999329447746
+      Value: Lines
+    Name: Grid
+    Normal Cell Count: 0
+    Offset:
+      X: 0
+      Y: 0
+      Z: 0
+    Plane: XY
+    Plane Cell Count: 20
+    Reference Frame: <Fixed Frame>
+    Value: true
+  - Alpha: 1
+    Class: rviz_default_plugins/RobotModel
+    Collision Enabled: false
+    Description File: ''
+    Description Source: Topic
+    Description Topic:
+      Depth: 1
+      Durability Policy: Transient Local
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Value: /soarm4_live/robot_description
+    Enabled: true
+    Links:
+      All Links Enabled: true
+      Expand Joint Details: false
+      Expand Link Details: false
+      Expand Tree: false
+      Link Tree Style: Links in Alphabetic Order
+      base_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      base_link_box_plate_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      base_link_box_wall_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      base_link_print_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      base_link_servo_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      cup_tip:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      electronics_base_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      link1:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      link1_print_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      link1_servo_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      link2:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      link2_print_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      link2_servo_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      link3:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      link3_print_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      link3_servo_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      tool_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+      tool_link_alu_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      tool_link_cup_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      tool_link_print_visual_link:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+        Value: true
+      world:
+        Alpha: 1
+        Show Axes: false
+        Show Trail: false
+    Mass Properties:
+      Inertia: false
+      Mass: false
+    Name: Actual robot - measured encoders
+    TF Prefix: ''
+    Update Interval: 0
+    Value: true
+    Visual Enabled: true
+  - Class: rviz_default_plugins/Marker
+    Name: Live feedback status
+    Enabled: true
+    Value: true
+    Topic:
+      Value: /soarm4_live/live_status
+      Depth: 10
+      Durability Policy: Volatile
+      Reliability Policy: Reliable
+      History Policy: Keep Last
+  Enabled: true
+  Global Options:
+    Background Color: 235; 238; 242
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+  - Class: rviz_default_plugins/Interact
+    Hide Inactive Objects: true
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/Select
+  - Class: rviz_default_plugins/FocusCamera
+  - Class: rviz_default_plugins/Measure
+    Line color: 128; 128; 0
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 0.75
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: -0.029553567990660667
+        Y: 0.04041123390197754
+        Z: 0.14722472429275513
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.5
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.9
+    Saved: null
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 850
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd000000010000000000000156000003b5fc0200000001fb000000100044006900730070006c006100790073010000003f000003b5000000cc00ffffff00000264000003b500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Width: 1200
+  X: 0
+  Y: 0

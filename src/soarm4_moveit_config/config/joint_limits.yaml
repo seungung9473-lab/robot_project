@@ -1,0 +1,24 @@
+pick_place_velocity_scaling_factor: 0.5
+default_acceleration_scaling_factor: 0.15
+default_velocity_scaling_factor: 0.15
+joint_limits:
+  joint1:
+    has_acceleration_limits: true
+    has_velocity_limits: true
+    max_acceleration: 1.0
+    max_velocity: 2.36
+  joint2:
+    has_acceleration_limits: true
+    has_velocity_limits: true
+    max_acceleration: 1.0
+    max_velocity: 2.36
+  joint3:
+    has_acceleration_limits: true
+    has_velocity_limits: true
+    max_acceleration: 1.0
+    max_velocity: 2.36
+  joint4:
+    has_acceleration_limits: true
+    has_velocity_limits: true
+    max_acceleration: 1.0
+    max_velocity: 3.3

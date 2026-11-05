@@ -1,0 +1,5 @@
+{
+  "disabled": "allow_execution:=true 모드에서만 홈 이동 가능합니다",
+  "over_5_degrees": "j1: 홈까지 6.00°로 초기 시험 5° 제한을 넘습니다",
+  "outside_limit": "j1 현재 각도 229.18°가 계획 리미트 밖입니다"
+}

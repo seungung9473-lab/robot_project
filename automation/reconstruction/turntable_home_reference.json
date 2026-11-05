@@ -1,0 +1,22 @@
+{
+  "zero_count": 4095,
+  "previous_zero_count": 2047,
+  "source": "User confirmed scan-start direction as home; moved and read-back verified",
+  "homing_offset_preserved": -4070,
+  "return_after_successful_scan_deg": 0.0,
+  "next_scan_angles_deg": [
+    0,
+    -30,
+    -60,
+    -90,
+    -120,
+    -150,
+    -180,
+    -210,
+    -240,
+    -270,
+    -300,
+    -330
+  ],
+  "note": "Single-turn mode: from endpoint 4095, use decreasing angles; no automatic wrap. Existing capture metadata keeps original zero2047."
+}
