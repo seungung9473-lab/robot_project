@@ -11,7 +11,7 @@ def validate_polygon(points,width,height):
     if len(points)<3:raise ValueError('작업 영역 꼭짓점을 3개 이상 지정하세요')
     p=np.array(points,dtype=np.float64)
     if p.shape!=(len(points),2) or not np.isfinite(p).all():raise ValueError('잘못된 작업 영역')
-    if (p[:,0]<0).any() or (p[:,0]>=width).any() or (p[:,1]<0).any() or (p[:,1]>=height).any():raise ValueError('영역이 영상 밖입니다')
+    if (p[:,0]<0) .any() or (p[:,0]>=width).any() or (p[:,1]<0).any() or (p[:,1]>=height).any():raise ValueError('영역이 영상 밖입니다')
     if abs(cv2.contourArea(p.astype(np.float32)))<100:raise ValueError('작업 영역이 너무 작습니다')
     # Reject crossing edges rather than silently filling an unintended polygon.
     def orient(a,b,c):return float((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))
