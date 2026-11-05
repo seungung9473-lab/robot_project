@@ -1,7 +1,0 @@
-{
-  "calibrations": {
-    "cam1": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261030_213506_two_markers/cam1_table_calibration.json",
-    "cam2": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261030_213506_two_markers/cam2_table_calibration.json"
-  },
-  "independently_validated": false
-}

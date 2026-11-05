@@ -1,8 +1,0 @@
-{
-  "calibrations": {
-    "cam1": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261030_220606_three_markers/cam1_table_calibration.json",
-    "cam2": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261030_220606_three_markers/cam2_table_calibration.json"
-  },
-  "independently_validated": false,
-  "note": "Both cameras fitted from simultaneous observations of markers 10,11,7; no independent validation or robot transform yet"
-}
