@@ -1,0 +1,78 @@
+"""Execute only a fully reviewed sequence; stop on any stage failure.
+
+Contact points/angles are never refitted or visually checked after rotation.
+"""
+import argparse,json,sys,subprocess,time,fcntl,math
+from pathlib import Path
+import numpy as np,yaml
+from batch_search import require_complete
+from batch_inputs import fingerprints
+R=Path(__file__).resolve().parent
+from test_data_recorder import start_trial
+
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('plan',type=Path);ap.add_argument('--execute',action='store_true');a=ap.parse_args();path=a.plan.resolve();plan=json.loads(path.read_text());require_complete(plan)
+ if not a.execute:print('Validated complete batch; no movement. Add --execute to run.');return
+ source=Path(plan['source_scan']);trial=start_trial('batch_execution',physical=True,source=source);trial.attach(path)
+ from expiry_policy import validate_route
+ routes={o['object']:o for o in json.loads((source/'color_sort_plan.json').read_text())['objects']}
+ for stage in plan['stages']:validate_route(routes[stage['object']])
+ lock=(R/'scan_pick_cycle.lock').open('w');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ if plan['input_fingerprints']!=fingerprints(source):raise RuntimeError('Scan/configuration/executor changed; plan the complete batch again')
+ if time.time()-plan['created_time']>1800 or time.time()-(source/'session.json').stat().st_mtime>1800:raise RuntimeError('Batch or scan expired; rescan/replan')
+ import rclpy
+ from sensor_msgs.msg import JointState
+ from std_msgs.msg import Int32
+ from soarm_turntable.scan import Scanner
+ from soarm4_workcell.camera_calib import capture
+ rclpy.init();guard=rclpy.create_node('batch_initial_guard');feedback={};names=['joint'+str(i) for i in range(1,5)]
+ guard.create_subscription(JointState,'/joint_states',lambda m:feedback.update(q=[m.position[m.name.index(k)] for k in names],qt=time.monotonic()) if all(k in m.name for k in names) else None,10);guard.create_subscription(Int32,'/vacuum/diff',lambda m:feedback.update(diff=m.data,pt=time.monotonic()),10)
+ try:
+  end=time.monotonic()+15
+  while time.monotonic()<end:
+   rclpy.spin_once(guard,timeout_sec=.05)
+   if 'q' in feedback and 'diff' in feedback and time.monotonic()-feedback['qt']<.3 and time.monotonic()-feedback['pt']<.5:break
+  if 'q' not in feedback or 'diff' not in feedback or time.monotonic()-feedback.get('qt',0)>.3 or time.monotonic()-feedback.get('pt',0)>.5:raise RuntimeError('Fresh initial joint/pressure feedback missing')
+  if feedback['diff']<=-200:raise RuntimeError('Possible held object; no automatic batch start')
+  if np.max(abs(np.array(feedback['q'])-[0,math.pi,-math.pi,0]))>math.radians(1):raise RuntimeError('Start the batch from the verified home pose')
+ finally:guard.destroy_node();rclpy.shutdown()
+ plan['execution_performed']=True;plan['execution_status']='running'
+ def save():path.write_text(json.dumps(plan,ensure_ascii=False,indent=2))
+ save()
+ try:
+  for index,stage in enumerate(plan['stages']):
+   validate_route(routes[stage['object']])
+   prep=Path(stage['prepared_session']);manifest=json.loads((prep/'session.json').read_text());completed_path=source/'completed_placements.json';completed=json.loads(completed_path.read_text()) if completed_path.exists() else {}
+   expected=set(plan['already_completed'])|{x['object'] for x in plan['stages'][:index]}
+   if set(completed)!=expected:raise RuntimeError('Actual completed objects differ from reviewed batch')
+   # Prior placements must match the virtual obstacles used for all-stage review.
+   for earlier in plan['stages'][:index]:
+    if earlier.get('destination')=='trash_drop':continue
+    actual_prep=Path(completed[earlier['object']]['prepared_session']);results=list(actual_prep.glob('placement_left_*/execution.json'))
+    if len(results)!=1:raise RuntimeError('Ambiguous prior placement result')
+    actual=json.loads(results[0].read_text());T=np.asarray(actual['predicted_placed_object_pose_table']);expected_T=np.asarray(earlier['placement']['pose_table'])
+    angular=math.acos(np.clip((np.trace(T[:3,:3]@expected_T[:3,:3].T)-1)/2,-1,1))
+    if np.linalg.norm(T[:3,3]-expected_T[:3,3])>.003 or angular>math.radians(1):raise RuntimeError('Prior placed pose changed; stop before next stage')
+   trial.event('stage_start',number=index+1,object=stage['object'],pad_id=stage['pad_id'],destination=stage.get('destination','pad'))
+   print('BATCH STAGE',index+1,stage['object'],'-> ID',stage['pad_id'],flush=True)
+   if stage.get('destination')!='trash_drop':capture(str(prep/'pre_rotation_observation'),1)
+   manifest.update(contact_execution_mode='precomputed_prediction_only',pre_rotation_observation_time=time.time());(prep/'session.json').write_text(json.dumps(manifest,indent=2))
+   rclpy.init();scanner=Scanner()
+   try:
+    end=time.monotonic()+15
+    while (not scanner.arm or not scanner.states) and time.monotonic()<end:scanner.spin()
+    end=time.monotonic()+1
+    while time.monotonic()<end:scanner.spin()
+    scanner.arm_reference=list(scanner.arm[1]);state=scanner.state();scanner.reference_zero=state['zero_count'];scanner.reference_stop=state['stop_generation'];scanner.guard_arm()
+    if state['zero_count']!=manifest['return_to_zero']['state']['zero_count']:raise RuntimeError('Turntable zero changed')
+    scanner.move(float(stage['angle_deg']),60);scanner.wait_stable()
+   except BaseException:scanner.stop();raise
+   finally:scanner.destroy_node();rclpy.shutdown()
+   command=[sys.executable,str(R/'verified_place_left.py'),str(prep),'--inclined','--pad',str(stage['pad_id'] if stage['pad_id'] is not None else 5),'--execute']
+   if stage.get('placement_plan'):command+=['--placement-plan',stage['placement_plan'],'--placement-object',stage['object']]
+   subprocess.run(command,check=True)
+   completed[stage['object']]={'pad_id':stage['pad_id'],'destination':stage.get('destination','pad'),'prepared_session':str(prep),'completed_time':time.time()};temporary=completed_path.with_suffix('.tmp');temporary.write_text(json.dumps(completed,indent=2));temporary.replace(completed_path);stage['execution_status']='complete';save()
+  plan['execution_status']='complete';save()
+ except BaseException as exc:
+  plan.update(execution_status='stopped',error=str(exc),notice='No automatic retry/restart/release after a stage error');save();raise
+if __name__=='__main__':main()

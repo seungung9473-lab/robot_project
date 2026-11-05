@@ -1,0 +1,20 @@
+{
+  "frame_id": "table",
+  "enclosure_reference": "lower-left corner viewed from above, as described by user",
+  "corner_xy_m": [
+    1.3,
+    0.15
+  ],
+  "corner_z_m": 0.0,
+  "enclosure_yaw_rad": null,
+  "user_orientation_description": "robot faces turntable",
+  "status": "anchor confirmed; enclosure yaw correspondence pending geometry check",
+  "pending": [
+    "Which vertical level of enclosure corner was measured",
+    "Enclosure edge orientation relative to table axes",
+    "Corresponding enclosure CAD corner identification"
+  ],
+  "validated_for_robot_execution": false,
+  "corner_vertical_reference": "bottom corner contacting tabletop",
+  "enclosure_edges_parallel_table_axes": true
+}

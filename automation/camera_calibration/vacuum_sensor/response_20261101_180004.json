@@ -1,0 +1,510 @@
+{
+  "sensor": "XGZP6847A",
+  "gpio": 10,
+  "test": "2s suction, then pump off and vent; no motor movement",
+  "summary": {
+    "baseline": {
+      "samples": 5,
+      "raw": {
+        "min": 1764,
+        "max": 1776,
+        "median": 1770
+      },
+      "diff": {
+        "min": -1,
+        "max": 11,
+        "median": 5
+      },
+      "pump": {
+        "min": 0,
+        "max": 0,
+        "median": 0
+      },
+      "valve": {
+        "min": 0,
+        "max": 0,
+        "median": 0
+      }
+    },
+    "suction": {
+      "samples": 10,
+      "raw": {
+        "min": 1175,
+        "max": 1605,
+        "median": 1240.5
+      },
+      "diff": {
+        "min": -590,
+        "max": -160,
+        "median": -524.5
+      },
+      "pump": {
+        "min": 1000,
+        "max": 1000,
+        "median": 1000.0
+      },
+      "valve": {
+        "min": 0,
+        "max": 0,
+        "median": 0.0
+      }
+    },
+    "release": {
+      "samples": 8,
+      "raw": {
+        "min": 1760,
+        "max": 1769,
+        "median": 1768.0
+      },
+      "diff": {
+        "min": -5,
+        "max": 4,
+        "median": 3.0
+      },
+      "pump": {
+        "min": 0,
+        "max": 0,
+        "median": 0.0
+      },
+      "valve": {
+        "min": 500,
+        "max": 500,
+        "median": 500.0
+      }
+    },
+    "after_release": {
+      "samples": 5,
+      "raw": {
+        "min": 1769,
+        "max": 1774,
+        "median": 1770
+      },
+      "diff": {
+        "min": 4,
+        "max": 9,
+        "median": 5
+      },
+      "pump": {
+        "min": 0,
+        "max": 0,
+        "median": 0
+      },
+      "valve": {
+        "min": 0,
+        "max": 0,
+        "median": 0
+      }
+    }
+  },
+  "rows": [
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.001044060001732,
+      "raw": 1774,
+      "diff": 30,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.001197699999466,
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.001340003000223,
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0014758159995836,
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.001609955001186,
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0017375520001224,
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.001976531002583,
+      "raw": 1775,
+      "diff": 31,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.002111772002536,
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0022410870005842,
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0023610690004716,
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.002479836002749,
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.002602533000754,
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0027156560026924,
+      "raw": 1773,
+      "diff": 29,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.002849155000149,
+      "raw": 1763,
+      "diff": 19,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0029643350026163,
+      "raw": 1770,
+      "diff": 26,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.0030872950010234,
+      "raw": 1776,
+      "diff": 32,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.003198214002623,
+      "raw": 1772,
+      "diff": 28,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.003307817001769,
+      "raw": 1771,
+      "diff": 27,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.2006109210014984,
+      "raw": 1766,
+      "diff": 22,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.4009254400007194,
+      "raw": 1767,
+      "diff": 23,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.6006658370024525,
+      "raw": 1768,
+      "diff": 24,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 2.800622115999431,
+      "raw": 1767,
+      "diff": 23,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "vent_before_zero",
+      "time_s": 3.0008060690015554,
+      "raw": 1767,
+      "diff": 23,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "baseline",
+      "time_s": 3.200619604001986,
+      "raw": 1764,
+      "diff": -1,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "baseline",
+      "time_s": 3.4008030879995204,
+      "raw": 1770,
+      "diff": 5,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "baseline",
+      "time_s": 3.600758312000835,
+      "raw": 1770,
+      "diff": 5,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "baseline",
+      "time_s": 3.800736749002681,
+      "raw": 1772,
+      "diff": 7,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "baseline",
+      "time_s": 4.000659244000417,
+      "raw": 1776,
+      "diff": 11,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 4.200765133002278,
+      "raw": 1605,
+      "diff": -160,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 4.400927970000339,
+      "raw": 1450,
+      "diff": -315,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 4.6006698590026645,
+      "raw": 1354,
+      "diff": -411,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 4.8006887570008985,
+      "raw": 1299,
+      "diff": -466,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 5.000706832001015,
+      "raw": 1255,
+      "diff": -510,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 5.2006972870003665,
+      "raw": 1226,
+      "diff": -539,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 5.400695807002194,
+      "raw": 1203,
+      "diff": -562,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 5.600680015002581,
+      "raw": 1196,
+      "diff": -569,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 5.800701733001915,
+      "raw": 1188,
+      "diff": -577,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "suction",
+      "time_s": 6.000722061002307,
+      "raw": 1175,
+      "diff": -590,
+      "pump": 1000,
+      "valve": 0
+    },
+    {
+      "phase": "release",
+      "time_s": 6.200884678000875,
+      "raw": 1760,
+      "diff": -5,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 6.400685464999697,
+      "raw": 1768,
+      "diff": 3,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 6.600839077000273,
+      "raw": 1764,
+      "diff": -1,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 6.800823658999434,
+      "raw": 1768,
+      "diff": 3,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 7.00078833400039,
+      "raw": 1768,
+      "diff": 3,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 7.20069123400026,
+      "raw": 1769,
+      "diff": 4,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 7.400658031001512,
+      "raw": 1768,
+      "diff": 3,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "release",
+      "time_s": 7.600843842999893,
+      "raw": 1769,
+      "diff": 4,
+      "pump": 0,
+      "valve": 500
+    },
+    {
+      "phase": "after_release",
+      "time_s": 7.800781865000317,
+      "raw": 1774,
+      "diff": 9,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "after_release",
+      "time_s": 8.000665171999572,
+      "raw": 1772,
+      "diff": 7,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "after_release",
+      "time_s": 8.20060871700116,
+      "raw": 1770,
+      "diff": 5,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "after_release",
+      "time_s": 8.400605390001147,
+      "raw": 1769,
+      "diff": 4,
+      "pump": 0,
+      "valve": 0
+    },
+    {
+      "phase": "after_release",
+      "time_s": 8.600610335000965,
+      "raw": 1769,
+      "diff": 4,
+      "pump": 0,
+      "valve": 0
+    }
+  ],
+  "pressure_kpa": "not calibrated"
+}

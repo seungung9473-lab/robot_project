@@ -1,0 +1,24 @@
+{
+  "camera": "cam1",
+  "ids_used": [
+    6
+  ],
+  "detected_ids": [
+    0,
+    7,
+    8,
+    10,
+    11,
+    37
+  ],
+  "layout_file": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/marker_layout.json",
+  "marker_layout_snapshot": {
+    "dictionary": "DICT_4X4_50",
+    "id": 6,
+    "black_edge_m": 0.06
+  },
+  "samples": [],
+  "rejected_high_reprojection_frames": 0,
+  "independently_validated": false,
+  "validated_for_robot_execution": false
+}

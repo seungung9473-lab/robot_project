@@ -1,0 +1,135 @@
+{
+  "status": "preliminary_not_applied",
+  "series_file": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/turntable_marker/axis_rescan_20261101_175211/series.json",
+  "angle_source": "user reported; encoder not read",
+  "cameras": {
+    "cam1": {
+      "used_angles_deg": [
+        45.0,
+        135.0
+      ],
+      "excluded_angles_deg": [
+        90.5,
+        180.5,
+        0.1
+      ],
+      "status": "insufficient stable angles"
+    },
+    "cam2": {
+      "used_angles_deg": [
+        45.0,
+        90.5,
+        135.0,
+        180.5,
+        0.1
+      ],
+      "excluded_angles_deg": [],
+      "status": "preliminary",
+      "axis_point_table_m": [
+        1.0949580776521153,
+        0.23156987070083696,
+        0.056858251456540915
+      ],
+      "axis_direction_table_positive_z": [
+        -0.0028253632053578167,
+        0.02524962461568826,
+        0.9996771847849308
+      ],
+      "axis_tilt_deg": 1.4558824537089534,
+      "pairwise_fit_rms_mm": 4.810219119707,
+      "pairwise_fit_max_mm": 8.499952645473215,
+      "marker_center_span_mm": [
+        1.4193812547174112,
+        8.470117242781516,
+        2.991561801142711
+      ],
+      "relative_rotations": [
+        {
+          "angles": [
+            45.0,
+            90.5
+          ],
+          "observed_rotation_deg": 45.26232538979642
+        },
+        {
+          "angles": [
+            45.0,
+            135.0
+          ],
+          "observed_rotation_deg": 89.56681858815658
+        },
+        {
+          "angles": [
+            45.0,
+            180.5
+          ],
+          "observed_rotation_deg": 135.46433340085255
+        },
+        {
+          "angles": [
+            45.0,
+            0.1
+          ],
+          "observed_rotation_deg": 45.27835532937042
+        },
+        {
+          "angles": [
+            90.5,
+            135.0
+          ],
+          "observed_rotation_deg": 44.320152764255084
+        },
+        {
+          "angles": [
+            90.5,
+            180.5
+          ],
+          "observed_rotation_deg": 90.2042698915143
+        },
+        {
+          "angles": [
+            90.5,
+            0.1
+          ],
+          "observed_rotation_deg": 90.52489170101362
+        },
+        {
+          "angles": [
+            135.0,
+            180.5
+          ],
+          "observed_rotation_deg": 45.9120360518393
+        },
+        {
+          "angles": [
+            135.0,
+            0.1
+          ],
+          "observed_rotation_deg": 134.8390438850083
+        },
+        {
+          "angles": [
+            180.5,
+            0.1
+          ],
+          "observed_rotation_deg": 179.27686124443375
+        }
+      ]
+    }
+  },
+  "physical_reference": {
+    "axis_point_table_m": [
+      1.095,
+      0.235,
+      0.059
+    ],
+    "axis_direction_table": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "source": "user physical measurements and confirmed vertical axis; retained independently of cameras",
+    "uncertainty": "height approximately 5.9cm; manual alignment precision unspecified",
+    "plate_diameter_m": 0.15
+  }
+}

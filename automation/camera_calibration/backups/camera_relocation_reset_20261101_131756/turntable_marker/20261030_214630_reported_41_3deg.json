@@ -1,0 +1,31 @@
+{
+  "reported_relative_rotation_deg": 41.3,
+  "angle_source": "user report; not encoder verified",
+  "rotation_axis_calibrated": false,
+  "cameras": {
+    "cam1": {
+      "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_214618_cam1/measurement.json",
+      "baseline_source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_214219_cam1/measurement.json",
+      "samples": 6,
+      "marker_center_table_m": [
+        1.0976173498614634,
+        0.24170424717491404,
+        0.06228154246286099
+      ],
+      "observed_orientation_change_deg": 39.74969106575631,
+      "adequate_samples": false
+    },
+    "cam2": {
+      "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_214611/measurement.json",
+      "baseline_source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_214217/measurement.json",
+      "samples": 35,
+      "marker_center_table_m": [
+        1.0958503019555255,
+        0.2357301026287616,
+        0.0558282019310421
+      ],
+      "observed_orientation_change_deg": 41.19966117489377,
+      "adequate_samples": true
+    }
+  }
+}

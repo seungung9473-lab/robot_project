@@ -1,0 +1,32 @@
+{
+  "camera": "cam2",
+  "samples": 30,
+  "K": [
+    611.5272216796875,
+    0.0,
+    314.2455139160156,
+    0.0,
+    611.0509033203125,
+    240.9235382080078,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "D": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "width": 640,
+  "height": 480,
+  "distortion_model": "plumb_bob",
+  "depth_encoding": "16UC1",
+  "expected_box_m": [
+    0.05,
+    0.05,
+    0.06
+  ],
+  "frame_id": "cam2_color_optical_frame"
+}

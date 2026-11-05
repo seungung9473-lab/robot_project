@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "trigger": "grip service returned failure with fresh pressure and actual motor feedback",
+  "retry_limit_per_object": 3,
+  "gap_reduction_m": 0.001,
+  "reference": "first failed contact actual encoder TCP; attempt1/2/3 are absolute1/2/3mm offsets along inward surface normal",
+  "direction": "toward observed suction plane along its normal",
+  "orientation": "preserve current orientation",
+  "goal_offset_accumulation": false,
+  "sensor_loss": "stop without additional approach",
+  "gap_measurement": "Relative motion uses measured joint feedback and current TCP calibration; no direct optical measurement of compliant cup-mouth gap",
+  "physical_gap_reduction_exactly_1mm_guaranteed": false,
+  "max_total_additional_approach_m": 0.003,
+  "pump_during_retry": "keep ON; sensor check after each1mm step",
+  "on_final_failure": "release and stop; no lift"
+}

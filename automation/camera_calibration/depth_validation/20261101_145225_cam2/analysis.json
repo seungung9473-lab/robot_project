@@ -1,0 +1,30 @@
+{
+  "support_reference": "turntable top, not tabletop",
+  "camera": "cam2",
+  "samples": 30,
+  "target_bbox_xyxy": [
+    328,
+    155,
+    431,
+    265
+  ],
+  "object_valid_depth_fraction": 0.9746451403185611,
+  "table_plane_inliers": 2800,
+  "table_plane_rms_mm": 0.9296154805331928,
+  "measured_height_mm": 57.25160441717496,
+  "expected_height_mm": 60.0,
+  "height_error_mm": -2.74839558282504,
+  "height_repeat_std_mm": 0.03202058803908424,
+  "visible_top_extent_mm": [
+    32.59790316224098,
+    65.50826132297516
+  ],
+  "extent_note": "Visible valid depth extent only, not a verified full box dimension",
+  "top_surface_pixels": 892,
+  "table_plane_camera": [
+    -0.007866164663724856,
+    -0.9501618738789548,
+    -0.31165772392212,
+    0.13778107747471832
+  ]
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>soarm_pipeline</name>
+  <version>0.1.0</version>
+  <description>Recorded multi-view reconstruction, expiry sorting and reviewed robot execution.</description>
+  <maintainer email="user@example.com">seungung9473</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>soarm4_description</exec_depend>
+  <exec_depend>soarm4_moveit_config</exec_depend>
+  <exec_depend>soarm4_workcell</exec_depend>
+  <exec_depend>soarm_bridge</exec_depend>
+  <exec_depend>soarm_turntable</exec_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

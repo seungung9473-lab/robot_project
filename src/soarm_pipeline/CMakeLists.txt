@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8)
+project(soarm_pipeline)
+find_package(ament_cmake REQUIRED)
+install(PROGRAMS scripts/expiry_sort.py DESTINATION lib/${PROJECT_NAME} RENAME expiry_sort)
+install(FILES README_KO.md DESTINATION share/${PROJECT_NAME})
+ament_package()

@@ -1,0 +1,30 @@
+{
+  "marker_id": 6,
+  "pad_center_table_m": [
+    1.097805614569502,
+    0.38441874573139295,
+    0.059
+  ],
+  "model_tcp_table_m": [
+    1.103831447995174,
+    0.38629677050105427,
+    0.07201034860924
+  ],
+  "user_actual_minus_marker_xy_m": [
+    0.0015,
+    0.0034
+  ],
+  "inferred_actual_tcp_xy_table_m": [
+    1.0993056145695022,
+    0.38781874573139297
+  ],
+  "actual_minus_model_xy_m": [
+    -0.004525833425671921,
+    0.0015219752303387013
+  ],
+  "z_gap_m": 0.0,
+  "status": "Recorded only; no correction applied",
+  "contact_condition": "User confirmed uncompressed contact",
+  "actual_tcp_z_from_measurement_m": 0.059,
+  "model_minus_actual_z_m": 0.013010348609239997
+}

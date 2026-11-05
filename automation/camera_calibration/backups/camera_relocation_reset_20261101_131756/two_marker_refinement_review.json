@@ -1,0 +1,214 @@
+{
+  "cam1": {
+    "old_calibration": {
+      "parent_frame": "table",
+      "child_frame": "cam1_color_optical_frame",
+      "transform_convention": "p_table = T_table_cam1_color_optical @ p_cam1_color_optical",
+      "T_table_cam1_color_optical": [
+        [
+          -0.9993468703752,
+          0.0034539365327520832,
+          0.035970863121704,
+          1.1270964646050992
+        ],
+        [
+          -0.03530798129404389,
+          0.11857926435659316,
+          -0.9923166352135729,
+          0.6467041988856406
+        ],
+        [
+          -0.007692797165665011,
+          -0.9929385823841652,
+          -0.11837986519966509,
+          0.1520573000628807
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "marker": {
+        "dictionary": "DICT_4X4_50",
+        "id": 10,
+        "edge_m": 0.07,
+        "center_table_m": [
+          0.946,
+          0.154,
+          0.0
+        ],
+        "printed_top_direction": "+Y",
+        "normal_direction": "+Z"
+      },
+      "table_frame": {
+        "origin": "lower-left tabletop corner viewed from above",
+        "x": "right",
+        "y": "up in top view",
+        "z": "up vertically",
+        "table_size_m": [
+          1.8,
+          0.75
+        ]
+      },
+      "assumptions": [
+        "Marker remains at previously supplied table position and canonical orientation",
+        "Marker surface assumed at table Z=0"
+      ],
+      "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_211833_cam1/measurement.json",
+      "samples": 35,
+      "camera_position_sample_max_deviation_mm": 7.702962346737855,
+      "median_reprojection_rms_px": 0.295424829556386,
+      "independently_validated": false,
+      "validated_for_robot_execution": false,
+      "robot_transform_available": false
+    },
+    "new_T": [
+      [
+        -0.9998136407437311,
+        0.015356024728142053,
+        0.011699413973108452,
+        1.1293218780553207
+      ],
+      [
+        -0.00980650368735931,
+        0.11802529089659097,
+        -0.992962166043704,
+        0.6181791187073394
+      ],
+      [
+        -0.016628778313372387,
+        -0.9928918486992042,
+        -0.11785270687803928,
+        0.14517857428934144
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "rms_px": 2.292361880057799,
+    "marker_rms_px": [
+      2.8842654319789998,
+      1.4801550243725312
+    ],
+    "id11_old_error_mm": [
+      13.280210729339048,
+      23.11208494649278,
+      3.6385674611607577
+    ],
+    "sources": [
+      "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_211833_cam1/measurement.json",
+      "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_212429_cam1/measurement.json"
+    ]
+  },
+  "cam2": {
+    "old_calibration": {
+      "parent_frame": "table",
+      "child_frame": "cam2_color_optical_frame",
+      "transform_convention": "p_table = T_table_cam2_color_optical @ p_cam2_color_optical",
+      "T_table_cam2_color_optical": [
+        [
+          -0.9999567665419493,
+          -0.000344271800216428,
+          0.009292283029299853,
+          1.1353874545565463
+        ],
+        [
+          -0.006690053794841291,
+          0.7206892885304572,
+          -0.6932259318416216,
+          0.6598354790491606
+        ],
+        [
+          -0.006458190705697475,
+          -0.6932581271607208,
+          -0.7206604338371971,
+          0.5292784933970788
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "marker": {
+        "dictionary": "DICT_4X4_50",
+        "id": 10,
+        "edge_m": 0.07,
+        "center_table_m": [
+          0.946,
+          0.154,
+          0.0
+        ],
+        "printed_top_direction": "+Y",
+        "normal_direction": "+Z"
+      },
+      "table_frame": {
+        "origin": "lower-left tabletop corner viewed from above",
+        "x": "right",
+        "y": "up in top view",
+        "z": "up vertically",
+        "table_size_m": [
+          1.8,
+          0.75
+        ]
+      },
+      "assumptions": [
+        "Marker remains at previously supplied table position and canonical orientation",
+        "Marker surface assumed at table Z=0"
+      ],
+      "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_211837/measurement.json",
+      "samples": 35,
+      "camera_position_sample_max_deviation_mm": 1.4854606856525263,
+      "median_reprojection_rms_px": 0.014501628143911604,
+      "independently_validated": false,
+      "validated_for_robot_execution": false,
+      "robot_transform_available": false
+    },
+    "new_T": [
+      [
+        -0.9987154829118462,
+        0.0435982285609738,
+        0.02581818464770435,
+        1.1159294098327739
+      ],
+      [
+        0.011292360944530403,
+        0.6882429063608737,
+        -0.7253924347746095,
+        0.659799534228027
+      ],
+      [
+        -0.04939500760660243,
+        -0.7241691075365495,
+        -0.6878511735203051,
+        0.49452375107005475
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "rms_px": 1.7897042543107626,
+    "marker_rms_px": [
+      2.139007859820985,
+      1.3530439798543632
+    ],
+    "id11_old_error_mm": [
+      11.336013182603022,
+      15.364248277900755,
+      -6.8467903668957275
+    ],
+    "sources": [
+      "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_211837/measurement.json",
+      "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_212437/measurement.json"
+    ]
+  }
+}

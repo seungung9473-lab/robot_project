@@ -1,0 +1,46 @@
+{
+  "status": "candidate_only",
+  "training_ids": [
+    8,
+    10
+  ],
+  "holdout_id": 11,
+  "cam1_holdout_before": {
+    "median_rms_px": 1.1233827200189672,
+    "max_rms_px": 1.221529068744565
+  },
+  "cam1_holdout_candidate": {
+    "median_rms_px": 3.614969418839664,
+    "max_rms_px": 3.6385674825634826
+  },
+  "T_table_cam1_candidate": [
+    [
+      -0.9996500071600294,
+      0.026053380337527753,
+      -0.004591792454085308,
+      1.143548474597734
+    ],
+    [
+      0.020548600428127093,
+      0.6553641490177055,
+      -0.7550335007155273,
+      0.6388809895742508
+    ],
+    [
+      -0.016661878807578856,
+      -0.7548635993047266,
+      -0.6556701367603343,
+      0.4837197022428246
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "cam2_anchor": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json",
+  "simultaneous_capture": false,
+  "note": "Stationary scene captures at different times; two planar markers may be ill conditioned. Not applied.",
+  "holdout_improved": false
+}

@@ -1,0 +1,61 @@
+{
+  "parent_frame": "table",
+  "child_frame": "cam2_color_optical_frame",
+  "transform_convention": "p_table = T_table_cam2_color_optical @ p_cam2_color_optical",
+  "T_table_cam2_color_optical": [
+    [
+      -0.999950095688231,
+      0.009779175294969703,
+      0.002043003584880021,
+      1.1435624181462851
+    ],
+    [
+      0.005610995808625785,
+      0.7189453906860745,
+      -0.6950439136754477,
+      0.6599393317327582
+    ],
+    [
+      -0.008265764280038362,
+      -0.6949977647027346,
+      -0.7189643831227452,
+      0.5283731480243457
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "markers": {
+    "dictionary": "DICT_4X4_50",
+    "edge_m": 0.07,
+    "centers_table_m": {
+      "10": [
+        0.948,
+        0.154,
+        0
+      ],
+      "11": [
+        1.2425,
+        0.055,
+        0
+      ]
+    },
+    "printed_top_direction": "+Y",
+    "normal_direction": "+Z"
+  },
+  "assumptions": [
+    "Both markers flat on tabletop, canonical tops +Y; supplied center coordinates accurate"
+  ],
+  "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261030_213450_cam2_both/measurement.json",
+  "samples": 45,
+  "median_reprojection_rms_px": 0.3849146972052785,
+  "camera_position_sample_max_deviation_mm": 0.731335689461154,
+  "independently_validated": false,
+  "validated_for_robot_execution": false,
+  "robot_transform_available": false,
+  "measured_center_separation_m": 0.314,
+  "coordinate_center_separation_m": 0.31069478592342037
+}

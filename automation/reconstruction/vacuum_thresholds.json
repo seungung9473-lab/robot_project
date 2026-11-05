@@ -1,0 +1,9 @@
+{
+  "grip_diff": -400,
+  "hold_diff": -300,
+  "release_diff": -50,
+  "unit": "raw sensor difference; not kPa",
+  "hold_bad_consecutive_samples": 2,
+  "feedback_timeout_s": 0.5,
+  "updated": "20261101_230121"
+}

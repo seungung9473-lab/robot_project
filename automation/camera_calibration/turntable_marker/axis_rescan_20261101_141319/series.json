@@ -1,0 +1,56 @@
+{
+  "version": 2,
+  "status": "collecting",
+  "baseline_reported_angle_deg": 0.0,
+  "angle_source": "user reported; encoder not read",
+  "calibrations": {
+    "cam1": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261101_140827_relocated_four_markers/cam1_table_calibration.json",
+    "cam2": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/saved/20261101_140827_relocated_four_markers/cam2_table_calibration.json"
+  },
+  "physical_reference": {
+    "axis_point_table_m": [
+      1.095,
+      0.235,
+      0.059
+    ],
+    "axis_direction_table": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "source": "user physical measurements and confirmed vertical axis; retained independently of cameras",
+    "uncertainty": "height approximately 5.9cm; manual alignment precision unspecified"
+  },
+  "observations": [
+    {
+      "reported_angle_deg": 0.0,
+      "cameras": {
+        "cam1": {
+          "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_141305_cam1_turntable/measurement.json",
+          "samples": 45,
+          "marker_center_table_m": [
+            1.0948712054151413,
+            0.23401779921482596,
+            0.059511530016482295
+          ],
+          "marker_center_max_sample_deviation_mm": 24.261704244760224,
+          "median_reprojection_rms_px": 0.7750663050175792,
+          "orientation_quality_note": "Single planar marker orientation may be ambiguous; inspect before rotation-axis fit"
+        },
+        "cam2": {
+          "source": "/home/seungung9473/문서/ChatGPT/라파 대회/camera_calibration/measurements/20261101_141302_cam2_turntable/measurement.json",
+          "samples": 45,
+          "marker_center_table_m": [
+            1.095341821727826,
+            0.23176013844178572,
+            0.05796246207614661
+          ],
+          "marker_center_max_sample_deviation_mm": 0.27031757933460787,
+          "median_reprojection_rms_px": 1.186336868973783,
+          "orientation_quality_note": "Single planar marker orientation may be ambiguous; inspect before rotation-axis fit"
+        }
+      }
+    }
+  ],
+  "rotation_axis_calibrated": false
+}

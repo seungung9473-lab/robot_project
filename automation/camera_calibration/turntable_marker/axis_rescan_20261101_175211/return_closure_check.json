@@ -1,0 +1,10 @@
+{
+  "baseline_angle_deg": 0.0,
+  "return_angle_deg": 0.1,
+  "cam2_center_delta_mm": [
+    -0.012984584137010202,
+    0.5089488340396797,
+    0.09834303645986364
+  ],
+  "cam2_center_distance_mm": 0.5185256675572644
+}

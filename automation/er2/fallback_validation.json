@@ -1,0 +1,9 @@
+{
+  "offline_tests_passed": 8,
+  "primary_live_check": "ER2 actual response confirmed",
+  "fallback_live_check": "/home/seungung9473/\ubb38\uc11c/ChatGPT/\ub77c\ud30c \ub300\ud68c/er2/runs/fallback_20261101_222744/fallback_result.json",
+  "primary_failure_was_simulated": true,
+  "fallback_inference_was_real": true,
+  "selection_verified_visually": true,
+  "robot_commands_sent": false
+}
