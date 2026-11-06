@@ -20,6 +20,13 @@ def main():
  lock=(R/'scan_pick_cycle.lock').open('w');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  if plan['input_fingerprints']!=fingerprints(source):raise RuntimeError('Scan/configuration/executor changed; plan the complete batch again')
  if time.time()-plan['created_time']>1800 or time.time()-(source/'session.json').stat().st_mtime>1800:raise RuntimeError('Batch or scan expired; rescan/replan')
+ # Re-read placed objects before any actuator command; changed occupancy invalidates reservations.
+ from pad_occupancy import read_occupancy,validate_reserved
+ from motion import kinematics
+ reservation_paths={stage['placement_plan'] for stage in plan['stages'] if stage.get('placement_plan')}
+ if reservation_paths:
+  occupancy=read_occupancy(kinematics.W)
+  for reservation_path in reservation_paths:validate_reserved(json.loads(Path(reservation_path).read_text()),occupancy)
  import rclpy
  from sensor_msgs.msg import JointState
  from std_msgs.msg import Int32

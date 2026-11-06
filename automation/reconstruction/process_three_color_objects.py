@@ -1,5 +1,5 @@
 """Gemini identities + measured RGB-D/encoder association for multiple objects. No actuation."""
-import json,sys,subprocess,shutil
+import json,sys,subprocess,shutil,os
 from pathlib import Path
 import cv2,numpy as np,yaml
 from scipy.cluster.vq import kmeans2
@@ -12,9 +12,9 @@ def observe(v,c):
  folder=s/v['path'];md=json.loads((folder/'metadata.json').read_text());d=md['cameras'][c];raw=cv2.imread(str(folder/d['depth_file']),-1);im=cv2.imread(str(folder/d['color_file']));P,valid=depth_table(raw,d['depth_scale_m'],d['camera_info'],wc['cameras'][c]['T_table_optical']);hsv=cv2.cvtColor(im,cv2.COLOR_BGR2HSV);fg=valid&object_region(P,ctx)&(np.linalg.norm(P[:,:,:2]-axis,axis=2)<ctx['support_radius_m'])&((hsv[:,:,1]>55)|((hsv[:,:,1]<45)&(hsv[:,:,2]>70)))
  a=np.deg2rad(-md['turntable']['angle_deg']);rot=np.array([[np.cos(a),-np.sin(a)],[np.sin(a),np.cos(a)]]);ref=(P[:,:,:2]-axis)@rot.T+axis
  return folder,d,P,fg,ref
-initial=[]
+initial=[];initial_observations={}
 for c in ['cam1','cam2']:
- _,_,P,fg,ref=observe(m['views'][0],c);initial.append(ref[fg])
+ initial_observations[c]=observe(m['views'][0],c);_,_,P,fg,ref=initial_observations[c];initial.append(ref[fg])
 # Resolve Gemini pixel identities to measured 3D seeds in the same reference frame.
 meta=json.loads(Path(sys.argv[2]).with_name('input_metadata.json').read_text());source=Path(meta['source_image_local_only']).parent;md=json.loads((source/'metadata.json').read_text());cam='cam1';dd=md['cameras'][cam];raw=cv2.imread(str(source/dd['depth_file']),-1)
 from inclined_runtime import depth_scale
@@ -42,7 +42,7 @@ for i in range(N):
   if not link.exists():link.symlink_to(s/v['path'],target_is_directory=True)
 for v in m['views']:
  for c in ['cam1','cam2']:
-  folder,d,P,fg,ref=observe(v,c);dist=np.linalg.norm(ref[:,:,None,:]-centers,axis=3);labels=dist.argmin(axis=2);entries=[];seeds=[]
+  folder,d,P,fg,ref=initial_observations[c] if v['path']==m['views'][0]['path'] else observe(v,c);dist=np.linalg.norm(ref[:,:,None,:]-centers,axis=3);labels=dist.argmin(axis=2);entries=[];seeds=[]
   for i in range(N):
    mask=(fg&(labels==i)&(dist[:,:,i]<.045)).astype('uint8');n,cc,stats,_=cv2.connectedComponentsWithStats(mask);ids=[j for j in range(1,n) if stats[j,4]>80];entry={'image':str(folder/d['color_file']),'prompt_source':'Gemini identity + measured depth foreground + encoder-unrotated spatial identity'}
    if not ids:entry['occluded']=True;seeds.append(None)
@@ -52,9 +52,10 @@ for v in m['views']:
   for i,entry in enumerate(entries):
    if not entry.get('occluded'):entry['negative_xy']=[seed for j,seed in enumerate(seeds) if j!=i and seed is not None]
    prompts[i][v['path']+'/'+c]=entry
+initial_observations.clear()
 for i,o in enumerate(outs):
  (o/'sam2/prompts.json').write_text(json.dumps(prompts[i],indent=2))
- if '--reuse-masks' not in sys.argv:subprocess.run([str(R/'.sam2_cpu/bin/python'),str(R/'apply_sam2.py'),'--session',str(o)],check=True)
+if '--reuse-masks' not in sys.argv:subprocess.run([os.environ.get('SOARM_SAM2_PYTHON',str(R/('.sam2_gpu' if (R/'.sam2_gpu/bin/python').exists() else '.sam2_cpu')/'bin/python')),str(R/'apply_sam2.py'),'--sessions',*map(str,outs)],check=True)
 excluded=[]
 for v in m['views']:
  for c in ['cam1','cam2']:
@@ -76,11 +77,10 @@ results=[]
 for i,o in enumerate(outs):
  an=o/'analysis';an.mkdir(exist_ok=True);masks={v['path']+'_'+c:cv2.imread(str(o/'sam2'/v['path']/(c+'_mask.png')),0)>127 for v in m['views'] for c in ['cam1','cam2']};np.savez_compressed(an/'sam2.npz',**masks)
  # Geometry per camera retains actual measured angles and colours.
- out=o/'reconstruction_sam2';subprocess.run([sys.executable,str(R/'reconstruct.py'),str(o),'--direction','1','--reference-angle','0','--mask-root',str(o/'sam2'),'--output',str(out)],check=True)
+ out=o/'reconstruction_sam2';subprocess.run([sys.executable,str(R/'reconstruct.py'),str(o),'--direction','1','--reference-angle','0','--mask-root',str(o/'sam2'),'--output',str(out),*(['--no-preview'] if '--identity-only' in sys.argv else [])],check=True)
  # Use a direct merged coloured cloud here; fitting a per-object rotation axis would be invalid.
  parts=[np.load(out/(c+'_object.npz')) for c in ['cam1','cam2']];np.savez_compressed(an/'cloud.npz',points=np.vstack([p['points'] for p in parts]),colors_rgb=np.vstack([p['colors'] for p in parts]))
- identity=det['objects'][i];colors=np.vstack([p['colors'] for p in parts]);hsv=cv2.cvtColor(colors.astype('uint8').reshape(-1,1,3),cv2.COLOR_RGB2HSV).reshape(-1,3);sat=hsv[:,1]>55;h=hsv[sat,0];red=float(np.mean((h<12)|(h>170))) if len(h) else 0.;green=float(np.mean((h>30)&(h<95))) if len(h) else 0.;gray=float(np.mean(hsv[:,1]<45))
- color='gray' if gray>.7 else ('red' if red>.7 else ('green' if green>.7 else 'unknown'));label=identity['label'];expected='red' if '빨' in label else ('green' if '초록' in label or '녹색' in label else ('gray' if '회색' in label or '회' in label else 'unknown'))
- if '--identity-only' not in sys.argv and (color=='unknown' or color!=expected):raise RuntimeError('Gemini label and measured segmented RGB colour disagree')
- results.append({'object':f'object_{i+1}','label':label,'session':str(o),'reference_center_xy':centers[i].tolist(),'color':color,'color_support_fraction':max(red,green,gray),'destination_pad_id':policy['routes'].get(color,{}).get('pad_id'),'route_status':'assigned' if color in policy['routes'] else 'unassigned_keep_as_obstacle'})
+ from identity_routing import identity_routing
+ metadata=identity_routing(det['objects'][i],policy,identity_only='--identity-only' in sys.argv,color_parts=(p['colors'] for p in parts))
+ results.append({'object':f'object_{i+1}','session':str(o),'reference_center_xy':centers[i].tolist(),**metadata})
 (s/'color_sort_plan.json').write_text(json.dumps({'objects':results,'model_used':det['model_used'],'same_pad_policy':policy['occupied_destination'],'robot_execution_performed':False},ensure_ascii=False,indent=2));print('MULTI OBJECTS COMPLETE',json.dumps(results,ensure_ascii=False),flush=True)

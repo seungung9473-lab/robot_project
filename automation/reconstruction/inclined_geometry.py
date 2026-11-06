@@ -57,8 +57,11 @@ def patch(points,n,d,radius=.0125,margin=.003,max_tilt=90.,center_point=None,pre
         if len(eligible):
             heights=(center+grid[:,0,None]*u+grid[:,1,None]*v)[:,2]
             indices=eligible[np.argsort(heights[eligible])[-64:][::-1]]
+    tree=cKDTree(xy);projected=np.column_stack([(p-center)@u,(p-center)@v]);plane_residual=p@n+d
+    aa=np.linspace(0,2*np.pi,64,endpoint=False);rr=np.linspace(0,radius,9)
+    disk_offsets=np.array([r*np.array([np.cos(a),np.sin(a)]) for r in rr for a in aa])
     for idx in indices:
-        g=grid[idx];point=center+u*g[0]+v*g[1];aa=np.linspace(0,2*np.pi,64,endpoint=False);rr=np.linspace(0,radius,9);disk=np.array([g+r*np.array([np.cos(a),np.sin(a)]) for r in rr for a in aa]);dist=cKDTree(xy).query(disk)[0];coverage=float(np.mean(dist<.003));local=np.linalg.norm(np.column_stack([(p-center)@u,(p-center)@v])-g,axis=1)<radius;res=p[local]@n+d
+        g=grid[idx];point=center+u*g[0]+v*g[1];disk=g+disk_offsets;dist=tree.query(disk)[0];coverage=float(np.mean(dist<.003));local=np.linalg.norm(projected-g,axis=1)<radius;res=plane_residual[local]
         # Include near-surface points only, avoid far face on opposite side.
         res=res[np.abs(res)<.008]
         rms=float(np.sqrt(np.mean(res**2))*1000) if len(res) else 1e9

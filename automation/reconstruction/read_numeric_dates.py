@@ -9,17 +9,12 @@ from model_router import generate
 def read_numeric_dates(session):
  s=Path(session);manifest=json.loads((s/'session.json').read_text());out=s/('numeric_dates_'+str(time.time_ns()));out.mkdir();key,_=load_key()
  if not key:raise RuntimeError('Gemini key missing')
+ from date_crops import collect_date_crops
+ objects=sorted((s/'objects').glob('object_*'))
+ all_candidates=collect_date_crops(s,manifest,objects)
  results=[]
- for obj in sorted((s/'objects').glob('object_*')):
-  candidates=[]
-  for v in manifest['views']:
-   folder=s/v['path'];md=json.loads((folder/'metadata.json').read_text())
-   for cam in ['cam1','cam2']:
-    im=cv2.imread(str(folder/md['cameras'][cam]['color_file']));mask=cv2.imread(str(obj/'sam2'/v['path']/(cam+'_mask.png')),0)
-    if im is None or mask is None or mask.shape!=im.shape[:2]:raise ValueError('Numeric evidence mask missing/mismatched')
-    y,x=np.nonzero(mask>127)
-    if len(x)<100:continue
-    hsv=cv2.cvtColor(im,cv2.COLOR_BGR2HSV);white=(hsv[:,:,1]<70)&(hsv[:,:,2]>155)&(mask>127);score=int(white.sum());x0,y0=max(0,int(x.min())-5),max(0,int(y.min())-5);x1,y1=min(im.shape[1],int(x.max())+6),min(im.shape[0],int(y.max())+6);crop=im[y0:y1,x0:x1].copy();crop[mask[y0:y1,x0:x1]<128]=128;candidates.append((score,cam,v['path']+'/'+cam,crop))
+ for obj in objects:
+  candidates=all_candidates.pop(obj.name)
   chosen=[]
   for cam in ['cam1','cam2']:chosen+=sorted([a for a in candidates if a[1]==cam],key=lambda a:a[0],reverse=True)[:12]
   parts=[];allowed=set();evidence=[]

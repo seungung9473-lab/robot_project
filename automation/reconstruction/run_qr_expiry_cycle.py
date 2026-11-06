@@ -35,6 +35,9 @@ def main():
  def run(*cmd):subprocess.run(list(map(str,cmd)),check=True)
  lock=(R/'scan_pick_cycle.lock').open('w');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  try:
+  from pad_occupancy import clear_confirmed_empty_pads
+  stage('clear_confirmed_empty_pad_5_6_models')
+  clear_confirmed_empty_pads(trial.directory);trial.attach(trial.directory/'empty_pad_reset.json');trial.attach(trial.directory/'empty_pad_reset_before.json')
   stage('home');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
   stage('scan_12_stopped_angles');run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*range(0,360,30),'--timeout',60,'--output',out/'scans')
   scans=[s for s in (out/'scans').iterdir() if (s/'session.json').exists()]
