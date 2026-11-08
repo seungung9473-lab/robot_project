@@ -55,7 +55,9 @@ for v in m['views']:
 initial_observations.clear()
 for i,o in enumerate(outs):
  (o/'sam2/prompts.json').write_text(json.dumps(prompts[i],indent=2))
-if '--reuse-masks' not in sys.argv:subprocess.run([os.environ.get('SOARM_SAM2_PYTHON',str(R/('.sam2_gpu' if (R/'.sam2_gpu/bin/python').exists() else '.sam2_cpu')/'bin/python')),str(R/'apply_sam2.py'),'--sessions',*map(str,outs)],check=True)
+if '--reuse-masks' not in sys.argv:
+ from desktop_runtime import gpu_python
+ subprocess.run([gpu_python(),str(R/'apply_sam2.py'),'--device','cuda','--sessions',*map(str,outs)],check=True)
 excluded=[]
 for v in m['views']:
  for c in ['cam1','cam2']:

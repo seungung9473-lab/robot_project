@@ -165,7 +165,7 @@ def reset_empty_pad_scene(query, apply, audit_directory):
     return report
 
 
-def clear_confirmed_empty_pads(audit_directory):
+def clear_confirmed_empty_pads(audit_directory, *, reset_all_scans=False):
     """Call under scan_pick_cycle.lock, once per new full cycle, never between picks."""
     import rclpy
     from rclpy.context import Context
@@ -190,5 +190,10 @@ def clear_confirmed_empty_pads(audit_directory):
     def apply(scene):
         request=ApplyPlanningScene.Request();request.scene=scene
         if not call('/apply_planning_scene',ApplyPlanningScene,request).success:raise RuntimeError('패드 이전 모델 삭제 거부')
-    try:return reset_empty_pad_scene(query,apply,audit_directory)
+    try:
+        if reset_all_scans:
+            from scan_scene_reset import reset_previous_scan_scene, delete_scan_markers
+            return reset_previous_scan_scene(query,apply,audit_directory,
+                clear_markers=lambda:delete_scan_markers(node,executor))
+        return reset_empty_pad_scene(query,apply,audit_directory)
     finally:executor.shutdown();node.destroy_node();context.shutdown()

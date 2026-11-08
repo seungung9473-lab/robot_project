@@ -42,6 +42,7 @@ class ReconstructedModels(Node):
         super().__init__('reconstructed_models')
         value=self.declare_parameter('session','latest').value
         self.session=resolve_session(value);self.models=[];self.latest={};self.busy=False
+        self.hide_collision_proxies=bool(self.declare_parameter('hide_collision_proxies',False).value)
         self.get_scene=self.create_client(GetPlanningScene,'/get_planning_scene');self.apply_scene=self.create_client(ApplyPlanningScene,'/apply_planning_scene')
         self.pub=self.create_publisher(MarkerArray,'/workcell_markers',QoSProfile(depth=5,durability=DurabilityPolicy.TRANSIENT_LOCAL,reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(String,'/turntable/state',self.state,10)
@@ -58,14 +59,20 @@ class ReconstructedModels(Node):
     def draw(self):
         if not self.models or not self.latest or time.monotonic()-self.latest['t']>1:return
         R=Rotation.from_euler('z',self.latest['angle'],degrees=True).as_matrix();arr=MarkerArray()
+        completed={}
+        done=self.session/'completed_placements.json'
+        if done.exists():
+            try:completed=json.loads(done.read_text())
+            except (OSError,ValueError):return
         for i,name,P,C in self.models:
+            if name in completed:continue
             Q=(P-self.axis)@R.T+self.axis;m=Marker();m.header.frame_id='table';m.ns='reconstructed_pair_rgb';m.id=i;m.type=Marker.POINTS;m.action=Marker.ADD;m.pose.orientation.w=1.;m.scale.x=m.scale.y=.0012;m.color.a=1.;m.lifetime.sec=3
             for point,color in zip(Q,C):
                 m.points.append(Point(x=float(point[0]),y=float(point[1]),z=float(point[2])));m.colors.append(ColorRGBA(r=float(color[0]),g=float(color[1]),b=float(color[2]),a=1.))
             arr.markers.append(m)
         self.pub.publish(arr)
     def hide_proxies(self):
-        if not self.models or not self.latest or time.monotonic()-self.latest['t']>1 or self.busy or not self.get_scene.service_is_ready() or not self.apply_scene.service_is_ready():return
+        if not self.hide_collision_proxies or not self.models or not self.latest or time.monotonic()-self.latest['t']>1 or self.busy or not self.get_scene.service_is_ready() or not self.apply_scene.service_is_ready():return
         self.busy=True;req=GetPlanningScene.Request();req.components.components=PlanningSceneComponents.WORLD_OBJECT_GEOMETRY|PlanningSceneComponents.OBJECT_COLORS
         self.get_scene.call_async(req).add_done_callback(self.scene_received)
     def scene_received(self,future):

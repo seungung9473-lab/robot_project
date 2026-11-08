@@ -159,10 +159,12 @@ def select_backend(path):
     required = ['automation/reconstruction/run_expiry_sort.py',
                 'automation/reconstruction/apply_sam2.py',
                 'automation/reconstruction/sam2_gpu.py',
-                'automation/reconstruction/.sam2_gpu/bin/python']
+                'automation/reconstruction/desktop_runtime.py']
     for name in required:
         if not (root / name).is_file():
-            raise RuntimeError('GPU backend missing: ' + name)
+            raise RuntimeError('Desktop backend missing: ' + name)
+    from desktop_runtime import gpu_python
+    gpu_python(root)
     return root
 
 
@@ -196,10 +198,11 @@ def main(argv=None):
             if os.environ.get('ROS_DOMAIN_ID') != '73':
                 raise RuntimeError('Actual control requires ROS_DOMAIN_ID=73')
             import torch
-            if not torch.cuda.is_available():
-                raise RuntimeError('CUDA unavailable; CPU fallback forbidden for desktop demo')
-            if torch.cuda.get_device_name() == '':
-                raise RuntimeError('GPU identity unavailable')
+            from desktop_runtime import require_cuda_profile, gpu_python
+            result['sam2_runtime'] = require_cuda_profile(torch_module=torch,config_path=code/'sam2_gpu_config.json')
+            os.environ['SOARM_SAM2_DEVICE'] = 'cuda'
+            os.environ['SOARM_SAM2_PYTHON'] = gpu_python(backend)
+            trial.event('sam2_runtime', **result['sam2_runtime'])
         t0 = time.monotonic(); intent, routing = understand(args.command)
         result.update(intent=intent, routing=routing, interpretation_seconds=time.monotonic()-t0)
         print('Gemini:', intent['reason'], flush=True)
@@ -267,10 +270,10 @@ def main(argv=None):
                 fcntl.flock(scan_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 # Every caller of the existing stages shares this outer trial ID.
                 if attempt==0:
-                    from pad_occupancy import clear_confirmed_empty_pads
-                    stage('패드 5·6 빈 상태 초기화 · 이전 배치 모델 삭제', lambda: clear_confirmed_empty_pads(trial.directory))
-                    trial.attach(trial.directory/'empty_pad_reset.json')
-                    trial.attach(trial.directory/'empty_pad_reset_before.json')
+                    from scan_scene_reset import clear_previous_scan_scene
+                    stage('턴테이블·패드 이전 스캔 초기화', lambda: clear_previous_scan_scene(trial.directory))
+                    trial.attach(trial.directory/'previous_scan_reset.json')
+                    trial.attach(trial.directory/'previous_scan_reset_before.json')
                     stage('HOME', lambda: run('/usr/bin/python3', Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py'))
                 scans = trial.directory / ('scans' if attempt==0 else 'rescan_'+str(attempt))
                 stage('듀얼 12방향 스캔·0도 복귀', lambda: run('ros2', 'run', 'soarm_turntable', 'turntable_scan', 'scan',
@@ -283,7 +286,7 @@ def main(argv=None):
                     raise RuntimeError('Incomplete scan; no recognition or pickup')
                 result['scan_session'] = str(session)
                 fcntl.flock(scan_lock, fcntl.LOCK_UN); scan_lock.close(); scan_lock = None
-                stage('물체 식별·GPU SAM2·면/IK 계산', lambda: prepare_instances(session))
+                stage('물체 식별·GPU FP32 SAM2·면/IK 계산', lambda: prepare_instances(session))
                 stage('인쇄 날짜·QR 판독', lambda: read_dates(session))
                 routes = stage('로컬 날짜 분류', lambda: route_dates(session))
                 result['date_routes'] = routes

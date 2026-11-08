@@ -12,7 +12,9 @@ servo_bridge — STS 서보 버스 ↔ ROS 2
 변환: rad = sign * (count - center) * 2π/4096   (config/soarm.yaml 의 servo_map)
 """
 import math
+import json
 import threading
+import termios
 import time
 
 import rclpy
@@ -23,10 +25,13 @@ from rclpy.node import Node
 
 from control_msgs.action import FollowJointTrajectory
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Float32MultiArray, Float64
+from std_msgs.msg import Float32MultiArray, Float64, String
 from std_srvs.srv import SetBool, Trigger
 
 from soarm_bridge.sts_bus import STSBus
+from soarm_bridge.fine_limits import correction_limits
+from ament_index_python.packages import get_package_share_directory
+from pathlib import Path
 from soarm_bridge.trajectory_speed import planned_speed
 
 C2R = 2 * math.pi / 4096
@@ -35,12 +40,14 @@ C2R = 2 * math.pi / 4096
 def fine_goals(final, pos, cmd, cmin, cmax, tol, max_extra):
     """도착 후 미세 보정 목표(count). 모든 관절이 final에서 tol 이내면 None.
     모자란 관절은 '지난 명령 + 모자란 만큼'(final에서 최대 max_extra까지), 나머지는 지난 명령 유지."""
+    extras = list(max_extra) if isinstance(max_extra, (list, tuple)) else [max_extra]*len(final)
+    if len(extras)!=len(final) or any(e<0 for e in extras):raise ValueError('Invalid per-joint correction bounds')
     err = [f - p for f, p in zip(final, pos)]
     if all(abs(e) <= tol for e in err):return None
     out = []
-    for f, e, c, lo, hi in zip(final, err, cmd, cmin, cmax):
+    for f, e, c, lo, hi, extra in zip(final, err, cmd, cmin, cmax, extras):
         g = c + e if abs(e) > tol else c
-        out.append(int(round(min(max(g, f - max_extra, lo), f + max_extra, hi))))
+        out.append(int(round(min(max(g, f - extra, lo), f + extra, hi))))
     return out
 
 
@@ -69,9 +76,15 @@ class ServoBridge(Node):
         self.tol = p('goal_tolerance_counts', 15).value
         self.settle = p('settle_timeout', 3.0).value
         # 도착 후 미세 보정: 데드밴드 때문에 모자라게 선 관절에 모자란 만큼 더 보내기 (0회 = 끔)
-        p('fine_correction_iterations', 3)
-        self.fine_tol = p('fine_tolerance_counts', 2).value
-        self.fine_max = p('fine_max_counts', 20).value
+        p('fine_correction_iterations', 5)
+        self.fine_tol = p('fine_tolerance_counts', 1).value
+        self.fine_max = p('fine_max_counts', 4).value
+        if not (0 <= self.fine_tol <= self.fine_max <= 20):raise ValueError('Invalid fine correction bounds')
+        self.fine_max_joint = list(p('fine_max_counts_per_joint', [self.fine_max]*len(self.ids)).value)
+        if len(self.fine_max_joint)!=len(self.ids) or any(not self.fine_tol<=x<=20 for x in self.fine_max_joint):raise ValueError('Invalid joint correction caps')
+        urdf = Path(get_package_share_directory('soarm4_description'))/'urdf/soarm4.urdf'
+        self.fine_lower, self.fine_upper = correction_limits(urdf,self.names,self.center,self.sign,self.pos_gain,
+            [c+m for c,m in zip(self.cmin,self.mlo)],[c-m for c,m in zip(self.cmax,self.mhi)])
         rate = p('rate_hz', 30.0).value
         self.stream_hz = p('stream_hz', 50.0).value          # 궤적 따라갈 때 목표 보내는 주기
         self.lookahead = p('lookahead', 0.15).value          # 목표를 이만큼(초) 앞선 지점으로 → 서보가 중간에 안 멈춤
@@ -79,6 +92,7 @@ class ServoBridge(Node):
         self.tt_id = p('turntable_id', 0).value              # 0 = 턴테이블 서보 없음
         self.tt_speed = p('turntable_speed', 600).value
 
+        self.port_name=port;self.baud_rate=baud;self.next_observer_reconnect=0.0
         self.bus = STSBus(port, baud)
         self.n = len(self.ids)
         self.pos = [None] * self.n
@@ -98,6 +112,7 @@ class ServoBridge(Node):
         cb = ReentrantCallbackGroup()
         self.pub_js = self.create_publisher(JointState, 'joint_states', 10)
         self.pub_st = self.create_publisher(Float32MultiArray, 'servo/status', 10)
+        self.pub_fine = self.create_publisher(String, 'servo/fine_correction_status', 10)
         self.create_service(SetBool, 'servo/torque', self.srv_torque, callback_group=cb)
         self.create_service(Trigger, 'servo/toggle_torque', self.srv_toggle_torque, callback_group=cb)
         self.create_service(Trigger, 'servo/stop', self.srv_stop, callback_group=cb)
@@ -132,10 +147,27 @@ class ServoBridge(Node):
         try:self.poll()
         finally:self.poll_lock.release()
 
+    def reconnect_observer(self):
+        """Only reconnect a read-only observer. Never restores torque or motion."""
+        if not self.read_only or time.monotonic()<self.next_observer_reconnect:return False
+        self.next_observer_reconnect=time.monotonic()+2.0
+        try:self.bus.close()
+        except (OSError,RuntimeError,termios.error):pass
+        try:
+            self.bus=STSBus(self.port_name,self.baud_rate)
+        except (OSError,RuntimeError,termios.error) as exc:
+            self.get_logger().warning('측정용 USB 연결 대기: '+str(exc));return False
+        self.pos=[None]*self.n;self.last_feedback_time=0.0
+        self.get_logger().info('측정용 USB 다시 연결됨 · 읽기만 재개, 토크/이동 명령 없음')
+        return True
+
     def poll(self):
         for i, sid in enumerate(self.ids):
             try:st = self.bus.read_state(sid)
-            except (RuntimeError,OSError):st=None
+            except RuntimeError:st=None
+            except (OSError,termios.error):
+                st=None;self.last_feedback_time=0.0
+                self.reconnect_observer()
             if st and 0<=st[0]<=4095:
                 c, spd, v, t = st
                 self.pos[i] = c
@@ -168,10 +200,17 @@ class ServoBridge(Node):
     # ---------------- 토크
     def set_torque(self, on):
         if self.read_only:raise RuntimeError('Read-only bridge')
-        if on and None not in self.pos:
-            # 힘 주기 전에 목표 = 현재 위치 (예전 목표값으로 갑자기 튀는 것 방지)
-            self.bus.sync_goal({sid: (self.pos[i], self.vmin) for i, sid in enumerate(self.ids)}, self.acc)
+        if on:
+            if not self.feedback_fresh():
+                raise RuntimeError('Fresh encoder feedback required before torque ON')
+            # Verify every preloaded hold before enabling any joint.
+            positions=list(self.pos)
+            self.bus.sync_goal({sid: (positions[i], self.vmin) for i, sid in enumerate(self.ids)}, self.acc)
             time.sleep(0.02)
+            for i,sid in enumerate(self.ids):
+                raw=self.bus.read(sid,42,2)
+                if raw is None or len(raw)!=2 or int.from_bytes(raw,'little')!=positions[i]:
+                    raise RuntimeError(f'ID {sid}: current-position hold verification failed; torque not enabled')
         for sid in self.ids:
             self.bus.torque(sid, on)
         self.torque_on = on
@@ -182,7 +221,10 @@ class ServoBridge(Node):
         if not req.data and self.exec_lock.locked():
             res.success, res.message = False, '궤적 실행 중에는 토크를 끌 수 없음'
             return res
-        self.set_torque(req.data)
+        try:
+            self.set_torque(req.data)
+        except (RuntimeError,OSError) as exc:
+            res.success=False;res.message=str(exc);return res
         res.success, res.message = True, 'torque ' + ('ON' if req.data else 'OFF (팔 받치기!)')
         return res
 
@@ -253,7 +295,11 @@ class ServoBridge(Node):
             if not self.feedback_fresh():
                 gh.abort();result.error_code=FollowJointTrajectory.Result.PATH_TOLERANCE_VIOLATED;return result
             if not self.torque_on:
-                self.set_torque(True)
+                try:
+                    self.set_torque(True)
+                except (RuntimeError,OSError) as exc:
+                    gh.abort();result.error_code=FollowJointTrajectory.Result.PATH_TOLERANCE_VIOLATED
+                    result.error_string=str(exc);return result
             # 시간표 T[k], 관절별 목표 Q[j][k] (rad). 첫 점 = 지금 위치(t=0)
             T = [0.0]
             Q = [[self.c2r(i, self.pos[i])] for i in idx]
@@ -354,25 +400,54 @@ class ServoBridge(Node):
             time.sleep(0.03)
             if self.pos != last:last = list(self.pos); since = time.monotonic()
             elif time.monotonic() - since >= window:return True
-        return True
+        return False
+
+    def report_fine(self, idx, final, cmd, status, attempts):
+        actual = [self.pos[i] for i in idx]
+        residual = [None if p is None else f-p for f,p in zip(final, actual)]
+        payload = {'status': status, 'attempts': attempts,
+                   'joint_names': [self.names[i] for i in idx],
+                   'target_counts': list(final), 'actual_counts': actual,
+                   'command_counts': list(cmd), 'residual_counts': residual,
+                   'tolerance_counts': self.fine_tol, 'max_extra_counts': [self.fine_max_joint[i] for i in idx],
+                   'command_lower_counts': [self.fine_lower[i] for i in idx], 'command_upper_counts': [self.fine_upper[i] for i in idx]}
+        self.pub_fine.publish(String(data=json.dumps(payload)))
+        if status != 'within_tolerance':
+            self.get_logger().warning('미세 보정 종료: '+status+' · 잔여 count='+str(residual))
 
     def fine_correct(self, idx, final, gh):
-        """도착 후 데드밴드로 모자라게 선 관절에 '목표 + 모자란 만큼'을 다시 보내 목표에 맞춘다.
-        취소/정지면 hold 후 False (gh 상태는 여기서 정함)."""
-        cmd = list(final)
-        for _ in range(self.get_parameter('fine_correction_iterations').value):  # 실행 중 ros2 param set 으로 바꿀 수 있음
+        """Bounded endpoint feedback correction; report residuals without changing zeros."""
+        cmd = list(final); attempts = 0
+        for _ in range(self.get_parameter('fine_correction_iterations').value):
             if not self.wait_still(gh):break
-            goals = fine_goals(final, [self.pos[i] for i in idx], cmd, [self.cmin[i] for i in idx], [self.cmax[i] for i in idx], self.fine_tol, self.fine_max)
-            if goals is None:return True
-            cmd = goals
-            self.bus.sync_goal({self.ids[i]: (cmd[j], self.settle_speed) for j, i in enumerate(idx)}, self.acc)
+            actual = [self.pos[i] for i in idx]
+            if any(v is None for v in actual) or not self.feedback_fresh():
+                self.hold_here();gh.abort();return False
+            goals = fine_goals(final, actual, cmd,
+                               [self.fine_lower[i] for i in idx],
+                               [self.fine_upper[i] for i in idx],
+                               self.fine_tol, [self.fine_max_joint[i] for i in idx])
+            if goals is None:
+                self.report_fine(idx, final, cmd, 'within_tolerance', attempts);return True
+            if goals == cmd:
+                self.report_fine(idx, final, cmd, 'command_bound_reached', attempts);return True
+            cmd = goals; attempts += 1
+            self.bus.sync_goal({self.ids[i]: (cmd[j], self.settle_speed) for j,i in enumerate(idx)}, self.acc)
         else:
-            self.wait_still(gh);return True
-        if gh.is_cancel_requested or self.stop_event.is_set():
+            stable = self.wait_still(gh)
+            if stable:
+                actual = [self.pos[i] for i in idx]
+                if any(v is None for v in actual) or not self.feedback_fresh():
+                    self.hold_here();gh.abort();return False
+                residual = [abs(f-p) for f,p in zip(final,actual)]
+                status = 'within_tolerance' if max(residual,default=0)<=self.fine_tol else 'iteration_limit'
+                self.report_fine(idx, final, cmd, status, attempts);return True
+        if gh.is_cancel_requested or self.stop_event.is_set() or not self.feedback_fresh():
             self.hold_here()
             if gh.is_cancel_requested:gh.canceled()
             else:gh.abort()
             return False
+        self.report_fine(idx, final, cmd, 'not_settled', attempts)
         return True
 
     def hold_here(self):

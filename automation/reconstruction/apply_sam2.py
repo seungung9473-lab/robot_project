@@ -15,8 +15,9 @@ def main():
     sessions=args.sessions or [args.session or root/'multiview/20261101_194509_024461']
     if len({p.resolve() for p in sessions})!=len(sessions):raise ValueError('Duplicate SAM2 session')
     torch.set_num_threads(min(6,os.cpu_count() or 2));checkpoint=root/'checkpoints/sam2.1_hiera_tiny.pt'
-    device=('cuda' if torch.cuda.is_available() else 'cpu') if args.device=='auto' else args.device
-    if device=='cuda' and not torch.cuda.is_available():raise RuntimeError('CUDA requested but unavailable')
+    from desktop_runtime import require_cuda_profile
+    runtime=require_cuda_profile(args.device,torch_module=torch)
+    device='cuda'
     predictor=SAM2ImagePredictor(build_sam2('configs/sam2.1/sam2.1_hiera_t.yaml',str(checkpoint),device=device,apply_postprocessing=False))
     if device=='cuda':
         from sam2_gpu import run_gpu
@@ -24,7 +25,9 @@ def main():
         if config.get('precision')!='fp32':raise RuntimeError('Only validated FP32 SAM2 is enabled')
         ctx=contextlib.nullcontext()
         with torch.inference_mode(),ctx:stats=run_gpu(sessions,predictor,config['batch_size'],args.review)
-        print(json.dumps({'device':'cuda','precision':config['precision'],**stats}))
+        print(json.dumps({**runtime,**stats}))
+        for session in sessions:
+            path=Path(session)/'sam2/manifest.json';payload=json.loads(path.read_text());payload['runtime']=runtime;path.write_text(json.dumps(payload,indent=2))
     else:
         with torch.inference_mode():run_sessions(sessions,predictor,hashlib.sha256(checkpoint.read_bytes()).hexdigest())
 

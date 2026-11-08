@@ -31,9 +31,9 @@ export ROS_DOMAIN_ID=73
 Git에는 모델 가중치, Python 가상환경, API 키, 실험 원본을 넣지 않습니다. 저장소를 받기만 하면 GPU 추론까지 바로 준비되는 구성은 아닙니다.
 
 - SAM2: 공식 설치 안내 https://github.com/facebookresearch/sam2 를 따라 CUDA 사용 가능한 PyTorch와 SAM2를 설치합니다. Python환경 위치는 `automation/reconstruction/.sam2_gpu/`, 가중치는 `automation/reconstruction/checkpoints/sam2.1_hiera_tiny.pt`입니다. SAM2.1 Hiera Tiny 설정을 사용합니다.
-- 로봇용 시스템 Python에는 ROS Python 패키지와 `numpy`, `scipy`, `yaml`, `cv2`, `PIL`, `serial`, `zxingcpp`가 필요합니다. 가상환경에서 인식할 때도 해당 패키지를 사용할 수 있어야 합니다. `zxingcpp`의 pip 배포 이름은 `zxing-cpp`입니다. QR 모듈이 시스템 Python에 없으면 `run_sort.sh`의 시스템 Python 경로도 따로 준비해야 합니다.
+- CUDA Python 환경에서 ROS Python 패키지와 `numpy`, `scipy`, `yaml`, `cv2`, `PIL`, `serial`, `zxingcpp`를 사용할 수 있어야 합니다. ROS 패키지를 함께 쓰는 가상환경은 `--system-site-packages` 구성이 필요할 수 있습니다. `zxingcpp`의 pip 배포 이름은 `zxing-cpp`입니다. `run_sort.sh`, 자연어 진입점, ROS 실행 진입점은 실제 실행 시 CUDA Python을 선택합니다.
 - 데스크탑 시연은 `sam2_gpu_config.json`의 CUDA/FP32 설정을 유지합니다. CUDA가 없는 친구 장비에서 이 GPU 시연 경로가 동작한다고 보장하지 않습니다.
-- Gemini 키는 환경변수 `GOOGLE_API_KEY`/`GEMINI_API_KEY` 또는 개인 설정 `~/.config/soarm4/gemini.json`을 사용합니다. 코드에 키를 적지 않습니다. `python3 automation/er2/check_connection.py --setup-key` 명령은 키를 가려서 입력받아 개인 설정에 저장합니다.
+- Gemini 키는 환경변수 `GOOGLE_API_KEY`/`GEMINI_API_KEY` 또는 개인 설정 `~/.config/soarm4/gemini.json`을 사용합니다. 코드에 키를 적지 않습니다. `python3 automation/er2/check_connection.py --setup-key` 명령은 키를 가려서 입력받아 개인 설정에 저장하고 텍스트 API 연결 시험을 수행합니다.
 
 ## 실행
 
@@ -45,7 +45,7 @@ cd ~/robot_ws
 SOARM_DEMO_BACKEND="$HOME/robot_ws" ./run_tidy_demo.sh "테이블 정리해"
 ```
 
-자연어 진입점은 인접한 `robot_ws_mybranch`가 있으면 그 백엔드를 자동 선택할 수 있으므로, 공유 브랜치만 쓰려면 위처럼 `SOARM_DEMO_BACKEND`를 명시합니다.
+기본 백엔드는 현재 `robot_ws`입니다. 인접한 `robot_ws_mybranch`의 코드를 자동으로 선택하지 않습니다. 다른 백엔드는 `SOARM_DEMO_BACKEND`, 다른 CUDA Python은 `SOARM_SAM2_PYTHON`으로 명시할 수 있습니다. 실제 실행에서 CUDA가 없으면 이동 전에 중단하며 CPU로 대체하지 않습니다.
 
 ### 실제 분류
 
@@ -80,3 +80,21 @@ SOARM_DEMO_BACKEND="$HOME/robot_ws" ./run_tidy_demo.sh "테이블 정리해" --e
 기존 실험용 보정/마커 도구와 독립 카메라 미리보기, reconstruction 설명 문서·테스트는 실행 배포에서 제거했습니다. 원본 측정과 보정 재개 자료는 작성자 PC에 별도 보관합니다. 현재 보정 후보는 검증을 통과하지 않아 적용되지 않았습니다. 저장소의 작업대·카메라·툴·폐기 자세 설정이 친구의 실제 장치와 맞는지 확인해야 합니다.
 
 재생성 가능한 `build/`, `install/`, `log/`, 캐시는 Git 제외 대상입니다. 원본 작업공간의 기존 build/install과 로봇 설정은 변경하지 않았습니다.
+
+## 2026-11-08 mybranch 통합 — 데스크탑 프로필
+
+원격 `mybranch`의 `c50090d`를 병합했습니다. 노트북 CPU 고정 경로는 CUDA/FP32로 교체했습니다. 새 전체 실행 전 이전 턴테이블·패드 스캔 모델과 표시를 정리하고, 고정 작업대와 과거 기록은 유지합니다. 부착 물체가 있으면 초기화를 거부합니다.
+
+서보 토크ON 전 현재 위치 hold 목표를 읽어 확인하는 보호, URDF/엔코더 범위 안의 제한된 미세 보정과 상태 보고, TCP/반복 오차 시험 도구를 포함합니다. 미세 보정 파라미터를 제외한 기존 영점·게인·관절 범위·압력·속도·카메라/작업대 형상과 폐기 관절 목표는 보존했습니다. J3 적분 시험 도구는 통합됐지만 실행하거나 모터 설정을 바꾸지 않았습니다. 엔코더 기반 TCP 오차는 실제 팁을 외부에서 실측한 정확도와 다릅니다.
+
+### GPU 설정 검증
+
+RTX5060, PyTorch2.11.0+cu128 / CUDA12.8에서 저장된 실제 듀얼12방향 영상24장과 물체3개(마스크72개)로 비교했습니다. FP32 유지, 이미지 특징24회만 계산해 물체 간 공유, 선택적 리뷰 JPG 출력은 기본 생략합니다.
+
+- 배치1: 워밍업 후 2회 중앙값 약2.10초.
+- 배치2: 약2.15초, 마스크72개 모두 배치1과 픽셀 단위 일치.
+- 이 자료에서는 배치2가 빠르지 않아 기본 배치1을 유지했습니다. 더 큰 배치나 BF16을 무조건 활성화하지 않습니다.
+- 위 시간은 영상 읽기·PNG 저장을 포함한 SAM2 단계입니다. 모델 로딩 약0.77초는 별도이며, 실제 촬영·복원·Gemini·경로 계산·로봇 이동 시간은 포함하지 않습니다. 전체 시연 시간으로 해석하면 안 됩니다.
+- CPU 요청 및 CUDA 부재 시 추론 전에 중단하는 경로를 검사했습니다. 실제 로봇 구동과 유료 API 호출은 이번 통합 검사에 포함하지 않았습니다.
+
+이 PC의 가상환경/가중치는 기존 검증된 로컬 자산을 링크해 사용합니다. 링크나 가중치는 Git으로 공유하지 않으므로 다른 PC에서는 같은 위치에 별도 설치해야 합니다.

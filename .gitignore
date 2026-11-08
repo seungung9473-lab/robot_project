@@ -14,7 +14,7 @@ data/
 /automation/test_data
 /automation/reconstruction/.sam2_cpu/
 /automation/reconstruction/.venv_sam2/
-/automation/reconstruction/checkpoints/
+/automation/reconstruction/checkpoints
 /automation/reconstruction/vendor/
 /automation/reconstruction/backups/
 /automation/reconstruction/settings_backups/
@@ -36,5 +36,5 @@ data/
 /automation/camera_calibration/saved/
 
 # GPU runtime and transient demo state
-/automation/reconstruction/.sam2_gpu/
+/automation/reconstruction/.sam2_gpu
 /automation/reconstruction/tidy_demo.lock

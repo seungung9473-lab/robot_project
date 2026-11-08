@@ -16,7 +16,7 @@ from shape_msgs.msg import SolidPrimitive
 from geometry_msgs.msg import Pose
 from motion.kinematics import fk,m,W
 from placement_geometry import load_context
-ROOT=Path('/home/wanjae/robot_ws_mybranch/automation/reconstruction')
+ROOT=Path(__file__).resolve().parent
 p=argparse.ArgumentParser();p.add_argument('session',type=Path);p.add_argument('--execute',action='store_true');p.add_argument('--resume-contact',action='store_true',help='Only resume first object after recorded grip-before-lift interruption');p.add_argument('--resume-held-small',action='store_true');args=p.parse_args();session=args.session.resolve();plan=json.loads((session/'sort_plan.json').read_text());out=session/('sorting_resume_small' if args.resume_held_small else ('sorting_resume_contact' if args.resume_contact else 'sorting'));out.mkdir(exist_ok=True)
 out=session/'sorting_finish';out.mkdir(exist_ok=True)
 if args.execute and (out/'execution.json').exists():raise RuntimeError('Execution already attempted; inspect saved state before retry')

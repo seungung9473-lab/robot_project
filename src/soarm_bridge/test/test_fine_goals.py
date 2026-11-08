@@ -21,6 +21,17 @@ class FineGoalsTests(unittest.TestCase):
         self.assertEqual(fine_goals([2000, 10], [1950, 30], [2000, 10], self.lo, [4095, 4095], 2, 20), [2020, 0])
 
 
+class TightCorrectionTests(unittest.TestCase):
+    def test_two_count_error_is_now_corrected(self):
+        self.assertEqual(fine_goals([1000], [1002], [1000], [0], [4095], 1, 4), [998])
+    def test_one_count_error_does_not_chase_quantization(self):
+        self.assertIsNone(fine_goals([1000], [1001], [1000], [0], [4095], 1, 4))
+    def test_commands_bounded_even_with_large_residual(self):
+        self.assertEqual(fine_goals([1000], [900], [1003], [0], [4095], 1, 4), [1004])
+    def test_effective_limit_cannot_be_crossed(self):
+        self.assertEqual(fine_goals([1000], [1005], [1000], [999], [2000], 1, 4), [999])
+
+
 class PositiveGainTests(unittest.TestCase):
     b = SimpleNamespace(sign=[-1], center=[2078], cmin=[974], cmax=[3357], mlo=[0], mhi=[0], pos_gain=[0.043])
 

@@ -56,6 +56,12 @@ servo_bridge:
     max_speed: 4000
     goal_tolerance_counts: 15
     settle_timeout: 3.0
+    # 50-pose encoder test: tighten bounded endpoint feedback correction; no zero/TCP offset change.
+    fine_correction_iterations: 5
+    fine_tolerance_counts: 1
+    fine_max_counts: 4
+    # J1 alone reached the old 4-count command bound in the 10-cycle test.
+    fine_max_counts_per_joint: [8, 4, 4, 4]
     turntable_id: 0
     turntable_speed: 600
     read_only: false

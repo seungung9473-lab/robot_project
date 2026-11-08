@@ -30,14 +30,16 @@ def main():
  if a.reference_date:
   from datetime import date
   a.reference_date=date.fromisoformat(a.reference_date).isoformat()
+ from desktop_runtime import require_cuda_profile, gpu_python
+ runtime=require_cuda_profile();os.environ['SOARM_SAM2_DEVICE']='cuda';os.environ['SOARM_SAM2_PYTHON']=gpu_python();trial.event('sam2_runtime',**runtime);print('CUDA/FP32: '+runtime['gpu_name'],flush=True)
  control_preflight();out=R/'expiry_cycles'/('cycle_'+time.strftime('%Y%m%d_%H%M%S')+'_'+uuid.uuid4().hex[:6]);out.mkdir(parents=True);state={'status':'starting','robot_motion_requested':True};log=out/'cycle.json';trial.attach(log)
  def stage(name):trial.event('stage',stage=name);state['stage']=name;log.write_text(json.dumps(state,ensure_ascii=False,indent=2));print(name,flush=True)
  def run(*cmd):subprocess.run(list(map(str,cmd)),check=True)
  lock=(R/'scan_pick_cycle.lock').open('w');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  try:
-  from pad_occupancy import clear_confirmed_empty_pads
-  stage('clear_confirmed_empty_pad_5_6_models')
-  clear_confirmed_empty_pads(trial.directory);trial.attach(trial.directory/'empty_pad_reset.json');trial.attach(trial.directory/'empty_pad_reset_before.json')
+  from scan_scene_reset import clear_previous_scan_scene
+  stage('clear_previous_turntable_and_pad_scans')
+  clear_previous_scan_scene(trial.directory);trial.attach(trial.directory/'previous_scan_reset.json');trial.attach(trial.directory/'previous_scan_reset_before.json')
   stage('home');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
   stage('scan_12_stopped_angles');run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*range(0,360,30),'--timeout',60,'--output',out/'scans')
   scans=[s for s in (out/'scans').iterdir() if (s/'session.json').exists()]
