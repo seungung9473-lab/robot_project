@@ -50,7 +50,7 @@ def refresh(series,config,rows):
             'logged_success_rate':successes/len(ended) if ended else None,
             'observed_results_count':len(observed),
             'observed_success_rate':sum(r['observed_success'] is True for r in observed)/len(observed) if observed else None,
-            'note':'Software completion and human-observed physical success are separate. Failures/interruptions stay in the denominator. Historical run #1 predates final HOME.'}
+            'note':'Software completion and human-observed physical success are separate. Failures/interruptions stay in the denominator.'+(' Historical run #1 predates final HOME.' if config.get('anchor_trial_id') else '')}
     write(series/'summary.json',report)
     fields=['number','trial_id','started_at','finished_at','outcome','logged_success','observed_success','duration_s','objects_total','objects_completed_logged','git_revision_at_registration','error','run_directory']
     tmp=series/'trials.csv.tmp'
@@ -126,3 +126,20 @@ def record_observation(root,number,success,note):
 if __name__=='__main__' and len(__import__('sys').argv)>=5 and __import__('sys').argv[1]=='observe':
     import sys
     print(record_observation(Path(__file__).resolve().parents[1]/'test_data',int(sys.argv[2]),sys.argv[3]=='success',sys.argv[4]))
+
+
+def restart_series(root):
+    """현재 평가를 삭제하지 않고 archive로 옮긴 뒤, 지금 시각 이후 첫 전체 실행부터 1회차로 새로 시작한다."""
+    root=Path(root).resolve();folder=root/'evaluations';active=folder/'active.json';old=read(active)
+    now=datetime.datetime.now().astimezone();stamp=now.strftime('%Y%m%d_%H%M%S')
+    if old:
+        archive=folder/('archive_'+stamp);archive.mkdir(parents=True)
+        (folder/old['series_id']).rename(archive/old['series_id']);active.rename(archive/'active.json')
+    config={'version':1,'series_id':'table_clear_success_50_restart_'+stamp,'enabled':True,'target_runs':50,'anchor_trial_id':None,
+            'anchor_started_at':now.isoformat(),
+            'count_policy':'one top-level physical full-cycle invocation; success/failure/interruption included; children/previews excluded; no automatic robot execution',
+            'observed_success_policy':'human confirmation; never inferred from software completion',
+            'configuration_policy':'record git revision for each new run','restarted_from':old['series_id'] if old else None}
+    write(active,config);series=folder/config['series_id'];series.mkdir(parents=True,exist_ok=True)
+    write(series/'trials.json',[]);refresh(series,config,[])
+    return config
