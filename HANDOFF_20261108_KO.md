@@ -1,6 +1,6 @@
 # 2026-11-08 다른 PC 작업 인계
 
-브랜치: `soarm-cpu-integration-20261108`. 친구 `TUMST_test`의 a475c74 파일을 CPU 노트북 구성에 통합한 스냅샷이다. Git merge 이력 대신 파일 통합으로 보존했다.
+브랜치: `mybranch`. 친구 `TUMST_test`의 a475c74 파일을 CPU 노트북 구성에 통합한 스냅샷이다. Git merge 이력 대신 파일 통합으로 보존했다.
 
 ## 포함한 변경
 
@@ -18,7 +18,7 @@
 
 기존 작업이 있으면 먼저 별도 백업한다. 새 폴더로 받는 예:
 ```bash
-git clone --branch soarm-cpu-integration-20261108 git@github.com:seungung9473-lab/robot_project.git ~/robot_ws
+git clone --branch mybranch git@github.com:seungung9473-lab/robot_project.git ~/robot_ws
 cd ~/robot_ws
 source /opt/ros/jazzy/setup.bash
 rosdep install --from-paths src --ignore-src -r -y --skip-keys ament_python
@@ -62,3 +62,7 @@ export SOARM_SAM2_PYTHON="$HOME/robot_ws/automation/reconstruction/.sam2_cpu/bin
 ```
 
 모든 새 전체 실행은 시험 기록기에 기록된다. 안내만 보려면 `./run_sort.sh`를 실행한다. 자연어 진입점은 `./run_tidy_demo.sh`다. Git에 올리는 작업에서는 모터·펌프를 새로 구동하지 않았다.
+
+## 브랜치 정리
+
+사용자 요청으로 최신 통합 스냅샷을 mybranch에 반영했다. 기존 mybranch 커밋 이력과 통합 커밋 c1082b8은 병합 이력에 보존했다. 임시 CPU 통합 브랜치는 삭제한다.
