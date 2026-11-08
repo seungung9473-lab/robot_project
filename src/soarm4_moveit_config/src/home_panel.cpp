@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <rviz_common/panel.hpp>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
@@ -71,6 +72,27 @@ public:
    };
    if(QThread::currentThread()==thread())read();else QMetaObject::invokeMethod(this,read,Qt::BlockingQueuedConnection);
   });
+  // Apply the requested demo ratios once, after MotionPlanning creates its widgets.
+  // These are planner ratios in (0,1]; joint/servo limits are unchanged.
+  const double demo_velocity=node_->declare_parameter<double>("demo_velocity_scaling",0.30);
+  const double demo_acceleration=node_->declare_parameter<double>("demo_acceleration_scaling",0.40);
+  if(!(demo_velocity>0.0&&demo_velocity<=1.0&&demo_acceleration>0.0&&demo_acceleration<=1.0))
+    throw std::runtime_error("Demo scaling must be in (0,1]");
+  auto* scaling_timer=new QTimer(this);
+  connect(scaling_timer,&QTimer::timeout,this,[this,scaling_timer,demo_velocity,demo_acceleration](){
+   QDoubleSpinBox *velocity=nullptr,*acceleration=nullptr;int nv=0,na=0;
+   for(auto* widget:QApplication::allWidgets()){
+    if(widget->window()!=this->window())continue;
+    auto* spin=qobject_cast<QDoubleSpinBox*>(widget);if(!spin)continue;
+    if(spin->objectName()=="velocity_scaling_factor"){velocity=spin;++nv;}
+    if(spin->objectName()=="acceleration_scaling_factor"){acceleration=spin;++na;}
+   }
+   if(nv!=1||na!=1)return;
+   velocity->setValue(demo_velocity);acceleration->setValue(demo_acceleration);
+   RCLCPP_INFO(node_->get_logger(),"Demo ratios applied: velocity=%.2f acceleration=%.2f; limits unchanged",velocity->value(),acceleration->value());
+   scaling_timer->stop();scaling_timer->deleteLater();
+  });
+  scaling_timer->start(200);
   edit_pub_=node_->create_publisher<std_msgs::msg::String>("/soarm4/pick_place/edit",10);QPointer<HomePanel> guard(this);
   diff_sub_=node_->create_subscription<std_msgs::msg::Int32>("/vacuum/diff",10,[guard](std_msgs::msg::Int32::ConstSharedPtr m){if(!guard)return;int value=m->data;QMetaObject::invokeMethod(guard,[guard,value](){if(guard){guard->diff_=value;guard->have_pressure_=true;guard->pressure_elapsed_.start();}},Qt::QueuedConnection);});
   hold_sub_=node_->create_subscription<std_msgs::msg::Bool>("/vacuum/holding",10,[guard](std_msgs::msg::Bool::ConstSharedPtr m){if(!guard)return;bool value=m->data;QMetaObject::invokeMethod(guard,[guard,value](){if(guard)guard->holding_=value;},Qt::QueuedConnection);});

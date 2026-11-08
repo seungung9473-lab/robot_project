@@ -1,13 +1,20 @@
 """Search complete pick sequences before committing any movement."""
-def search_all(pending, completed, placements, evaluate, limit=100):
-    trials=[];visits=0
+import time
+
+class SearchBudgetExceeded(RuntimeError):
+    def __init__(self, trials):
+        super().__init__('Batch search limit reached; no execution permitted')
+        self.trials = list(trials)
+
+def search_all(pending, completed, placements, evaluate, limit=100, time_limit=None):
+    trials=[];visits=0;started=time.monotonic()
     def visit(todo,done,placed,path):
         nonlocal visits
         if not todo:return path
         for key in todo:
             for stage in evaluate(key,tuple(done),tuple(placed)):
                 visits+=1;trials.append(stage.get('review',{}))
-                if visits>limit:raise RuntimeError('Batch search limit reached; no execution permitted')
+                if visits>limit or (time_limit is not None and time.monotonic()-started>time_limit):raise SearchBudgetExceeded(trials)
                 if not stage.get('success'):continue
                 result=visit([k for k in todo if k!=key],done+[key],placed+([] if (isinstance(stage['placement'],dict) and stage['placement'].get('removed_from_workcell')) else [stage['placement']]),path+[stage])
                 if result is not None:return result

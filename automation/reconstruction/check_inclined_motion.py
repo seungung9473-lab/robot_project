@@ -14,19 +14,47 @@ from normal_contact_trajectory import contact_samples
 from inclined_geometry import solve_axis
 from payload_placement import signed_pitch,place_payload
 from collision_geometry import convex_mesh
+from planning_feedback import calculating
 from motion.kinematics import fk,m,W
-p=argparse.ArgumentParser();p.add_argument('session',type=Path);p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');a=p.parse_args();s=a.session;ctx=json.loads((s/'inclined_context.json').read_text());option=ctx['option'];trash=ctx.get('destination')=='trash_drop';pad_id=ctx.get('destination_pad_id',5);pad_key='pad2' if pad_id==5 else 'pad1';lo=np.array([j['limit']['lower'] for j in m['joints']],float);hi=np.array([j['limit']['upper'] for j in m['joints']],float);names=['joint'+str(i) for i in range(1,5)]
+p=argparse.ArgumentParser();p.add_argument('session',type=Path);p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');p.add_argument('--planning-seconds',type=float,default=8.);a=p.parse_args();
+if not 0<a.planning_seconds<=8:raise ValueError('Planning budget must be in (0,8]')
+s=a.session;ctx=json.loads((s/'inclined_context.json').read_text());option=ctx['option'];trash=ctx.get('destination')=='trash_drop';pad_id=ctx.get('destination_pad_id',5);pad_key='pad2' if pad_id==5 else 'pad1';lo=np.array([j['limit']['lower'] for j in m['joints']],float);hi=np.array([j['limit']['upper'] for j in m['joints']],float);names=['joint'+str(i) for i in range(1,5)]
 packing=json.loads(a.placement_plan.read_text()) if a.placement_plan else None
 if packing is not None and (packing.get('pad_id')!=pad_id or a.placement_object not in packing['placements']):raise RuntimeError('Invalid placement reservation')
 rclpy.init();n=rclpy.create_node('inclined_plan_only');latest={}
 n.create_subscription(JointState,'/joint_states',lambda msg:latest.update(q=[msg.position[msg.name.index(k)] for k in names],t=time.monotonic()) if all(k in msg.name for k in names) else None,10)
 def call(path,typ,req):
+ if typ is GetMotionPlan:
+  motion=req.motion_plan_request
+  for label,qstate in [('출발 자세',motion.start_state),('목표 자세',state([j.position for j in motion.goal_constraints[0].joint_constraints]))]:
+   vreq=GetStateValidity.Request();vreq.group_name='arm';vreq.robot_state=qstate
+   valid=call('/check_state_validity',GetStateValidity,vreq)
+   if not valid.valid:raise RuntimeError(label+' collision '+str([(c.contact_body_1,c.contact_body_2) for c in valid.contacts]))
+  goal=[j.position for j in motion.goal_constraints[0].joint_constraints]
+  home=m['poses']['home']
+  if motion.planner_id=='PTP' or (len(goal)==len(home) and np.max(np.abs(np.asarray(goal)-home))<1e-6):
+   motion.pipeline_id='pilz_industrial_motion_planner';motion.planner_id='PTP';motion.num_planning_attempts=1
+   reply=raw_plan(req, '홈 복귀 Pilz PTP')
+   if reply.motion_plan_response.error_code.val==1:return reply
+   print('안전점검 실패: Pilz 홈 경로 거부. 재탐색합니다: RRT-Connect',flush=True)
+   motion.pipeline_id='ompl';motion.planner_id='RRTConnectkConfigDefault'
+  return raw_plan(req,'RRT-Connect 경로 탐색 및 안전점검')
  c=n.create_client(typ,path)
  try:
   assert c.wait_for_service(timeout_sec=20),path;f=c.call_async(req);rclpy.spin_until_future_complete(n,f,timeout_sec=30)
   if not f.done():raise RuntimeError('Timeout '+path)
   return f.result()
  finally:n.destroy_client(c)
+def raw_plan(req,label):
+ c=n.create_client(GetMotionPlan,'/plan_kinematic_path')
+ try:
+  if not c.wait_for_service(timeout_sec=10):raise RuntimeError('Planning service unavailable')
+  with calculating(label):
+   f=c.call_async(req);rclpy.spin_until_future_complete(n,f,timeout_sec=30)
+   if not f.done() or f.result() is None:raise RuntimeError('Planning response timeout')
+   return f.result()
+ finally:n.destroy_client(c)
+
 def apply(scene):
  req=ApplyPlanningScene.Request();req.scene=scene;assert call('/apply_planning_scene',ApplyPlanningScene,req).success
 
@@ -60,7 +88,7 @@ try:
  while (not latest or time.monotonic()-latest['t']>.3) and time.monotonic()<deadline:rclpy.spin_once(n,timeout_sec=.05)
  if not latest:raise RuntimeError('No joint state')
  start=latest['q'];qa=option['approach_q_rad'];qc=option['contact_q_rad']
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=8.;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qa)])]
+ req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qa)])]
  plan=call('/plan_kinematic_path',GetMotionPlan,req).motion_plan_response
  result['approach_plan_error']=plan.error_code.val
  if plan.error_code.val!=1:raise RuntimeError('Approach plan rejected '+str(plan.error_code.val))
@@ -122,7 +150,27 @@ try:
  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=original.allowed_collision_matrix;apply(scene)
  validity_request=GetStateValidity.Request();validity_request.group_name='arm';validity_request.robot_state=state(lifted[0]);lift_valid=call('/check_state_validity',GetStateValidity,validity_request)
  result['lifted_payload_state_valid']=lift_valid.valid;result['lifted_payload_contacts']=[(c.contact_body_1,c.contact_body_2) for c in lift_valid.contacts]
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=8.;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(lifted[0]);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,hover)])]
+ if not trash:
+  # Validate descent while only the carried body may touch the destination pad.
+  placed_body=fk(placed)@L;corners=(P-O[:3,3])@placed_body[:3,:3].T+placed_body[:3,3];pad=np.array(wc['pads'][pad_key]['center_table_m'])
+  if np.max(np.linalg.norm(corners[:,:2]-pad[:2],axis=1))>wc['pads'][pad_key]['diameter_m']/2-.002:raise RuntimeError('Payload footprint exceeds pad')
+  if packing is not None:
+   from pad_packing import validate_actual
+   validate_actual(packing,a.placement_object,corners)
+  acm=copy.deepcopy(original.allowed_collision_matrix)
+  for key in ['scanned_block','workcell_'+pad_key]:
+   if key not in acm.entry_names:
+    acm.entry_names.append(key)
+    for row in acm.entry_values:row.enabled.append(False)
+    acm.entry_values.append(AllowedCollisionEntry(enabled=[False]*len(acm.entry_names)))
+  i=acm.entry_names.index('scanned_block');j=acm.entry_names.index('workcell_'+pad_key);acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
+  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=acm;apply(scene)
+  for endpoint,label in [(placed,'Placement'),(hover,'Placement hover')]:
+   vr=GetStateValidity.Request();vr.group_name='arm';vr.robot_state=state(endpoint)
+   vv=call('/check_state_validity',GetStateValidity,vr)
+   if not vv.valid:raise RuntimeError(label+' collision '+str([(c.contact_body_1,c.contact_body_2) for c in vv.contacts]))
+  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=original.allowed_collision_matrix;apply(scene)
+ req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(lifted[0]);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,hover)])]
  transfer=call('/plan_kinematic_path',GetMotionPlan,req).motion_plan_response;result['transfer_plan_error']=transfer.error_code.val
  if transfer.error_code.val!=1:raise RuntimeError('Payload transfer plan rejected '+str(transfer.error_code.val))
  cached['transfer_to_trash_drop' if trash else 'transfer_to_pad_ID'+str(pad_id)]={'joint_names':list(transfer.trajectory.joint_trajectory.joint_names),'start':lifted[0].tolist(),'goal':hover.tolist(),'scaling':scaling,'trajectory':message_to_ordereddict(transfer.trajectory)}
@@ -131,25 +179,14 @@ try:
   detached=AttachedCollisionObject();detached.link_name='cup_tip';detached.object.id='scanned_block';detached.object.operation=CollisionObject.REMOVE
   remove=CollisionObject();remove.id='scanned_block';remove.operation=CollisionObject.REMOVE
   scene=PlanningScene();scene.is_diff=True;scene.robot_state.is_diff=True;scene.robot_state.attached_collision_objects=[detached];scene.world.collision_objects=[remove];scene.allowed_collision_matrix=original.allowed_collision_matrix;apply(scene)
-  request=GetMotionPlan.Request();mr=request.motion_plan_request;mr.group_name='arm';mr.pipeline_id='ompl';mr.planner_id='RRTConnectkConfigDefault';mr.allowed_planning_time=8.;mr.num_planning_attempts=1;mr.max_velocity_scaling_factor=vscale;mr.max_acceleration_scaling_factor=ascale;mr.start_state=state(placed);mr.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,start)])]
+  request=GetMotionPlan.Request();mr=request.motion_plan_request;mr.group_name='arm';mr.pipeline_id='ompl';mr.planner_id='RRTConnectkConfigDefault';mr.allowed_planning_time=a.planning_seconds;mr.num_planning_attempts=1;mr.max_velocity_scaling_factor=vscale;mr.max_acceleration_scaling_factor=ascale;mr.start_state=state(placed);mr.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,start)])]
+  if trash or label=='return_to_initial_home':
+   mr.pipeline_id='pilz_industrial_motion_planner';mr.planner_id='PTP'
   response=call('/plan_kinematic_path',GetMotionPlan,request).motion_plan_response
   if response.error_code.val!=1:raise RuntimeError('Trash empty return path rejected')
   cached['return_to_initial_home']={'joint_names':list(response.trajectory.joint_trajectory.joint_names),'start':placed.tolist(),'goal':list(map(float,start)),'scaling':scaling,'trajectory':message_to_ordereddict(response.trajectory)}
   result.update(success=True,destination='trash_drop',trash_goal_q_rad=placed.tolist(),object_origin_table=O.tolist(),predicted_placed_object_pose_table=None,empty_retreat_and_return_checked=True,scope='approach/contact/attached lift/trash transfer/empty return reviewed; no physical release performed; bin interior/fall not modeled')
   (s/'reviewed_trajectories.json').write_text(json.dumps(cached,indent=2));raise SystemExit(0)
- # Validate descent while only the carried body may touch the destination pad.
- placed_body=fk(placed)@L;corners=(P-O[:3,3])@placed_body[:3,:3].T+placed_body[:3,3];pad=np.array(wc['pads'][pad_key]['center_table_m'])
- if np.max(np.linalg.norm(corners[:,:2]-pad[:2],axis=1))>wc['pads'][pad_key]['diameter_m']/2-.002:raise RuntimeError('Payload footprint exceeds pad')
- if packing is not None:
-  from pad_packing import validate_actual
-  validate_actual(packing,a.placement_object,corners)
- acm=copy.deepcopy(original.allowed_collision_matrix)
- for key in ['scanned_block','workcell_'+pad_key]:
-  if key not in acm.entry_names:
-   acm.entry_names.append(key)
-   for row in acm.entry_values:row.enabled.append(False)
-   acm.entry_values.append(AllowedCollisionEntry(enabled=[False]*len(acm.entry_names)))
- i=acm.entry_names.index('scanned_block');j=acm.entry_names.index('workcell_'+pad_key);acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=acm;apply(scene)
  tt,qq,_,_=contact_samples(fk,lo,hi,hover,placed,[float(cfg[k]['max_velocity'])*vscale for k in names],[float(cfg[k]['max_acceleration'])*ascale for k in names])
  for q in qq:
@@ -171,14 +208,17 @@ try:
  for label,begin,end in [('empty_retreat_from_pad_ID'+str(pad_id),placed,retreat[0]),('return_to_initial_home',retreat[0],start)]:
   if label=='return_to_initial_home':
    scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=original.allowed_collision_matrix;apply(scene)
-  request=GetMotionPlan.Request();mr=request.motion_plan_request;mr.group_name='arm';mr.pipeline_id='ompl';mr.planner_id='RRTConnectkConfigDefault';mr.allowed_planning_time=8.;mr.num_planning_attempts=1;mr.max_velocity_scaling_factor=vscale;mr.max_acceleration_scaling_factor=ascale;mr.start_state=state(begin);mr.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,end)])]
+  request=GetMotionPlan.Request();mr=request.motion_plan_request;mr.group_name='arm';mr.pipeline_id='ompl';mr.planner_id='RRTConnectkConfigDefault';mr.allowed_planning_time=a.planning_seconds;mr.num_planning_attempts=1;mr.max_velocity_scaling_factor=vscale;mr.max_acceleration_scaling_factor=ascale;mr.start_state=state(begin);mr.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,end)])]
+  if trash or label=='return_to_initial_home':
+   mr.pipeline_id='pilz_industrial_motion_planner';mr.planner_id='PTP'
   response=call('/plan_kinematic_path',GetMotionPlan,request).motion_plan_response
   if response.error_code.val!=1:raise RuntimeError(label+' plan rejected '+str(response.error_code.val))
   cached[label]={'joint_names':list(response.trajectory.joint_trajectory.joint_names),'start':list(map(float,begin)),'goal':list(map(float,end)),'scaling':scaling,'trajectory':message_to_ordereddict(response.trajectory)}
  result['empty_retreat_and_return_checked']=True
  result.update(predicted_placed_object_pose_table=placed_body.tolist(),object_origin_table=O.tolist(),success=True,placement_samples=len(qq),placement_q_rad=placed.tolist(),scope='approach/contact/full attached lift/transfer/placement/empty retreat/return planning; physical grip/release still untested')
  if result['success']:(s/'reviewed_trajectories.json').write_text(json.dumps(cached,indent=2))
-except Exception as exc:result['error']=str(exc)
+except Exception as exc:
+ result['error']=str(exc);print('안전점검 실패: '+str(exc),flush=True)
 finally:
  # Detach first, then query again: detaching may create a world object.
  query_current=GetPlanningScene.Request();query_current.components.components=PlanningSceneComponents.WORLD_OBJECT_GEOMETRY|PlanningSceneComponents.ROBOT_STATE_ATTACHED_OBJECTS

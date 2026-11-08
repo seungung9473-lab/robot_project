@@ -17,7 +17,12 @@ def generate_launch_description():
         if hashlib.sha256((d/'meshes'/name).read_bytes()).hexdigest()!=digest:
             raise RuntimeError('Collision mesh changed: '+name+'. Regenerate MoveIt audit snapshot.')
     model={'robot_description':(d/'urdf/soarm4.urdf').read_text(),'robot_description_semantic':(p/'config/soarm4.srdf').read_text()}
-    params={**model,'robot_description_planning':yaml.safe_load((p/'config/joint_limits.yaml').read_text()),'planning_pipelines':['ompl'],'default_planning_pipeline':'ompl','ompl':yaml.safe_load((p/'config/ompl_planning.yaml').read_text()),'moveit_controller_manager':'soarm4_moveit_config/PreviewOnlyControllerManager','allow_trajectory_execution':False,'disable_capabilities':'move_group/MoveGroupExecuteTrajectoryAction','publish_robot_description':True,'publish_robot_description_semantic':True,'publish_planning_scene':True,'publish_geometry_updates':True,'publish_state_updates':True,'publish_transforms_updates':True,'monitor_dynamics':False}
+    planning_limits=yaml.safe_load((p/'config/joint_limits.yaml').read_text())
+    planning_limits.update(yaml.safe_load((p/'config/pilz_cartesian_limits.yaml').read_text()))
+    # Pilz braking magnitude equals the existing acceleration cap; do not raise limits.
+    for limit in planning_limits['joint_limits'].values():
+        limit.update(has_deceleration_limits=True,max_deceleration=-float(limit['max_acceleration']))
+    params={**model,'robot_description_kinematics':yaml.safe_load((p/'config/kinematics.yaml').read_text()),'robot_description_planning':planning_limits,'planning_pipelines':['ompl','pilz_industrial_motion_planner'],'default_planning_pipeline':'ompl','ompl':yaml.safe_load((p/'config/ompl_planning.yaml').read_text()),'pilz_industrial_motion_planner':yaml.safe_load((p/'config/pilz_industrial_motion_planner_planning.yaml').read_text()),'moveit_controller_manager':'soarm4_moveit_config/PreviewOnlyControllerManager','allow_trajectory_execution':False,'disable_capabilities':'move_group/MoveGroupExecuteTrajectoryAction','publish_robot_description':True,'publish_robot_description_semantic':True,'publish_planning_scene':True,'publish_geometry_updates':True,'publish_state_updates':True,'publish_transforms_updates':True,'monitor_dynamics':False}
     # Private namespace keeps the previous slider GUI from publishing this planning state.
     common={'namespace':'soarm4_plan','remappings':[('/tf','tf'),('/tf_static','tf_static')]}
     return LaunchDescription([

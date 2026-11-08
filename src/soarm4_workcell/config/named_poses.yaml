@@ -59,4 +59,17 @@ poses:
     calibration_hashes:
       /home/seungung9473/robot_ws/src/soarm4_description/config/model.json: e5eeeab4b3e0a9b457bc611349e66559cb8f5c9d390be2066cb02d5a182e72f2
       /home/seungung9473/robot_ws/src/soarm4_workcell/config/workcell.yaml: d9a7d14eb4baa13bd86e0c321b86e56d12d8253d01f461ea831a906952fed3df
-      /home/seungung9473/robot_ws/src/soarm_bridge/config/soarm.yaml: 62729c90e154d9cdd6393a1a17fb42feba1e85754bfd214a320d4f66519513a8
+      /home/seungung9473/robot_ws/src/soarm_bridge/config/soarm.yaml: c3182b174354d1e1b020424373a8ad156c814b564ffa942a243585a7acc145cc
+    configuration_revalidation:
+      reason: Only bounded endpoint fine-correction parameters added; all existing
+        values unchanged. Joint target and calibration geometry preserved.
+      changed_parameters:
+        fine_correction_iterations: 5
+        fine_tolerance_counts: 1
+        fine_max_counts: 4
+        fine_max_counts_per_joint:
+        - 8
+        - 4
+        - 4
+        - 4
+      record: /home/seungung9473/robot_ws/test_data/runs/20261108_204615_5d8f8655

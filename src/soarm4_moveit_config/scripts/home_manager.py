@@ -105,12 +105,22 @@ class HomeManager(Node):
             q=self.fresh()
             if max(abs(a-b) for a,b in zip(q,self.home))<1e-6:
                 res.success=True;res.message='이미 홈입니다 · 현재 위치 유지';self.status(res.message);return res
-            self.status('홈까지 충돌 회피 경로 계획 중…')
-            reqplan=GetMotionPlan.Request();r=reqplan.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=5;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(self.home_velocity_scaling);r.max_acceleration_scaling_factor=float(self.home_acceleration_scaling)
+            self.status('계산중: 홈 복귀 Pilz PTP · 충돌/관절 점검 포함')
+            reqplan=GetMotionPlan.Request();r=reqplan.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(self.home_velocity_scaling);r.max_acceleration_scaling_factor=float(self.home_acceleration_scaling)
             r.start_state=RobotState();r.start_state.joint_state=JointState(name=self.names,position=q)
             goal=Constraints()
             for name,value in zip(self.names,self.home):goal.joint_constraints.append(JointConstraint(joint_name=name,position=value,tolerance_above=1e-6,tolerance_below=1e-6,weight=1.))
-            r.goal_constraints=[goal];plan=self.call(self.plan,reqplan,20).motion_plan_response
+            r.goal_constraints=[goal]
+            plan=None
+            for pipeline,planner in [('pilz_industrial_motion_planner','PTP'),('ompl','RRTConnectkConfigDefault')]:
+                if self.stop.is_set():raise RuntimeError('홈 이동이 취소됐습니다')
+                r.pipeline_id=pipeline;r.planner_id=planner
+                plan=self.call(self.plan,reqplan,30).motion_plan_response
+                if plan.error_code.val==MoveItErrorCodes.SUCCESS:
+                    self.status('안전점검 통과: 홈 경로 '+planner);break
+                if planner=='PTP':
+                    self.status('안전점검 실패: Pilz PTP ('+str(plan.error_code.val)+') · 재탐색합니다: RRT-Connect')
+
             if self.stop.is_set():raise RuntimeError('홈 이동이 취소됐습니다')
             if plan.error_code.val!=MoveItErrorCodes.SUCCESS:raise RuntimeError('홈 경로 계획 실패: '+str(plan.error_code.val))
             jt=plan.trajectory.joint_trajectory

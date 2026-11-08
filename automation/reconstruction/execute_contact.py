@@ -37,7 +37,7 @@ def call(c,req,seconds=45):
  if not f.done():raise RuntimeError('Service timed out')
  return f.result()
 def state(q):return RobotState(joint_state=JointState(name=names,position=q))
-ROOT=Path('/home/seungung9473/robot_ws/automation/reconstruction')
+ROOT=Path('/home/seungung9473/robot_ws_mybranch/automation/reconstruction')
 settings=json.loads((ROOT/'contact_settings.json').read_text())
 candidate_path=Path(os.environ.get('SOARM_SUCTION_CANDIDATES',str(ROOT/'multiview/20261101_194509_024461/reconstruction_sam2/suction_candidates.json')))
 candidate_report=json.loads(candidate_path.read_text());candidate=candidate_report['selected_candidate']

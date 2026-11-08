@@ -106,7 +106,8 @@ def acm_for(object_id,support):
 def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
- if vertical and pump_target is None and np.linalg.norm(fk(goal)[:3,3]-fk(start)[:3,3])>.011:
+ continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
+ if vertical and not continuous_retreat and pump_target is None and np.linalg.norm(fk(goal)[:3,3]-fk(start)[:3,3])>.011:
   begin=fk(start)[:3,3];end=fk(goal)[:3,3];count=int(np.ceil(np.linalg.norm(end-begin)/.01))
   for step in range(1,count+1):
    target=begin+(end-begin)*step/count;segment=goal if step==count else ik(target,fresh(),axis=fk(goal)[:3,0]);move(segment,label+' '+str(step)+'_of_'+str(count),True)
@@ -118,7 +119,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
  sc=call('/soarm4/rviz_scaling');sc=json.loads(sc.message) if sc.success else None
  if not sc:raise RuntimeError('No RViz scaling')
  req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
- if pump_target is not None:
+ if pump_target is not None or continuous_retreat:
   from normal_contact_trajectory import contact_samples
   from moveit_msgs.msg import RobotTrajectory
   from trajectory_msgs.msg import JointTrajectoryPoint
@@ -151,7 +152,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
   a=fk(start)[:3,3];b=fk(goal)[:3,3];trajectory=res.trajectory.joint_trajectory;indices=[trajectory.joint_names.index(n) for n in names]
   for point in trajectory.points:
    pos=fk([point.positions[i] for i in indices])[:3,3]
-   if pump_target is not None:
+   if pump_target is not None or continuous_retreat:
     line=b-a;length=np.linalg.norm(line);direction=line/max(length,1e-9);along=float((pos-a)@direction);lateral=np.linalg.norm(pos-a-direction*along)
     if lateral>.001 or not -.001<=along<=length+.001:raise RuntimeError('Contact path leaves surface-normal corridor')
     T=fk([point.positions[i] for i in indices]);axis_error=np.degrees(np.arccos(np.clip(T[:3,0]@fk(goal)[:3,0],-1,1)))
