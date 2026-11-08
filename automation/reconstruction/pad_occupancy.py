@@ -117,6 +117,52 @@ def free_offsets(polygon, offsets, center, radius, occupancy, edge=.002, gap=.00
     return offsets[keep]
 
 
+FINE_STEP=.0005
+FINE_RADIUS=.012
+
+
+def min_enclosing_circle(points):
+    """Exact 2D minimum enclosing circle (Welzl, iterative). Returns (center, radius)."""
+    pts = np.unique(np.asarray(points, float).reshape(-1, 2), axis=0)
+    rng = np.random.default_rng(0); pts = pts[rng.permutation(len(pts))]
+    def circ2(a, b):
+        c = (a+b)/2; return c, float(np.linalg.norm(a-c))
+    def circ3(a, b, c):
+        d = 2*(a[0]*(b[1]-c[1])+b[0]*(c[1]-a[1])+c[0]*(a[1]-b[1]))
+        if abs(d) < 1e-15:
+            cands = [circ2(a, b), circ2(a, c), circ2(b, c)]; return max(cands, key=lambda t: t[1])
+        ux = ((a@a)*(b[1]-c[1])+(b@b)*(c[1]-a[1])+(c@c)*(a[1]-b[1]))/d
+        uy = ((a@a)*(c[0]-b[0])+(b@b)*(a[0]-c[0])+(c@c)*(b[0]-a[0]))/d
+        cen = np.array([ux, uy]); return cen, float(np.linalg.norm(a-cen))
+    inside = lambda cr, p: np.linalg.norm(p-cr[0]) <= cr[1]+1e-12
+    cr = (pts[0].copy(), 0.0)
+    for i in range(1, len(pts)):
+        if inside(cr, pts[i]):continue
+        cr = (pts[i].copy(), 0.0)
+        for j in range(i):
+            if inside(cr, pts[j]):continue
+            cr = circ2(pts[i], pts[j])
+            for k in range(j):
+                if inside(cr, pts[k]):continue
+                cr = circ3(pts[i], pts[j], pts[k])
+    return cr
+
+
+def free_offsets_refined(polygon, coarse_offsets, center, radius, occupancy, edge=.002, gap=.002):
+    """Same margins as free_offsets. If the 2 mm grid finds nothing, also try offsets that put the shape's
+    minimum-enclosing-circle center on the pad center (plus a 0.5 mm grid near the pad center).
+    Tight fits can have less slack than the coarse step. Never relaxes edge or gap margins."""
+    free = free_offsets(polygon, coarse_offsets, center, radius, occupancy, edge, gap)
+    if len(free):return free, False
+    p = np.asarray(polygon, float); mec_center, _ = min_enclosing_circle(p)
+    best = np.asarray(center, float)[:2]-mec_center
+    n = int(round(FINE_RADIUS/FINE_STEP)); ticks = np.arange(-n, n+1)*FINE_STEP
+    fine = np.array([(x, y) for x in ticks for y in ticks if x*x+y*y <= FINE_RADIUS**2], float)
+    fine = fine[np.argsort(np.linalg.norm(fine, axis=1), kind='stable')]
+    near = best+np.array([(dx, dy) for dx in (-.00025, 0., .00025) for dy in (-.00025, 0., .00025)])
+    return free_offsets(p, np.vstack((near, fine)), center, radius, occupancy, edge, gap), True
+
+
 def validate_reserved(plan, occupancy):
     if plan.get('occupancy_geometry_digest') not in (None, occupancy['geometry_digest']):
         raise RuntimeError('패드 점유 모델 변경: 새 예약이 필요합니다')

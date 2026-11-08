@@ -8,7 +8,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial.transform import Rotation
 from scipy.optimize import least_squares
 from pad_packing import footprint, separated
-from pad_occupancy import blockers, free_offsets, read_occupancy, write_snapshot
+from pad_occupancy import blockers, free_offsets, free_offsets_refined, read_occupancy, write_snapshot
 
 
 class StaticPlacementRejected(RuntimeError):
@@ -111,8 +111,8 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
                 reviews.append({'object':key,'option':index,'result':'nominal_ik_unavailable'});continue
             body=fk(nominal)@local
             nominal_points=(vertices-origin[:3,3])@body[:3,:3].T+body[:3,3]
-            free=free_offsets(footprint(nominal_points),grid,pad,radius,occupancy)
-            reviews.append({'object':key,'option':index,'prefilter_free_offsets':len(free)})
+            free,fine_used=free_offsets_refined(footprint(nominal_points),grid,pad,radius,occupancy)
+            reviews.append({'object':key,'option':index,'prefilter_free_offsets':len(free),'fine_grid_used':fine_used})
             # Try spatially distinct locations before adjacent 2mm variants.
             ordered=[]
             if len(free):
