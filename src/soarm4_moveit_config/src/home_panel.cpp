@@ -36,7 +36,7 @@ public:
   torque_->setToolTip(QString::fromUtf8("팔을 받친 상태에서 누르세요. 같은 버튼으로 토크 OFF/ON 전환"));torque_->setObjectName("soarm4_release_torque_button");
   row->addWidget(home_);row->addWidget(stop_);row->addWidget(torque_);root->addLayout(row);
   status_=new QLabel(QString::fromUtf8("관리 서비스 연결 대기"));status_->setWordWrap(true);root->addWidget(status_);
-  auto* pump_row=new QHBoxLayout();pump_on_=button("흡착 ON (수동)",[this](){request("vacuum_on");});pump_release_=button("놓기 / 해제 (수동)",[this](){request("vacuum_release");});pump_on_->setObjectName("soarm4_manual_grip");pump_release_->setObjectName("soarm4_manual_release");pump_row->addWidget(pump_on_);pump_row->addWidget(pump_release_);root->addLayout(pump_row);pressure_=new QLabel(QString::fromUtf8("압력 diff: 수신 대기"));root->addWidget(pressure_);
+  auto* pump_row=new QHBoxLayout();pump_on_=button("흡착 ON (수동)",[this](){request("vacuum_on");});pump_release_=button("놓기 / 해제 (수동)",[this](){request("vacuum_release");});pump_on_->setObjectName("soarm4_manual_grip");pump_release_->setObjectName("soarm4_manual_release");pump_stop_=button("흡착 중지 (펌프 OFF)",[this](){request("vacuum_stop");});pump_stop_->setObjectName("soarm4_manual_pump_stop");pump_stop_->setStyleSheet("QPushButton{background:#b3261e;color:white;font-weight:bold;}");pump_row->addWidget(pump_on_);pump_row->addWidget(pump_release_);pump_row->addWidget(pump_stop_);root->addLayout(pump_row);pressure_=new QLabel(QString::fromUtf8("압력 diff: 수신 대기"));root->addWidget(pressure_);
   auto* scroll=new QScrollArea();scroll->setWidgetResizable(true);scroll->setMinimumHeight(210);auto* body=new QWidget();auto* layout=new QVBoxLayout(body);
   layout->addWidget(new QLabel(QString::fromUtf8("이동 자세와 흡착·놓기 단계를 순서대로 저장")));
   route_=new QListWidget();route_->setMinimumHeight(100);route_->setMaximumHeight(140);route_->setObjectName("soarm4_route_list");layout->addWidget(route_);
@@ -55,7 +55,7 @@ public:
  }
  void onInitialize() override {
   auto abstraction=getDisplayContext()->getRosNodeAbstraction().lock();if(!abstraction)return;node_=abstraction->get_raw_node();
-  for(auto pair:{std::pair<const char*,const char*>("home","/soarm4/go_home"),{"stop","/soarm4/stop_home"},{"torque","/soarm4/toggle_torque"},{"list","/soarm4/pick_place/list"},{"check","/soarm4/pick_place/check"},{"run","/soarm4/pick_place/run"},{"vacuum_on","/soarm4/vacuum/grip"},{"vacuum_release","/soarm4/vacuum/release"}})clients_[pair.first]=node_->create_client<std_srvs::srv::Trigger>(pair.second);
+  for(auto pair:{std::pair<const char*,const char*>("home","/soarm4/go_home"),{"stop","/soarm4/stop_home"},{"torque","/soarm4/toggle_torque"},{"list","/soarm4/pick_place/list"},{"check","/soarm4/pick_place/check"},{"run","/soarm4/pick_place/run"},{"vacuum_on","/soarm4/vacuum/grip"},{"vacuum_release","/soarm4/vacuum/release"},{"vacuum_stop","/vacuum/off"}})clients_[pair.first]=node_->create_client<std_srvs::srv::Trigger>(pair.second);
   scaling_service_=node_->create_service<std_srvs::srv::Trigger>("/soarm4/rviz_scaling",[this](std::shared_ptr<std_srvs::srv::Trigger::Request>,std::shared_ptr<std_srvs::srv::Trigger::Response> response){
    auto read=[this,response](){
     QDoubleSpinBox *velocity=nullptr,*acceleration=nullptr;int nv=0,na=0;
@@ -122,14 +122,14 @@ private:
  void editSelected(const QString& action,int delta=0){auto s=selected();if(s.value("kind")!="waypoint"&&s.value("kind")!="action"){status_->setText(QString::fromUtf8("이동 중간점이나 흡착/놓기 동작 단계를 선택하세요."));return;}sendEdit(QJsonObject{{"action",action},{"section",s.value("section")},{"index",s.value("index")},{"delta",delta}});}
  void moveSelected(int delta){editSelected("move",delta);}
  void request(const std::string& name){
-  if(!node_||(busy_&&name!="stop"))return;auto client=clients_.at(name);if(!client->service_is_ready()){status_->setText(QString::fromUtf8("관리 서비스에 연결되지 않았습니다."));return;}if(name!="stop")busy_=true;QPointer<HomePanel> guard(this);
-  client->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(),[guard,name](rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future){auto response=future.get();QString text=QString::fromStdString(response->message);bool ok=response->success;if(guard)QMetaObject::invokeMethod(guard,[guard,text,ok,name](){if(!guard)return;if(name!="stop")guard->busy_=false;if(ok)guard->updateTorqueLabel(text);if(name=="list"&&ok){guard->setRoute(text);guard->status_->setText(QString::fromUtf8("저장된 경로를 불러왔습니다."));}else guard->status_->setText(text);},Qt::QueuedConnection);});
+  if(!node_||(busy_&&name!="stop"&&name!="vacuum_stop"))return;auto client=clients_.at(name);if(!client->service_is_ready()){status_->setText(QString::fromUtf8("관리 서비스에 연결되지 않았습니다."));return;}if(name!="stop"&&name!="vacuum_stop")busy_=true;QPointer<HomePanel> guard(this);
+  client->async_send_request(std::make_shared<std_srvs::srv::Trigger::Request>(),[guard,name](rclcpp::Client<std_srvs::srv::Trigger>::SharedFuture future){auto response=future.get();QString text=QString::fromStdString(response->message);bool ok=response->success;if(guard)QMetaObject::invokeMethod(guard,[guard,text,ok,name](){if(!guard)return;if(name!="stop"&&name!="vacuum_stop")guard->busy_=false;if(ok)guard->updateTorqueLabel(text);if(name=="list"&&ok){guard->setRoute(text);guard->status_->setText(QString::fromUtf8("저장된 경로를 불러왔습니다."));}else guard->status_->setText(text);},Qt::QueuedConnection);});
  }
  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr scaling_service_;
  rclcpp::Node::SharedPtr node_;std::map<std::string,rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr> clients_;
  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr edit_pub_;rclcpp::Subscription<std_msgs::msg::String>::SharedPtr route_sub_,edit_sub_;std::vector<rclcpp::Subscription<std_msgs::msg::String>::SharedPtr> status_subs_;
  rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr diff_sub_;rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr hold_sub_;QLabel* pressure_;QElapsedTimer pressure_elapsed_;bool sensorless_=false;bool have_pressure_=false,holding_=false;int diff_=0;
- QPushButton *pump_on_,*pump_release_,*insert_grip_,*insert_release_;QPushButton *home_,*stop_,*torque_,*save_,*add_,*up_,*down_,*remove_,*clear_,*list_,*check_,*run_;std::vector<QPushButton*> controls_;QListWidget* route_;QLabel* status_;bool busy_=false;int revision_=0;QString pending_,select_section_;int select_index_=-1;QElapsedTimer elapsed_;
+ QPushButton *pump_on_,*pump_release_,*pump_stop_,*insert_grip_,*insert_release_;QPushButton *home_,*stop_,*torque_,*save_,*add_,*up_,*down_,*remove_,*clear_,*list_,*check_,*run_;std::vector<QPushButton*> controls_;QListWidget* route_;QLabel* status_;bool busy_=false;int revision_=0;QString pending_,select_section_;int select_index_=-1;QElapsedTimer elapsed_;
 };
 }
 PLUGINLIB_EXPORT_CLASS(soarm4_moveit_config::HomePanel,rviz_common::Panel)
