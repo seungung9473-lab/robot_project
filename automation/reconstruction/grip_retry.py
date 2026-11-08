@@ -16,3 +16,4 @@ def final_advance_target(first_tcp,outward_normal,distance_m=FINAL_ADVANCE_M):
     origin=np.asarray(first_tcp,float);normal=np.asarray(outward_normal,float)
     if origin.shape!=(3,) or normal.shape!=(3,) or not np.isfinite(origin).all() or not np.isfinite(normal).all() or np.linalg.norm(normal)<1e-8:raise ValueError('Finite TCP and nonzero surface normal required')
     return origin-normal/np.linalg.norm(normal)*distance_m
+SLOW_5MM_SCALING=(.15,.10)  # (velocity, acceleration) 상한: 5mm 추가 전진은 RViz 0.80/0.40이 아니라 느리게

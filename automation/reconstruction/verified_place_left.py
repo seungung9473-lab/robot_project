@@ -103,7 +103,7 @@ def acm_for(object_id,support):
  i=acm.entry_names.index(object_id);j=acm.entry_names.index(support);acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
  continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
@@ -113,6 +113,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
   if not res.valid:raise RuntimeError('Invalid pose '+str([(c.contact_body_1,c.contact_body_2) for c in res.contacts]))
  sc=call('/soarm4/rviz_scaling');sc=json.loads(sc.message) if sc.success else None
  if not sc:raise RuntimeError('No RViz scaling')
+ if speed_cap:sc={'velocity':min(float(sc['velocity']),speed_cap[0]),'acceleration':min(float(sc['acceleration']),speed_cap[1])}  # 느리게 접근: 현재 RViz 비율보다 클 수 없음
  req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
  if vertical:
   from normal_contact_trajectory import contact_samples
@@ -404,7 +405,7 @@ try:
  phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
  if not grip.success:
   # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 5초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
-  from grip_retry import final_advance_target,SUCTION_WAIT_S
+  from grip_retry import final_advance_target,SUCTION_WAIT_S,SLOW_5MM_SCALING
   q=fresh();initial_contact=fk(q);status['retries']=[];wait_end=t_grip0+SUCTION_WAIT_S;good=0;since=0.
   while time.monotonic()<wait_end and good<2:
    rclpy.spin_once(node,timeout_sec=.05)
@@ -417,7 +418,7 @@ try:
    target=final_advance_target(initial_contact[:3,3],normal)
    q=fresh();retry_goal=ik(target,q,axis=initial_contact[:3,0])
    record={'attempt':1,'step_m':.005,'total_additional_approach_m':.005,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 5 mm inward-normal advance after 5 s without suction'};status['retries'].append(record)
-   move(retry_goal,'grip_retry_5mm_after_5s',True);phase('grip_retry_resting_5mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
+   move(retry_goal,'grip_retry_5mm_after_5s',True,speed_cap=SLOW_5MM_SCALING);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_5mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
   if not grip.success:
    released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed 5 s after contact and after 5mm extra advance; no lift')
  holding=True;wait_vacuum();q=fresh();Tcontact=fk(q)
