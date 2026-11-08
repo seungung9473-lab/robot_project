@@ -1,4 +1,5 @@
 """Temporarily apply predicted aligned geometry and plan; never execute actions."""
+from transit_clearance import RETREAT_UP_M
 import argparse,copy,json,time
 from pathlib import Path
 import numpy as np,yaml,rclpy
@@ -184,15 +185,15 @@ try:
   detached=AttachedCollisionObject();detached.link_name='cup_tip';detached.object.id='scanned_block';detached.object.operation=CollisionObject.REMOVE
   remove=CollisionObject();remove.id='scanned_block';remove.operation=CollisionObject.REMOVE
   scene=PlanningScene();scene.is_diff=True;scene.robot_state.is_diff=True;scene.robot_state.attached_collision_objects=[detached];scene.world.collision_objects=[remove];scene.allowed_collision_matrix=original.allowed_collision_matrix;apply(scene)
-  if not a.finish_above:
+  if True:  # trash always plans the empty return to this stage's start pose (HOME or previous wait pose)
    request=GetMotionPlan.Request();mr=request.motion_plan_request;mr.group_name='arm';mr.pipeline_id='ompl';mr.planner_id='RRTConnectkConfigDefault';mr.allowed_planning_time=a.planning_seconds;mr.num_planning_attempts=1;mr.max_velocity_scaling_factor=vscale;mr.max_acceleration_scaling_factor=ascale;mr.start_state=state(placed);mr.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,start)])]
    if trash:
     mr.pipeline_id='pilz_industrial_motion_planner';mr.planner_id='PTP'
    response=call('/plan_kinematic_path',GetMotionPlan,request).motion_plan_response
    if response.error_code.val!=1:raise RuntimeError('Trash empty return path rejected')
    cached['return_to_initial_home']={'joint_names':list(response.trajectory.joint_trajectory.joint_names),'start':placed.tolist(),'goal':list(map(float,start)),'scaling':scaling,'trajectory':message_to_ordereddict(response.trajectory)}
-  result['exit_q_rad']=placed.tolist() if a.finish_above else list(map(float,start))
-  result.update(success=True,destination='trash_drop',trash_goal_q_rad=placed.tolist(),object_origin_table=O.tolist(),predicted_placed_object_pose_table=None,finish_above=a.finish_above,empty_retreat_and_return_checked=not a.finish_above,scope='approach/contact/attached lift/trash transfer/empty return reviewed; no physical release performed; bin interior/fall not modeled')
+  result['exit_q_rad']=list(map(float,start))
+  result.update(success=True,destination='trash_drop',trash_goal_q_rad=placed.tolist(),object_origin_table=O.tolist(),predicted_placed_object_pose_table=None,finish_above=a.finish_above,empty_retreat_and_return_checked=True,scope='approach/contact/attached lift/trash transfer/empty return reviewed; no physical release performed; bin interior/fall not modeled')
   (s/'reviewed_trajectories.json').write_text(json.dumps(cached,indent=2));raise SystemExit(0)
  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=acm;apply(scene)
  tt,qq,_,_=contact_samples(fk,lo,hi,hover,placed,[float(cfg[k]['max_velocity'])*vscale for k in names],[float(cfg[k]['max_acceleration'])*ascale for k in names])
@@ -210,7 +211,7 @@ try:
  for key in ['cup_tip','tool_link_cup_visual_link']:
   i=acm.entry_names.index(key);j=acm.entry_names.index('scanned_block');acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
  scene=PlanningScene();scene.is_diff=True;scene.robot_state.is_diff=True;scene.robot_state.attached_collision_objects=[detached];scene.world.collision_objects=[placed_world];scene.allowed_collision_matrix=acm;apply(scene)
- retreat=solve_axis(fk,lo,hi,fk(placed)[:3,3]+[0,0,.03],fk(placed)[:3,0],seed=placed)
+ retreat=solve_axis(fk,lo,hi,fk(placed)[:3,3]+[0,0,RETREAT_UP_M],fk(placed)[:3,0],seed=placed)
  if retreat is None:raise RuntimeError('Empty retreat IK unavailable')
  for label,begin,end in [('empty_retreat_from_pad_ID'+str(pad_id),placed,retreat[0])]+([] if a.finish_above else [('return_to_initial_home',retreat[0],start)]):
   if label=='return_to_initial_home':

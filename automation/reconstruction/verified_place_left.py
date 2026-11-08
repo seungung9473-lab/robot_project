@@ -104,7 +104,8 @@ def acm_for(object_id,support):
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
 from grip_retry import SLOW_CONTACT_SCALING
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None):
+from transit_clearance import RETREAT_UP_M
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
  continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
@@ -115,7 +116,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
  sc=call('/soarm4/rviz_scaling');sc=json.loads(sc.message) if sc.success else None
  if not sc:raise RuntimeError('No RViz scaling')
  if speed_cap:sc={'velocity':min(float(sc['velocity']),speed_cap[0]),'acceleration':min(float(sc['acceleration']),speed_cap[1])}  # 느리게 접근: 현재 RViz 비율보다 클 수 없음
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
+ req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='pilz_industrial_motion_planner' if ptp else 'ompl';r.planner_id='PTP' if ptp else 'RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
  if vertical:
   from normal_contact_trajectory import contact_samples
   from moveit_msgs.msg import RobotTrajectory
@@ -217,6 +218,7 @@ def pad_clearance(view,pad):
  if max(c['surface_pixels'] for c in checks.values())<100 or any(c['elevated_pixels']>=40 for c in checks.values()):raise RuntimeError('Left pad obstructed or not observed sufficiently')
  return checks
 
+stage_start_q=None
 def dispose_at_trash():
  global holding,restore_acm
  from trash_destination import load_trash_pose,arrival_confirmed
@@ -236,6 +238,8 @@ def dispose_at_trash():
  holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];gone=CollisionObject();gone.id=object_id;gone.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[gone];apply(req)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
  if args.finish_above:
+  if stage_start_q is None:raise RuntimeError('Stage start pose unknown; cannot return after trash release')
+  move(stage_start_q,'return_to_stage_start_after_trash',ptp=True)  # 폐기 후 이 물체 시작 자세(이전 대기 자세/HOME)로 후퇴
   phase('wait_above_destination')
  else:
   phase('home');res=call('/soarm4/go_home',timeout=120)
@@ -305,7 +309,7 @@ if args.resume_held is not None:
   if not released.success:raise RuntimeError('Release not confirmed')
   holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];apply(req)
   placed_object=copy.deepcopy(co);placed_object.id='placed_pad_'+str(args.pad)+'_'+out.name;placed_object.header.frame_id='world';placed_object.operation=CollisionObject.ADD;placed_object.mesh_poses=[pose(np.linalg.inv(W)@np.array(status['predicted_placed_object_pose_table']))];req=scene_request();removal=CollisionObject();removal.id=object_id;removal.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[placed_object,removal];apply(req)
-  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip');q=fresh();move(ik(fk(q)[:3,3]+[0,0,.03],q,axis=fk(q)[:3,0]),'empty_retreat_from_pad_ID'+str(args.pad),True)
+  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip');q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),'empty_retreat_from_pad_ID'+str(args.pad),True)
   req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
   if args.finish_above:
    phase('wait_above_destination')
@@ -400,6 +404,7 @@ try:
   while not(out/'READY').exists():
    if time.monotonic()>deadline:raise RuntimeError('Recorder not ready')
    rclpy.spin_once(node,timeout_sec=.05)
+ stage_start_q=[float(x) for x in fresh()]
  move(qa.tolist(),'approach_3cm')
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
@@ -446,7 +451,7 @@ try:
   packing.setdefault('completed',{})[packing_key]={'collision_id':placed_object.id,'points_table_m':actual_points.tolist(),'execution_file':str(out/'execution.json')};temporary=packing_path.with_suffix('.tmp');temporary.write_text(json.dumps(packing,indent=2)+'\n');temporary.replace(packing_path)
  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip')
  acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
- q=fresh();move(ik(fk(q)[:3,3]+[0,0,.03],q,axis=fk(q)[:3,0]),f'empty_retreat_from_pad_ID{args.pad}',True)
+ q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),f'empty_retreat_from_pad_ID{args.pad}',True)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
  if args.finish_above:
   phase('wait_above_destination')
