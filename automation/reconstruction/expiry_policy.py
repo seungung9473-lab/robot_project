@@ -12,8 +12,11 @@ def parse_qr_expiry(text):
  if not m:raise ValueError('Expected type letter + YYMMDD')
  kind,yy,mm,dd=m.groups();return {'item_type':kind,'expiry_date':date(2000+int(yy),int(mm),int(dd)).isoformat(),'qr_text':text.strip()}
 
+# 인쇄 날짜 합의: 일치 판독이 충분히 많고 어긋난 판독이 단 1건이며, 그 1건이 만료/미만료 판정을 바꾸지 않을 때만 소수 오독으로 본다.
+MIN_MAJORITY_SOURCES=4;MAX_OUTLIER_SOURCES=1
+
 def printed_consensus(observations,today=None):
- today=today or today_seoul();values=[];seen=set()
+ today=today or today_seoul();by_value={};value_of={}
  for item in observations:
   if not isinstance(item,dict) or item.get('source')!='printed_numeric':continue
   confidence=item.get('confidence',0)
@@ -26,10 +29,17 @@ def printed_consensus(observations,today=None):
    elif short:value=date(today.year,*map(int,short.groups()))
    else:continue
   except ValueError:continue
-  if values and value!=values[0]:return None
-  if source in seen:continue
-  seen.add(source);values.append(value)
- return values[0] if len(values)>=2 else None
+  if source in value_of and value_of[source]!=value:return None  # 같은 증거에서 서로 다른 날짜는 충돌
+  value_of[source]=value;by_value.setdefault(value,set()).add(source)
+ if not by_value:return None
+ ranked=sorted(by_value.items(),key=lambda kv:-len(kv[1]));top,top_sources=ranked[0]
+ if len(top_sources)<2:return None
+ others=ranked[1:]
+ if not others:return top
+ if len(top_sources)<MIN_MAJORITY_SOURCES:return None
+ if len(others)>1 or len(others[0][1])>MAX_OUTLIER_SOURCES:return None
+ if (others[0][0]<today)!=(top<today):return None  # 폐기 여부가 갈리는 충돌은 절대 무시하지 않는다
+ return top
 
 def classify(observations,today=None,**unused):
  today=today or today_seoul();numeric=printed_consensus(observations,today);dates=[];seen=set()
