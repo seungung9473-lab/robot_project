@@ -1,5 +1,5 @@
 """Temporarily apply predicted aligned geometry and plan; never execute actions."""
-from transit_clearance import RETREAT_UP_M
+from transit_clearance import RETREAT_UP_M,TRANSIT_UP_M,TRANSIT_MIN_TCP_Z_M,min_tcp_z
 import argparse,copy,json,time
 from pathlib import Path
 import numpy as np,yaml,rclpy
@@ -93,12 +93,25 @@ try:
   from turntable_wait import review_wait_pose
   manifest=json.loads((s/'session.json').read_text())
   review_wait_pose(n,start,ctx['source_scan'],set(manifest.get('batch_assume_completed',[])))
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qa)])]
+ # 접근 경로: 시작 자세 -> 접근 자세 바로 위(TRANSIT_UP_M) 경유 자세(높이 유지) -> 수직 하강. 팔이 접힌 채 낮게 쓸고 가는 경로를 막는다.
+ qh_solution=solve_axis(fk,lo,hi,fk(qa)[:3,3]+[0,0,TRANSIT_UP_M],fk(qa)[:3,0],seed=qa)
+ if qh_solution is None:raise RuntimeError('Transit pose above target IK unavailable')
+ qh=np.asarray(qh_solution[0],float)
+ req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qh)])]
  plan=call('/plan_kinematic_path',GetMotionPlan,req).motion_plan_response
  result['approach_plan_error']=plan.error_code.val
  if plan.error_code.val!=1:raise RuntimeError('Approach plan rejected '+str(plan.error_code.val))
- result['start_q_rad']=list(map(float,start))
- cached['approach_3cm']={'joint_names':list(plan.trajectory.joint_trajectory.joint_names),'start':list(map(float,start)),'goal':list(map(float,qa)),'scaling':scaling,'trajectory':message_to_ordereddict(plan.trajectory)}
+ _tj=plan.trajectory.joint_trajectory;_idx=[list(_tj.joint_names).index(k) for k in names]
+ transit_z=min_tcp_z(fk,[[pt.positions[i] for i in _idx] for pt in _tj.points]);result['transit_min_tcp_z_m']=transit_z
+ if transit_z<TRANSIT_MIN_TCP_Z_M:raise RuntimeError('Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(transit_z*1000,TRANSIT_MIN_TCP_Z_M*1000))
+ result['start_q_rad']=list(map(float,start));result['transit_q_rad']=qh.tolist()
+ cached['transit_above_target']={'joint_names':list(plan.trajectory.joint_trajectory.joint_names),'start':list(map(float,start)),'goal':list(map(float,qh)),'scaling':scaling,'trajectory':message_to_ordereddict(plan.trajectory)}
+ _cfg=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
+ _t,_descent,_,_=contact_samples(fk,lo,hi,qh,qa,[float(_cfg[k]['max_velocity'])*vscale for k in names],[float(_cfg[k]['max_acceleration'])*ascale for k in names])
+ for q in _descent:
+  _r=GetStateValidity.Request();_r.group_name='arm';_r.robot_state=state(q);_v=call('/check_state_validity',GetStateValidity,_r)
+  if not _v.valid:raise RuntimeError('Transit descent collision '+str([(c.contact_body_1,c.contact_body_2) for c in _v.contacts]))
+ result['transit_descent_samples']=len(_descent)
  # Only intended cup/object contact is exempt. Other-object/table collisions remain active.
  acm=copy.deepcopy(original.allowed_collision_matrix)
  for key in ['scanned_block','cup_tip','tool_link_cup_visual_link']:

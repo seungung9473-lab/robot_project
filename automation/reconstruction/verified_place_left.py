@@ -104,8 +104,8 @@ def acm_for(object_id,support):
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
 from grip_retry import SLOW_CONTACT_SCALING
-from transit_clearance import RETREAT_UP_M
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False):
+from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,min_tcp_z
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
  continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
@@ -146,6 +146,9 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
   else:
    res=call('/plan_kinematic_path',req,GetMotionPlan).motion_plan_response
    if res.error_code.val!=1:raise RuntimeError('Planning failed '+str(res.error_code.val))
+ if min_tcp_z is not None:
+  _tj=res.trajectory.joint_trajectory;_idx=[_tj.joint_names.index(n) for n in names];_z=min(float(fk([pt.positions[i] for i in _idx])[2,3]) for pt in _tj.points)
+  if _z<min_tcp_z:raise RuntimeError('Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(_z*1000,min_tcp_z*1000))
  if vertical:
   a=fk(start)[:3,3];b=fk(goal)[:3,3];trajectory=res.trajectory.joint_trajectory;indices=[trajectory.joint_names.index(n) for n in names]
   for point in trajectory.points:
@@ -405,7 +408,11 @@ try:
    if time.monotonic()>deadline:raise RuntimeError('Recorder not ready')
    rclpy.spin_once(node,timeout_sec=.05)
  stage_start_q=[float(x) for x in fresh()]
- move(qa.tolist(),'approach_3cm')
+ _check=session/'collision_plan_check.json'
+ if not _check.exists() or 'transit_q_rad' not in json.loads(_check.read_text()):raise RuntimeError('Reviewed transit pose missing; replan the batch')
+ qh=json.loads(_check.read_text())['transit_q_rad']
+ move(qh,'transit_above_target',min_tcp_z=TRANSIT_MIN_TCP_Z_M);status['transit_q_rad']=qh
+ move(qa.tolist(),'approach_3cm',True)
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
  phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message

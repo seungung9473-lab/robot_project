@@ -41,6 +41,11 @@ def main():
   entry=next(x for x in report['objects'] if x['object']==key)
   trash=routes[key].get('destination')=='trash_drop';reservation=None if trash else pad_plans.get(routes[key]['destination_pad_id'])
   candidates=reservation_choices(entry,reservation,out)
+  # 접힘이 적은 각도부터: 시작 자세에서 접근 자세까지 관절 이동(J3/J4 가중)이 작은 후보를 먼저 검토한다.
+  from transit_clearance import travel_cost
+  import math as _math
+  _start0=exit_poses.get(tuple(done)) or [0.,_math.pi,-_math.pi,0.]
+  candidates=sorted(candidates,key=lambda c:travel_cost(_start0,c[1]['approach_q_rad']))
   for number,(index,opt,reservation) in enumerate(candidates,1):
    reservation_data=json.loads(reservation.read_text()) if reservation else None
    start_q=exit_poses.get(tuple(done));snapshot={'environment_digest':environment.snapshot(),'batch_start_q':start_q}
