@@ -203,13 +203,12 @@ def main(argv=None):
             os.environ['SOARM_SAM2_DEVICE'] = 'cuda'
             os.environ['SOARM_SAM2_PYTHON'] = gpu_python(backend)
             trial.event('sam2_runtime', **result['sam2_runtime'])
-        t0 = time.monotonic(); intent, routing = understand(args.command)
-        result.update(intent=intent, routing=routing, interpretation_seconds=time.monotonic()-t0)
-        print('Gemini:', intent['reason'], flush=True)
         if not args.execute:
+            t0 = time.monotonic(); intent, routing = understand(args.command)
+            result.update(intent=intent, routing=routing, interpretation_seconds=time.monotonic()-t0)
+            print('Gemini:', intent['reason'], flush=True)
             result['status'] = 'interpreted_no_motion'; outcome = 'interpreted'
             return 0
-        require_supported(intent)
 
         from planning_feedback import calculating, retry_safe
 
@@ -258,11 +257,15 @@ def main(argv=None):
                     raise subprocess.CalledProcessError(code_value, list(map(str,command)))
 
         from run_qr_expiry_cycle import control_preflight
+        stage('장치·빈 컵 사전 확인', control_preflight)
+        t0 = time.monotonic(); intent, routing = understand(args.command)
+        result.update(intent=intent, routing=routing, interpretation_seconds=time.monotonic()-t0)
+        print('Gemini:', intent['reason'], flush=True)
+        require_supported(intent)
         from prepare_expiry_instances import prepare_instances
         from read_expiry_labels import read_dates
         from run_expiry_sort import route_dates
         (backend/'automation/er2/runs').mkdir(parents=True, exist_ok=True)
-        stage('장치·빈 컵 사전 확인', control_preflight)
         telemetry = LiveTelemetry(trial)
         for attempt in range(args.max_rescans+1):
             try:

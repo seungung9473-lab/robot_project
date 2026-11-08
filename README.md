@@ -49,7 +49,17 @@ SOARM_DEMO_BACKEND="$HOME/robot_ws" ./run_tidy_demo.sh "테이블 정리해"
 
 ### 실제 분류
 
-서보·진공·턴테이블 제어 브리지, 두 카메라, MoveIt와 작업대 장면을 먼저 준비해야 합니다. 진입점은 드라이버를 자동 기동하지 않습니다. 장치 연결 및 보정 관련 준비법은 각 `src/` 패키지의 안내를 확인하세요.
+서보·진공·턴테이블 제어 브리지, 두 카메라, MoveIt와 작업대 장면을 먼저 준비해야 합니다. 진입점은 드라이버를 자동 기동하지 않습니다. 준비된 드라이버가 없을 때는 별도 터미널에서 한 번만 다음을 실행합니다.
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/robot_ws/install/setup.bash
+export ROS_DOMAIN_ID=73
+ros2 launch soarm_pipeline desktop_ready.launch.py allow_execution:=true
+```
+
+이 준비 명령은 제어용 드라이버·카메라·MoveIt·RViz를 기동합니다. 토크ON·HOME·집기·회전 목표는 보내지 않습니다. 진공 드라이버의 초기화는 펌프/밸브 OFF와 압력 영점을 수행하므로 물체를 들고 있는 중에는 사용하지 않습니다. 기존 드라이버가 이미 실행 중이면 중복 기동하지 않습니다. 이후 다른 터미널에서 아래 분류 명령을 실행합니다. 장치 연결/빈 컵 확인은 Gemini 해석 전에 수행하여 미연결 상태에서 API를 먼저 호출하지 않습니다.
+ 장치 연결 및 보정 관련 준비법은 각 `src/` 패키지의 안내를 확인하세요.
 
 ```bash
 cd ~/robot_ws

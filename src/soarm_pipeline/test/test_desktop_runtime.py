@@ -2,7 +2,7 @@
 import ast,json,os,sys,tempfile,unittest
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import patch,Mock
 ROOT=Path(__file__).resolve().parents[3]
 sys.path.insert(0,str(ROOT/'automation/reconstruction'))
 from desktop_runtime import require_cuda_profile,gpu_python
@@ -39,5 +39,13 @@ class DesktopRuntimeTests(unittest.TestCase):
   self.assertLess(calls['require_cuda_profile'],calls['control_preflight'])
  def test_ros_entry_uses_gpu_interpreter_for_execution(self):
   s=(ROOT/'src/soarm_pipeline/scripts/expiry_sort.py').read_text();self.assertIn("if '--execute' in sys.argv[1:]",s);self.assertIn('runtime=gpu_python(entry.parents[2])',s)
+
+ def test_disconnected_hardware_does_not_call_gemini(self):
+  import tidy_demo,contextlib,io
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d);(root/'automation/reconstruction').mkdir(parents=True);folder=root/'record';folder.mkdir();trial=Mock(directory=folder)
+   with patch.object(tidy_demo,'select_backend',return_value=root),patch('test_data_recorder.start_trial',return_value=trial),patch('desktop_runtime.require_cuda_profile',return_value={'device':'cuda','gpu_name':'mock GPU'}),patch('desktop_runtime.gpu_python',return_value='/fake/cuda/python'),patch('run_qr_expiry_cycle.control_preflight',side_effect=RuntimeError('servo offline')),patch.object(tidy_demo,'understand') as api,patch.dict(os.environ,{'ROS_DOMAIN_ID':'73'}),contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(io.StringIO()):
+    self.assertEqual(tidy_demo.main(['--execute']),1);api.assert_not_called()
+   result=json.loads((folder/'demo_result.json').read_text());self.assertEqual(result['error'],'servo offline');self.assertEqual(result['stages'][0]['status'],'stopped')
 
 if __name__=='__main__':unittest.main()

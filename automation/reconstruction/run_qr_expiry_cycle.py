@@ -12,7 +12,7 @@ def control_preflight():
  try:
   for node in ['servo_bridge','esp32_bridge','xl330_turntable']:
    c=n.create_client(GetParameters,'/'+node+'/get_parameters')
-   if not c.wait_for_service(timeout_sec=10):raise RuntimeError(node+' is not connected')
+   if not c.wait_for_service(timeout_sec=10):raise RuntimeError(node+' is not connected. 먼저 ros2 launch soarm_pipeline desktop_ready.launch.py allow_execution:=true 로 장치를 준비하세요.')
    req=GetParameters.Request();req.names=['read_only'];f=c.call_async(req);rclpy.spin_until_future_complete(n,f,timeout_sec=10)
    if not f.done() or f.result() is None or len(f.result().values)!=1 or f.result().values[0].type!=1:raise RuntimeError(node+' mode is unknown')
    if f.result().values[0].bool_value:raise RuntimeError(node+' is read-only; enable control before starting a physical cycle')
