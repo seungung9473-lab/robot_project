@@ -401,20 +401,25 @@ try:
  move(qa.tolist(),'approach_3cm')
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal)
- phase('grip_resting');grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
+ phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
  if not grip.success:
-  from grip_retry import retry_targets
-  q=fresh();initial_contact=fk(q);status['retries']=[]
-  for attempt,target in enumerate(retry_targets(initial_contact[:3,3],normal),1):
-   # Keep pump ON. No stale sensor data may authorize another inward step.
+  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 5초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
+  from grip_retry import final_advance_target,SUCTION_WAIT_S
+  q=fresh();initial_contact=fk(q);status['retries']=[];wait_end=t_grip0+SUCTION_WAIT_S;good=0;since=0.
+  while time.monotonic()<wait_end and good<2:
    rclpy.spin_once(node,timeout_sec=.05)
-   if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('Pressure feedback stale; no further retry')
+   if vac and vac['t']>since and time.monotonic()-vac['t']<.3:
+    since=vac['t'];good=good+1 if vac['value']<=-200 else 0
+  waited={'attempt':0,'wait_s':SUCTION_WAIT_S,'pressure_diff':vac.get('value'),'success':good>=2};status['retries'].append(waited)
+  if good>=2:grip=type('G',(),{'success':True,'message':f"diff={vac['value']} after waiting"})()
+  else:
+   if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('Pressure feedback stale; no further advance')
+   target=final_advance_target(initial_contact[:3,3],normal)
    q=fresh();retry_goal=ik(target,q,axis=initial_contact[:3,0])
-   record={'attempt':attempt,'step_m':.001,'total_additional_approach_m':attempt*.001,'target_table_m':target.tolist(),'reference':'first failed actual TCP; bounded absolute inward-normal offsets'};status['retries'].append(record)
-   move(retry_goal,'grip_retry_'+str(attempt)+'_of_3',True);phase('grip_retry_resting_'+str(attempt));grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
-   if grip.success:break
+   record={'attempt':1,'step_m':.005,'total_additional_approach_m':.005,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 5 mm inward-normal advance after 5 s without suction'};status['retries'].append(record)
+   move(retry_goal,'grip_retry_5mm_after_5s',True);phase('grip_retry_resting_5mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
   if not grip.success:
-   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed after three1mm retries; no lift')
+   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed 5 s after contact and after 5mm extra advance; no lift')
  holding=True;wait_vacuum();q=fresh();Tcontact=fk(q)
  if args.inclined:
   radial=Tcontact[:2,3]-j1;radial/=np.linalg.norm(radial);payload_pitch=math.atan2(float(Tcontact[:2,0]@radial),float(-Tcontact[2,0]))
