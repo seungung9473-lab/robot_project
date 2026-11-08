@@ -4,6 +4,7 @@ from pathlib import Path
 import cv2,numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import SingleThreadedExecutor
 from rclpy.action import ActionClient
 from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Image,CameraInfo,JointState
@@ -32,6 +33,8 @@ class Scanner(Node):
         self.create_subscription(String,'/turntable/state',self.state_cb,30)
         self.create_subscription(JointState,'/joint_states',self.arm_cb,qos_profile_sensor_data)
         self.action=ActionClient(self,FollowJointTrajectory,'/turntable/follow_joint_trajectory');self.stop_client=self.create_client(Trigger,'/turntable/stop')
+        self._scan_executor=SingleThreadedExecutor(context=self.context)
+        self._scan_executor.add_node(self)
     def state_cb(self,m):
         try:self.states.append((time.monotonic(),json.loads(m.data)))
         except (ValueError,TypeError):pass
@@ -49,7 +52,7 @@ class Scanner(Node):
         if self.arm_reference is None:return
         if self.arm is None or time.monotonic()-self.arm[0]>1:raise RuntimeError('스캔 중 로봇팔 피드백 유실')
         if any(not math.isfinite(q) or abs(q-r)>math.radians(.5) for q,r in zip(self.arm[1],self.arm_reference)):raise RuntimeError('스캔 중 로봇팔 움직임 감지 · 턴테이블 중단')
-    def spin(self,seconds=.02):rclpy.spin_once(self,timeout_sec=seconds);self.guard_arm()
+    def spin(self,seconds=.02):self._scan_executor.spin_once(timeout_sec=seconds);self.guard_arm()
     def await_future(self,f,timeout):
         end=time.monotonic()+timeout
         while not f.done():
@@ -62,10 +65,10 @@ class Scanner(Node):
             f=self.stop_client.call_async(Trigger.Request())
             # Still spin cleanup even when the arm guard is what failed.
             end=time.monotonic()+2
-            while not f.done() and time.monotonic()<end:rclpy.spin_once(self,timeout_sec=.05)
+            while not f.done() and time.monotonic()<end:self._scan_executor.spin_once(timeout_sec=.05)
             if not f.done() or not f.result().success:self.get_logger().error('정지 명령 확인 실패 · 실제 정지 상태 확인 필요')
     def move(self,angle,timeout):
-        self.state();self.guard_arm()
+        self.wait_stable();self.state();self.guard_arm()
         if not self.action.wait_for_server(timeout_sec=2):raise RuntimeError('턴테이블 액션 없음')
         goal=FollowJointTrajectory.Goal();goal.trajectory.joint_names=['turntable_joint'];pt=JointTrajectoryPoint(positions=[float(math.radians(angle))]);pt.time_from_start.sec=int(timeout);goal.trajectory.points=[pt]
         pending=self.action.send_goal_async(goal)
@@ -84,9 +87,15 @@ class Scanner(Node):
     def wait_stable(self,timeout=8):
         end=time.monotonic()+timeout
         while True:
-            self.spin();self.state()
-            if stable_states(list(self.states),time.monotonic()):return
-            if time.monotonic()>end:raise RuntimeError('턴테이블 정지 안정화 시간 초과')
+            self.spin()
+            now=time.monotonic()
+            # Wait for new telemetry, never accept stale samples after frame I/O.
+            if not self.states or now-self.states[-1][0]>.35:
+                if now>end:raise RuntimeError('턴테이블 상태 수신 없음/지연: 정지 확인 중 새 상태를 받지 못했습니다')
+                continue
+            self.state()
+            if stable_states(list(self.states),now):return
+            if now>end:raise RuntimeError('턴테이블 정지 안정화 시간 초과')
     def capture(self,session,index,target=None):
         self.wait_stable();gate=StationaryCaptureGate(self.settle_seconds)
         end=time.monotonic()+max(10.,self.settle_seconds+8.);after=None;received_after=None;position_at_barrier=None
@@ -134,6 +143,13 @@ class Scanner(Node):
         if self.environment:meta['environment']={'file':str(self.environment_path),'filters':self.environment['filters'],'note':'2D foreground candidates only; not a suction or collision decision'}
         meta['max_timestamp_skew_ms']=(max(stamps)-min(stamps))/1e6
         write_json(tmp/'metadata.json',meta);dst=session/f'view_{index:03d}';os.replace(tmp,dst);return dst,meta
+
+    def destroy_node(self):
+        executor=getattr(self,'_scan_executor',None)
+        if executor is not None:
+            executor.remove_node(self)
+            executor.shutdown(timeout_sec=1.)
+        return super().destroy_node()
 
 def main():
     p=argparse.ArgumentParser(description='두 D415와 실제 턴테이블 각도 저장');p.add_argument('command',choices=['capture','scan']);p.add_argument('--environment',help='환경 설정 environment.json 또는 active.json');p.add_argument('--angles',nargs='+',type=float);p.add_argument('--output',default=str(Path.home()/'robot_ws/data/turntable_scans'));p.add_argument('--timeout',type=int,default=30);p.add_argument('--settle-seconds',type=float,default=0.5,choices=[0.5],help='정지 확인 후 추가 대기 0.5초 고정');a=p.parse_args()
