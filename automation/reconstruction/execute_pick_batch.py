@@ -86,6 +86,8 @@ def main():
    if plan.get('finish_above'):command+=['--finish-above']
    subprocess.run(command,check=True)
    completed[stage['object']]={'pad_id':stage['pad_id'],'destination':stage.get('destination','pad'),'prepared_session':str(prep),'completed_time':time.time()};temporary=completed_path.with_suffix('.tmp');temporary.write_text(json.dumps(completed,indent=2));temporary.replace(completed_path);stage['execution_status']='complete';save()
+  from batch_completion import finish_batch_home
+  finish_batch_home(plan,save=save)
   plan['execution_status']='complete';save()
  except BaseException as exc:
   plan.update(execution_status='stopped',error=str(exc),notice='No automatic retry/restart/release after a stage error');save();raise
