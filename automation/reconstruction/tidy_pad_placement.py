@@ -8,7 +8,7 @@ from scipy.spatial import ConvexHull
 from scipy.spatial.transform import Rotation
 from scipy.optimize import least_squares
 from pad_packing import footprint, separated
-from pad_occupancy import blockers, free_offsets, free_offsets_refined, read_occupancy, write_snapshot
+from pad_occupancy import blockers, free_offsets, free_offsets_refined, inflate_polygon, FOOTPRINT_MARGIN_M, read_occupancy, write_snapshot
 
 
 class StaticPlacementRejected(RuntimeError):
@@ -111,7 +111,7 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
                 reviews.append({'object':key,'option':index,'result':'nominal_ik_unavailable'});continue
             body=fk(nominal)@local
             nominal_points=(vertices-origin[:3,3])@body[:3,:3].T+body[:3,3]
-            free,fine_used=free_offsets_refined(footprint(nominal_points),grid,pad,radius,occupancy)
+            free,fine_used=free_offsets_refined(inflate_polygon(footprint(nominal_points)),grid,pad,radius,occupancy)
             reviews.append({'object':key,'option':index,'prefilter_free_offsets':len(free),'fine_grid_used':fine_used})
             # Try spatially distinct locations before adjacent 2mm variants.
             ordered=[]
@@ -129,8 +129,8 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
                 seed=q;actual=fk(q)@local
                 if np.degrees(np.arccos(np.clip(actual[2,2],-1,1)))>1:continue
                 placed=(vertices-origin[:3,3])@actual[:3,:3].T+actual[:3,3]
-                if not within_pad(placed,pad,radius):continue
-                poly=footprint(placed)
+                if not within_pad(placed,pad,radius,margin=.002+FOOTPRINT_MARGIN_M):continue
+                poly=inflate_polygon(footprint(placed))
                 if blockers(poly,occupancy):continue
                 candidate={'offset_xy_m':offset.tolist(),'reserved_polygon_table_m':poly.tolist(),
                            'placement_q_rad':q.tolist(),'pickup_option_index':index,

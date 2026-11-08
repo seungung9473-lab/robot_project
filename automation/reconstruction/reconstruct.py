@@ -3,6 +3,7 @@ import argparse,json,math
 from pathlib import Path
 import cv2,numpy as np
 from placement_geometry import load_context,object_region
+from depth_mask import erode_depth_mask
 from scipy.spatial.transform import Rotation
 from scipy.spatial import cKDTree
 from scipy.sparse import coo_matrix
@@ -41,7 +42,7 @@ def main():
    if args.mask_root:
     mask_path=args.mask_root/view['path']/(c+'_mask.png');mask=cv2.imread(str(mask_path),cv2.IMREAD_GRAYSCALE)
     if mask is None or mask.shape!=raw.shape:raise RuntimeError('Missing or mismatched SAM2 mask '+str(mask_path))
-    ok &= mask>127
+    ok &= erode_depth_mask(mask>127)
    if not ok.any():
     rows.append({'view':view['path'],'camera':c,'points':0,'measured_angle_deg':m['turntable']['angle_deg'],'reason':'target not visible'});continue
    pixels=np.column_stack([u[ok],v[ok]]).astype(np.float64);rays=cv2.undistortPoints(pixels.reshape(-1,1,2),K,D).reshape(-1,2);p=np.column_stack([rays*z[ok,None],z[ok]]);T=np.array(cal[c][f'T_table_{c}_color_optical']);p=p@T[:3,:3].T+T[:3,3];color=rgb[ok]

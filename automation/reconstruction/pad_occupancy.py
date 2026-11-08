@@ -117,6 +117,19 @@ def free_offsets(polygon, offsets, center, radius, occupancy, edge=.002, gap=.00
     return offsets[keep]
 
 
+FOOTPRINT_MARGIN_M=.0025
+
+
+def inflate_polygon(polygon, margin=FOOTPRINT_MARGIN_M, sides=16):
+    """Convex polygon grown by margin (circumscribed 16-gon Minkowski sum, never smaller than the true offset)."""
+    p = np.asarray(polygon, float).reshape(-1, 2)
+    if margin <= 0:return p
+    from scipy.spatial import ConvexHull
+    a = np.linspace(0, 2*np.pi, sides, endpoint=False); ring = np.column_stack((np.cos(a), np.sin(a)))*margin/np.cos(np.pi/sides)
+    pts = (p[:, None, :]+ring[None, :, :]).reshape(-1, 2)
+    return pts[ConvexHull(pts).vertices]
+
+
 FINE_STEP=.0005
 FINE_RADIUS=.012
 
