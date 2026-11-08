@@ -48,6 +48,13 @@ class Scanner(Node):
         if self.reference_zero is not None and s.get('zero_count')!=self.reference_zero:raise RuntimeError('스캔 중 영점 변경 감지')
         if self.reference_stop is not None and s.get('stop_generation')!=self.reference_stop:raise RuntimeError('외부 STOP 감지 · 스캔 중단')
         return s
+    def wait_fresh_state(self,timeout=2.0,max_age=.2):
+        """Spin until a state newer than max_age arrives (executor backlog right after camera wait can leave the last state stale). Still fails if none arrives."""
+        end=time.monotonic()+timeout
+        while time.monotonic()<end:
+            if self.states and time.monotonic()-self.states[-1][0]<=max_age:return
+            self.spin()
+        raise RuntimeError('턴테이블 상태 수신 없음/지연: 시작 전 새 상태를 받지 못했습니다')
     def guard_arm(self):
         if self.arm_reference is None:return
         if self.arm is None or time.monotonic()-self.arm[0]>1:raise RuntimeError('스캔 중 로봇팔 피드백 유실')
@@ -172,6 +179,7 @@ def main():
             if time.monotonic()>deadline:raise RuntimeError('두 카메라 토픽을 먼저 실행하세요')
         angles=a.angles if a.command=='scan' else [None]
         if a.command=='scan':
+            n.wait_fresh_state()
             preflight_angles(n.state(),list(angles)+[0.0])
             deadline=time.monotonic()+5
             while (n.arm is None or time.monotonic()-n.arm[0]>1) and time.monotonic()<deadline:n.spin()
