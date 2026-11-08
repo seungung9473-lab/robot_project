@@ -74,7 +74,7 @@ public:
   });
   // Apply the requested demo ratios once, after MotionPlanning creates its widgets.
   // These are planner ratios in (0,1]; joint/servo limits are unchanged.
-  const double demo_velocity=node_->declare_parameter<double>("demo_velocity_scaling",0.30);
+  const double demo_velocity=node_->declare_parameter<double>("demo_velocity_scaling",0.80);
   const double demo_acceleration=node_->declare_parameter<double>("demo_acceleration_scaling",0.40);
   if(!(demo_velocity>0.0&&demo_velocity<=1.0&&demo_acceleration>0.0&&demo_acceleration<=1.0))
     throw std::runtime_error("Demo scaling must be in (0,1]");

@@ -36,14 +36,15 @@ def main():
   if not all(k in reservation['placements'] for k in keys):raise ValueError('Pad reservation does not cover all requested objects')
   # A stale or legacy reservation cannot bypass the current placed-obstacle check.
   validate_reserved(reservation,occupancy)
- failures={};environment=PlanningEnvironment(s)
+ failures={};exit_poses={};environment=PlanningEnvironment(s)
  def evaluate(key,done,placed):
   entry=next(x for x in report['objects'] if x['object']==key)
   trash=routes[key].get('destination')=='trash_drop';reservation=None if trash else pad_plans.get(routes[key]['destination_pad_id'])
   candidates=reservation_choices(entry,reservation,out)
   for number,(index,opt,reservation) in enumerate(candidates,1):
    reservation_data=json.loads(reservation.read_text()) if reservation else None
-   token=geometry_key(key,index,done,placed,reservation_data,environment.snapshot())
+   snapshot=environment.snapshot();start_q=exit_poses.get(tuple(done));snapshot['batch_start_q']=start_q
+   token=geometry_key(key,index,done,placed,reservation_data,snapshot)
    if token in failures:
     review={**failures[token],'memo_reused':True}
     print(f'재탐색: {key} 후보 {index} · 동일 조건의 기존 검사 결과 재사용 (시간 초과는 불가능 판정 아님)',flush=True)
@@ -62,10 +63,12 @@ def main():
    if result.returncode:
     yield {'success':False,'review':{'object':key,'option':index,'error':'prepare failed','log':str(trial/'prepare.log')}};continue
    prep=Path(json.loads(result.stdout)['prepared_session']);log=trial/'collision.log'
+   manifest_path=prep/'session.json';manifest=json.loads(manifest_path.read_text());manifest['batch_assume_completed']=list(done);manifest_path.write_text(json.dumps(manifest,indent=2))
+   chain_args=['--finish-above']+([] if start_q is None else ['--start-q',*map(str,start_q)])
    for budget in (1.,8.):
     print(f'계산중: {key} 안전점검 · 경로당 탐색 한도 {budget:g}초',flush=True)
     with log.open('a') as stream, calculating(key+' 접촉·들기·배치 안전점검'):
-     process=subprocess.Popen([sys.executable,'-u',str(R/'check_inclined_motion.py'),str(prep),*placement_args,'--planning-seconds',str(budget)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1)
+     process=subprocess.Popen([sys.executable,'-u',str(R/'check_inclined_motion.py'),str(prep),*placement_args,*chain_args,'--planning-seconds',str(budget)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,bufsize=1)
      try:
       for line in process.stdout:
        stream.write(line);stream.flush();print(line,end='',flush=True)
@@ -87,18 +90,19 @@ def main():
     yield {'success':False,'review':review}
     if invariant_source_overlap(review.get('error')):break
     continue
+   exit_poses[tuple(done)+(key,)]=check['exit_q_rad']
    if trash:
-    yield {'success':True,'object':key,'pad_id':None,'destination':'trash_drop','option_index':index,'angle_deg':opt['turntable_angle_deg'],'prepared_session':str(prep),'placement_plan':None,'placement':{'object':key,'destination':'trash_drop','removed_from_workcell':True},'review':review};continue
+    yield {'success':True,'object':key,'pad_id':None,'destination':'trash_drop','option_index':index,'angle_deg':opt['turntable_angle_deg'],'prepared_session':str(prep),'placement_plan':None,'placement':{'object':key,'destination':'trash_drop','removed_from_workcell':True},'review':review,'start_q_rad':check['start_q_rad'],'exit_q_rad':check['exit_q_rad']};continue
    cloud=np.load(prep/'analysis/cloud.npz')['points'];O=np.array(check['object_origin_table']);T=np.array(check['predicted_placed_object_pose_table']);placed_cloud=(cloud-O[:3,3])@T[:3,:3].T+T[:3,3];path=trial/'placed_cloud.npz';np.savez_compressed(path,points=placed_cloud)
    placement={'object':key,'collision_id':'batch_virtual_'+key,'cloud_file':str(path),'pose_table':T.tolist()}
-   yield {'success':True,'object':key,'pad_id':routes[key]['destination_pad_id'],'option_index':index,'angle_deg':opt['turntable_angle_deg'],'prepared_session':str(prep),'placement_plan':str(reservation) if reservation else None,'placement':placement,'review':review}
+   yield {'success':True,'object':key,'pad_id':routes[key]['destination_pad_id'],'option_index':index,'angle_deg':opt['turntable_angle_deg'],'prepared_session':str(prep),'placement_plan':str(reservation) if reservation else None,'placement':placement,'review':review,'start_q_rad':check['start_q_rad'],'exit_q_rad':check['exit_q_rad']}
  try:
   stages,trials=search_all(pending,list(completed),[],evaluate,limit=300,time_limit=180.)
  except SearchBudgetExceeded as exc:
   stages=None;trials=exc.trials
   print('안전점검 실패: 탐색 예산 소진 (경로 불가능 확정 아님)',flush=True)
  finally:environment.close()
- plan={'version':1,'source_scan':str(s),'created_time':time.time(),'requested_objects':pending,'already_completed':list(completed),'all_stages_ready':stages is not None,'stages':stages or [],'trials':trials,'execution_performed':False,'post_rotation_camera_verification':False,'return_home_between_stages':True}
+ plan={'version':1,'source_scan':str(s),'created_time':time.time(),'requested_objects':pending,'already_completed':list(completed),'all_stages_ready':stages is not None,'stages':stages or [],'trials':trials,'execution_performed':False,'post_rotation_camera_verification':False,'return_home_between_stages':False,'finish_above':True}
  from batch_inputs import fingerprints
  plan['input_fingerprints']=fingerprints(s)
  path=out/'batch_plan.json';trial_record.attach(path);path.write_text(json.dumps(plan,ensure_ascii=False,indent=2));print('BATCH_PLAN',path,flush=True);fcntl.flock(lock,fcntl.LOCK_UN)

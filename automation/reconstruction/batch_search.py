@@ -26,6 +26,19 @@ def require_complete(plan):
         raise RuntimeError('Every requested stage must pass before any execution')
     if {s['object'] for s in plan['stages']}!=set(plan['requested_objects']):
         raise RuntimeError('Batch stages do not cover the requested objects exactly')
+    if plan.get('finish_above'):
+        import math
+        if plan.get('return_home_between_stages') is not False:
+            raise RuntimeError('Chained batch cannot return HOME between stages')
+        previous=None
+        for stage in plan['stages']:
+            start=stage.get('start_q_rad',[]);end=stage.get('exit_q_rad',[])
+            if any(len(q)!=4 or any(not math.isfinite(v) for v in q) for q in (start,end)):
+                raise RuntimeError('Chained batch requires finite reviewed start/exit poses')
+            if previous is not None and max(abs(a-b) for a,b in zip(start,previous))>1e-6:
+                raise RuntimeError('Chained batch starts do not match previous exits')
+            previous=end
+
 
 def invariant_source_overlap(error):
     """Rigid co-rotation cannot resolve source object/object overlap at lift=0.

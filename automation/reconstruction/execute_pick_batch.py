@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np,yaml
 from batch_search import require_complete
 from batch_inputs import fingerprints
+from turntable_wait import review_wait_pose
 R=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
 
@@ -70,13 +71,19 @@ def main():
     while (not scanner.arm or not scanner.states) and time.monotonic()<end:scanner.spin()
     end=time.monotonic()+1
     while time.monotonic()<end:scanner.spin()
-    scanner.arm_reference=list(scanner.arm[1]);state=scanner.state();scanner.reference_zero=state['zero_count'];scanner.reference_stop=state['stop_generation'];scanner.guard_arm()
+    scanner.arm_reference=list(scanner.arm[1]);
+    if plan.get('finish_above'):
+     expected_q=stage['start_q_rad']
+     if np.max(np.abs(np.array(scanner.arm[1])-expected_q))>math.radians(1):raise RuntimeError('Actual waiting pose differs from reviewed stage start')
+     review_wait_pose(scanner,scanner.arm[1],source,set(completed),require_empty=True)
+    state=scanner.state();scanner.reference_zero=state['zero_count'];scanner.reference_stop=state['stop_generation'];scanner.guard_arm()
     if state['zero_count']!=manifest['return_to_zero']['state']['zero_count']:raise RuntimeError('Turntable zero changed')
     scanner.move(float(stage['angle_deg']),60);scanner.wait_stable()
    except BaseException:scanner.stop();raise
    finally:scanner.destroy_node();rclpy.shutdown()
    command=[sys.executable,str(R/'verified_place_left.py'),str(prep),'--inclined','--pad',str(stage['pad_id'] if stage['pad_id'] is not None else 5),'--execute']
    if stage.get('placement_plan'):command+=['--placement-plan',stage['placement_plan'],'--placement-object',stage['object']]
+   if plan.get('finish_above'):command+=['--finish-above']
    subprocess.run(command,check=True)
    completed[stage['object']]={'pad_id':stage['pad_id'],'destination':stage.get('destination','pad'),'prepared_session':str(prep),'completed_time':time.time()};temporary=completed_path.with_suffix('.tmp');temporary.write_text(json.dumps(completed,indent=2));temporary.replace(completed_path);stage['execution_status']='complete';save()
   plan['execution_status']='complete';save()
