@@ -105,3 +105,24 @@ def initialize(root,first):
         if s.get('started_at') and s.get('kind') in KINDS and s.get('physical_execution_requested') and not s.get('parent_trial_id') and s['started_at']>=config['anchor_started_at']:eligible.append((s['started_at'],directory))
     for _,directory in sorted(eligible):register(directory,root)
     return root/'evaluations'/config['series_id']
+
+
+def record_observation(root,number,success,note):
+    """사람이 확인한 결과를 회차에 기록한다. 이미 기록된 값은 덮어쓰지 않는다."""
+    if not isinstance(success,bool) or not note:raise ValueError('success(bool)와 사유(note)가 필요합니다')
+    root=Path(root).resolve();config=read(root/'evaluations/active.json')
+    series=root/'evaluations'/config['series_id']
+    with (series/'.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        rows=read(series/'trials.json',[]);row=next((r for r in rows if r['number']==number),None)
+        if row is None:raise ValueError(f'{number}회차 없음')
+        if row.get('observed_success') is not None:raise ValueError(f'{number}회차는 이미 사람 확인 결과가 있습니다')
+        row['observed_success']=success;row['observed_note']=note
+        row['observed_recorded_at']=datetime.datetime.now().astimezone().isoformat()
+        write(series/'trials.json',rows);refresh(series,config,rows)
+        return row
+
+
+if __name__=='__main__' and len(__import__('sys').argv)>=5 and __import__('sys').argv[1]=='observe':
+    import sys
+    print(record_observation(Path(__file__).resolve().parents[1]/'test_data',int(sys.argv[2]),sys.argv[3]=='success',sys.argv[4]))

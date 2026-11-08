@@ -17,3 +17,4 @@ def final_advance_target(first_tcp,outward_normal,distance_m=FINAL_ADVANCE_M):
     if origin.shape!=(3,) or normal.shape!=(3,) or not np.isfinite(origin).all() or not np.isfinite(normal).all() or np.linalg.norm(normal)<1e-8:raise ValueError('Finite TCP and nonzero surface normal required')
     return origin-normal/np.linalg.norm(normal)*distance_m
 SLOW_5MM_SCALING=(.15,.10)  # (velocity, acceleration) 상한: 5mm 추가 전진은 RViz 0.80/0.40이 아니라 느리게
+SLOW_CONTACT_SCALING=(.15,.10)  # 첫 접촉 접근(approach_3cm -> 접촉)도 RViz 0.80/0.40이 아니라 느리게: 가벼운 물체를 밀어 떨어뜨림 방지

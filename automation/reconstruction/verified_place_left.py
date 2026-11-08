@@ -103,6 +103,7 @@ def acm_for(object_id,support):
  i=acm.entry_names.index(object_id);j=acm.entry_names.index(support);acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
+from grip_retry import SLOW_CONTACT_SCALING
 def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
@@ -401,7 +402,7 @@ try:
    rclpy.spin_once(node,timeout_sec=.05)
  move(qa.tolist(),'approach_3cm')
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
- move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal)
+ move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
  phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
  if not grip.success:
   # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 5초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
