@@ -43,7 +43,7 @@ def main():
   candidates=reservation_choices(entry,reservation,out)
   for number,(index,opt,reservation) in enumerate(candidates,1):
    reservation_data=json.loads(reservation.read_text()) if reservation else None
-   snapshot=environment.snapshot();start_q=exit_poses.get(tuple(done));snapshot['batch_start_q']=start_q
+   start_q=exit_poses.get(tuple(done));snapshot={'environment_digest':environment.snapshot(),'batch_start_q':start_q}
    token=geometry_key(key,index,done,placed,reservation_data,snapshot)
    if token in failures:
     review={**failures[token],'memo_reused':True}

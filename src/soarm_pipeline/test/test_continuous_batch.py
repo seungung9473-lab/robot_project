@@ -109,3 +109,28 @@ def test_rotation_check_preserves_scanner_executor_and_cleans_scene(tmp_path,mon
         else:
             with pytest.raises(RuntimeError,match='안전점검 실패'):review_wait_pose(n,[0]*4,source,set())
         assert [int.from_bytes(v,'little') if isinstance(v,bytes) else int(v) for v in n.operations]==[0,1]  # ADD then REMOVE even if collision rejected.
+
+
+def test_candidate_key_accepts_environment_digest_and_tracks_chained_start():
+    # Exercise the production candidate-key statements with the real snapshot
+    # contract: PlanningEnvironment.snapshot() returns a hash string.
+    import ast,json
+    from planning_feedback import geometry_key
+    tree=ast.parse((R/'plan_pick_batch.py').read_text())
+    main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+    evaluate=next(n for n in main.body if isinstance(n,ast.FunctionDef) and n.name=='evaluate')
+    loop=next(n for n in evaluate.body if isinstance(n,ast.For))
+    statements=[]
+    for stmt in loop.body:
+        if not isinstance(stmt,ast.Assign):break
+        statements.append(stmt)
+    assert len(statements)>=3
+    code=compile(ast.Module(body=statements,type_ignores=[]),'<candidate-key>','exec')
+    def key(q):
+        ns={'reservation':None,'environment':SimpleNamespace(snapshot=lambda:'abc123hash'),
+            'exit_poses':{('first',):q},'done':('first',),'placed':(),
+            'key':'next','index':0,'geometry_key':geometry_key,'json':json}
+        exec(code,ns)
+        return ns['token']
+    assert key([.1]*4)==key([.1]*4)
+    assert key([.1]*4)!=key([.2]*4)
