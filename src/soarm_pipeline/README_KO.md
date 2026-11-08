@@ -31,7 +31,7 @@ ros2 run soarm_pipeline expiry_sort --execute
 - `~/robot_ws/test_data/`: 자동 시험 기록, `index.csv`와 시험별 센서·결과 파일.
 - `~/robot_ws/src/soarm_pipeline/`: ROS 실행 진입점.
 
-API 키는 개인 설정 `~/.config/soarm4/gemini.json` 또는 기존 환경변수를 그대로 사용하며 저장소에 복사하지 않습니다. ROS·시스템 Python은 기존 Ubuntu 설치를 사용합니다. SAM2 실행용 Python은 이 작업공간의 `.sam2_cpu` 가상환경을 사용합니다.
+API 키는 개인 설정 `~/.config/soarm4/gemini.json` 또는 기존 환경변수를 그대로 사용하며 저장소에 복사하지 않습니다. ROS·시스템 Python은 기존 Ubuntu 설치를 사용합니다. 데스크탑 GPU 시연의 SAM2 실행용 Python은 `automation/reconstruction/.sam2_gpu` 환경을 사용합니다. 가상환경과 모델 가중치는 Git에 포함하지 않으므로 별도 설치해야 합니다.
 
 이전 `문서/ChatGPT/라파 대회` 폴더의 `reconstruction`, `er2`, `camera_calibration`, `test_data`는 새 실제 위치를 가리키는 호환 링크입니다. 과거 결과 파일 속 절대 경로를 보존하기 위한 것으로, 새 전체 실행 명령은 이 링크가 없어도 시작할 수 있습니다. 과거 기록에 연결된 경로를 계속 열려면 링크를 유지하세요. 시험 자료와 모델·가상환경은 Git 제외 대상입니다.
 
