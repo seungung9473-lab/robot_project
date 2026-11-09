@@ -42,14 +42,22 @@ def pressure(msg):
  vac.update(value=msg.data,t=time.monotonic());bad=bad+1 if msg.data>HELD_DIFF else 0
  if handle is not None and holding and bad>=2:lost=True;handle.cancel_goal_async()
 node.create_subscription(JointState,'/joint_states',joint,10);node.create_subscription(Int32,'/vacuum/diff',pressure,10);node.create_subscription(String,'/turntable/state',lambda msg:turn.update(json.loads(msg.data)),10)
+state_validity_clients={}
+
 def call(name,req=None,typ=Trigger,timeout=45):
- c=node.create_client(typ,name)
+ keep_client=typ is GetStateValidity
+ if keep_client:
+  if name not in state_validity_clients:state_validity_clients[name]=node.create_client(typ,name)
+  c=state_validity_clients[name]
+ else:
+  c=node.create_client(typ,name)
  try:
   if not c.wait_for_service(timeout_sec=8):raise RuntimeError('Missing service '+name)
   f=c.call_async(req or typ.Request());rclpy.spin_until_future_complete(node,f,timeout_sec=timeout)
   if not f.done():raise RuntimeError('Service timeout '+name)
   return f.result()
- finally:node.destroy_client(c)
+ finally:
+  if not keep_client:node.destroy_client(c)
 def fresh():
  end=time.monotonic()+8
  while time.monotonic()<end:
@@ -114,7 +122,12 @@ def acm_for(object_id,support):
 
 from grip_retry import SLOW_CONTACT_SCALING
 from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None,stop_on_seal=False):
+def require_empty_cup():
+ if holding or not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:
+  raise RuntimeError('Waiting pose correction requires fresh empty-cup feedback')
+
+
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None,stop_on_seal=False,require_empty=False):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
  continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
@@ -126,35 +139,35 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
  if not sc:raise RuntimeError('No RViz scaling')
  if speed_cap:sc={'velocity':min(float(sc['velocity']),speed_cap[0]),'acceleration':min(float(sc['acceleration']),speed_cap[1])}  # 느리게 접근: 현재 RViz 비율보다 클 수 없음
  req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='pilz_industrial_motion_planner' if ptp else 'ompl';r.planner_id='PTP' if ptp else 'RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
- if vertical:
-  from normal_contact_trajectory import contact_samples
-  from moveit_msgs.msg import RobotTrajectory
-  from trajectory_msgs.msg import JointTrajectoryPoint
-  from types import SimpleNamespace
+ from trajectory_cache import compatible,restore
+ from types import SimpleNamespace
+ cache_file=session/'reviewed_trajectories.json'
+ entry=json.loads(cache_file.read_text()).get(label) if cache_file.exists() else None
+ reuse=compatible(entry,names,start,goal,sc,start_tolerance_deg=.25 if vertical else 1.,fixed_axis=vertical)
+ if reuse:
+  trajectory=restore(entry)
+  if vertical:
+   # Fixed-axis moves need a closer TCP match than the joint tolerance alone.
+   first=trajectory.joint_trajectory.points[0].positions
+   reuse=np.linalg.norm(fk(first)[:3,3]-fk(start)[:3,3])<=.0005
+ if reuse:
+  res=SimpleNamespace(trajectory=trajectory)
+  status.setdefault('reused_trajectories',[]).append(label)
+ elif vertical:
+  from normal_contact_trajectory import contact_samples,trajectory_from_samples
   limits=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
   velocities=[float(limits[n]['max_velocity'])*float(sc['velocity']) for n in names]
   accelerations=[float(limits[n]['max_acceleration'])*float(sc['acceleration']) for n in names]
-  times,positions,vels,accs=contact_samples(fk,lo,hi,start,goal,velocities,accelerations)
-  traj=RobotTrajectory();traj.joint_trajectory.joint_names=names
-  for t,qsample,v,acc in zip(times,positions,vels,accs):
-   validity=GetStateValidity.Request();validity.group_name='arm';validity.robot_state=state(qsample)
-   check=call('/check_state_validity',validity,GetStateValidity)
-   if not check.valid:raise RuntimeError('Inclined contact path collision '+str([(c.contact_body_1,c.contact_body_2) for c in check.contacts]))
-   pt=JointTrajectoryPoint();pt.positions=list(map(float,qsample));pt.velocities=list(map(float,v));pt.accelerations=list(map(float,acc));ns=int(round(float(t)*1e9));pt.time_from_start.sec=ns//1000000000;pt.time_from_start.nanosec=ns%1000000000;traj.joint_trajectory.points.append(pt)
-  res=SimpleNamespace(trajectory=traj)
+  samples=contact_samples(fk,lo,hi,start,goal,velocities,accelerations)
+  res=SimpleNamespace(trajectory=trajectory_from_samples(names,samples))
  else:
-  from trajectory_cache import compatible,restore
-  from types import SimpleNamespace
-  cache_file=session/'reviewed_trajectories.json';entry=json.loads(cache_file.read_text()).get(label) if cache_file.exists() else None
-  if compatible(entry,names,start,goal,sc):
-   trajectory=restore(entry)
-   for sample in trajectory.joint_trajectory.points:
-    validity=GetStateValidity.Request();validity.group_name='arm';validity.robot_state=state(sample.positions)
-    if not call('/check_state_validity',validity,GetStateValidity).valid:raise RuntimeError('Reviewed trajectory invalid in current scene; stop batch')
-   res=SimpleNamespace(trajectory=trajectory);status.setdefault('reused_trajectories',[]).append(label)
-  else:
-   res=call('/plan_kinematic_path',req,GetMotionPlan).motion_plan_response
-   if res.error_code.val!=1:raise RuntimeError('Planning failed '+str(res.error_code.val))
+  res=call('/plan_kinematic_path',req,GetMotionPlan).motion_plan_response
+  if res.error_code.val!=1:raise RuntimeError('Planning failed '+str(res.error_code.val))
+ if reuse or vertical or require_empty:
+  for sample in res.trajectory.joint_trajectory.points:
+   validity=GetStateValidity.Request();validity.group_name='arm';validity.robot_state=state(sample.positions)
+   if not call('/check_state_validity',validity,GetStateValidity).valid:
+    raise RuntimeError('Trajectory invalid in current scene; stop batch')
  if min_tcp_z is not None:
   _tj=res.trajectory.joint_trajectory;_idx=[_tj.joint_names.index(n) for n in names];_z=min(float(fk([pt.positions[i] for i in _idx])[2,3]) for pt in _tj.points)
   if _z<min_tcp_z:raise RuntimeError('Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(_z*1000,min_tcp_z*1000))
@@ -177,6 +190,13 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
   from continuous_pre_suction import PreSuctionTrigger
   pump_client=node.create_client(Trigger,'/vacuum/pump_on')
   if not pump_client.wait_for_service(timeout_sec=8):raise RuntimeError('Pre-suction pump service unavailable')
+ # Compare the measured pose against the trajectory actually being dispatched.
+ joint_path=res.trajectory.joint_trajectory
+ first_positions=dict(zip(joint_path.joint_names,joint_path.points[0].positions))
+ actual=fresh()
+ if max(abs(q-first_positions[name]) for q,name in zip(actual,names))>=math.radians(1):
+  raise RuntimeError('Actual pose no longer matches trajectory start within 1 degree')
+ if require_empty:require_empty_cup()
  goalmsg=ExecuteTrajectory.Goal();goalmsg.trajectory=res.trajectory;f=action.send_goal_async(goalmsg);rclpy.spin_until_future_complete(node,f,timeout_sec=8);handle=f.result()
  if not handle or not handle.accepted:raise RuntimeError('Execution rejected')
  if pump_client is not None:
@@ -488,6 +508,25 @@ try:
  q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),f'empty_retreat_from_pad_ID{args.pad}',True)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
  if args.finish_above:
+  from wait_pose import LIMIT_DEG,check_wait_pose,waiting_pose_errors
+  reviewed=json.loads(_check.read_text())
+  if not reviewed.get('success') or 'exit_q_rad' not in reviewed:
+   raise RuntimeError('Reviewed waiting pose missing; replan the batch')
+  expected=reviewed['exit_q_rad']
+  actual=fresh()
+  errors=waiting_pose_errors(actual,expected)
+  status['waiting_pose_error_deg']=errors.tolist()
+  if float(errors.max())>LIMIT_DEG:
+   require_empty_cup()
+   request=GetPlanningScene.Request()
+   request.components.components=PlanningSceneComponents.ROBOT_STATE_ATTACHED_OBJECTS
+   if call('/get_planning_scene',request,GetPlanningScene).scene.robot_state.attached_collision_objects:
+    raise RuntimeError('Waiting pose correction blocked: attached object remains in scene')
+   move(expected,'correct_empty_wait_pose',min_tcp_z=TRANSIT_MIN_TCP_Z_M,require_empty=True)
+   actual=fresh()
+   status['waiting_pose_after_correction']=check_wait_pose(actual,expected)
+  if float(fk(actual)[2,3])<TRANSIT_MIN_TCP_Z_M:
+   raise RuntimeError('Actual waiting pose is below transit clearance')
   phase('wait_above_destination')
  else:
   phase('home');res=call('/soarm4/go_home',timeout=120)

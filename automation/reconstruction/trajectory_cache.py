@@ -3,11 +3,17 @@ import math,numpy as np
 
 from wait_pose import EXACT_DEG
 
-def compatible(entry,names,start,goal,scaling,tolerance_deg=.25,start_tolerance_deg=EXACT_DEG):
+def compatible(entry,names,start,goal,scaling,tolerance_deg=.25,start_tolerance_deg=EXACT_DEG,*,fixed_axis=False):
     if not entry or entry['joint_names']!=list(names):return False
+    if fixed_axis and entry.get('profile') != 'fixed_axis':return False
     if any(abs(float(entry['scaling'][k])-float(scaling[k]))>1e-9 for k in ['velocity','acceleration']):return False
-    # 시작 자세는 wait_pose.EXACT_DEG(3.5°)까지 검토한 경로를 그대로 쓴다(2026-11-10 사용자 결정). 목표는 계속 .25° 이내여야 한다.
-    return (np.max(np.abs(np.asarray(entry['start'])-start))<=math.radians(start_tolerance_deg)
+    trajectory = entry['trajectory']['joint_trajectory']
+    if trajectory['joint_names'] != list(names) or not trajectory['points']:
+        return False
+    first = trajectory['points'][0]['positions']
+    limit = math.radians(min(start_tolerance_deg, EXACT_DEG))
+    return (np.max(np.abs(np.asarray(entry['start'])-start)) < limit
+            and np.max(np.abs(np.asarray(first)-start)) < limit
             and np.max(np.abs(np.asarray(entry['goal'])-goal))<=math.radians(tolerance_deg))
 
 def restore(entry):

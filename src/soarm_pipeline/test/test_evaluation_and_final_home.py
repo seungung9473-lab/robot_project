@@ -73,3 +73,14 @@ def test_failed_home_does_not_report_complete():
     p=plan()
     with pytest.raises(RuntimeError):finish_batch_home(p,lambda:{'success':False,'message':'blocked'})
     assert p['final_home']['status']=='stopped'
+
+
+
+def test_excluded_run_cannot_register_again_when_it_finishes(tmp_path):
+    first = fake_run(tmp_path, 'first')
+    series = initialize(tmp_path, first)
+    excluded = fake_run(tmp_path, 'excluded', day=9)
+    write(series/'excluded_trials.json', [{'trial_id': 'excluded'}])
+
+    assert register(excluded, tmp_path) is None
+    assert [r['trial_id'] for r in read(series/'trials.json')] == ['first']

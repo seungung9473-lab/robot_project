@@ -15,3 +15,22 @@ def contact_samples(fk,lo,hi,start,goal,velocity,acceleration,samples=81):
     if np.any(vmax<=0) or np.any(amax<=0):raise ValueError('Positive velocity/acceleration limits required')
     duration=max(.5,float(np.max(np.abs(v)/vmax)),float(np.sqrt(np.max(np.abs(acc)/amax))))*1.15
     return u*duration,q,v/duration,acc/duration**2
+
+
+
+def trajectory_from_samples(names, samples):
+    """Convert a checked fixed-axis profile to the trajectory sent to MoveIt."""
+    from moveit_msgs.msg import RobotTrajectory
+    from trajectory_msgs.msg import JointTrajectoryPoint
+
+    trajectory = RobotTrajectory()
+    trajectory.joint_trajectory.joint_names = list(names)
+    for time_s, q, velocity, acceleration in zip(*samples):
+        point = JointTrajectoryPoint()
+        point.positions = list(map(float, q))
+        point.velocities = list(map(float, velocity))
+        point.accelerations = list(map(float, acceleration))
+        ns = round(float(time_s) * 1_000_000_000)
+        point.time_from_start.sec, point.time_from_start.nanosec = divmod(ns, 1_000_000_000)
+        trajectory.joint_trajectory.points.append(point)
+    return trajectory

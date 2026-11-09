@@ -72,6 +72,9 @@ def register(directory,root):
     series=root/'evaluations'/config['series_id'];series.mkdir(parents=True,exist_ok=True)
     with (series/'.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
+        excluded = read(series/'excluded_trials.json', [])
+        if any(row['trial_id'] == summary['trial_id'] for row in excluded):
+            return None
         rows=read(series/'trials.json',[]);existing=next((r for r in rows if r['trial_id']==summary['trial_id']),None)
         if existing is None:
             if len(rows)>=config['target_runs']:return None

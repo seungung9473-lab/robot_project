@@ -10,11 +10,18 @@ RETREAT_UP_M=0.10
 # 패드 위 물체 사이 실제 간격(간격 2 mm + 발자국 여유 2.5 mm×2 = 7 mm)보다 작아야 배치 계획이 막히지 않는다. 집는 물체·든 물체에는 적용하지 않는다.
 OBSTACLE_PADDING_M=0.004
 
-# Approach to the next object: first go to a pose TRANSIT_UP_M straight above the approach pose (same elbow/wrist
-# configuration as the approach), keep the cup tip above TRANSIT_MIN_TCP_Z_M on the way (turntable top 59 mm + tallest object
-# ~40 mm + margin), then descend in a straight vertical line. Planning and execution use the same reviewed transit pose.
+# Prefer a 100 mm rise above the approach pose and try other heights as needed.
+# Transit keeps the cup tip above the absolute table-frame floor before descent.
 TRANSIT_UP_M=0.10
 TRANSIT_MIN_TCP_Z_M=0.14
+
+def transit_height_candidates(approach_z):
+    """Prefer the original 100 mm rise, then try shorter rises above the transit floor."""
+    minimum_rise = max(.01, TRANSIT_MIN_TCP_Z_M + .003 - approach_z)
+    rises = (TRANSIT_UP_M, .08, .06, .04, .02, minimum_rise)
+    return tuple(dict.fromkeys(rise for rise in rises if rise >= minimum_rise))
+
+
 JOINT_FOLD_WEIGHTS=(1.,1.,1.5,1.5)
 
 def _wrap(a):

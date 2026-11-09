@@ -1,5 +1,5 @@
 """Temporarily apply predicted aligned geometry and plan; never execute actions."""
-from transit_clearance import RETREAT_UP_M,TRANSIT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
+from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z,transit_height_candidates
 import argparse,copy,json,time
 from pathlib import Path
 import numpy as np,yaml,rclpy
@@ -11,7 +11,8 @@ from rosidl_runtime_py.convert import message_to_ordereddict
 from shape_msgs.msg import SolidPrimitive
 from moveit_msgs.msg import PlanningScene,PlanningSceneComponents,CollisionObject,RobotState,Constraints,JointConstraint,AllowedCollisionEntry,AttachedCollisionObject
 from moveit_msgs.srv import GetPlanningScene,ApplyPlanningScene,GetMotionPlan,GetStateValidity
-from normal_contact_trajectory import contact_samples
+from normal_contact_trajectory import contact_samples,trajectory_from_samples
+from grip_retry import SLOW_CONTACT_SCALING
 from inclined_geometry import solve_axis
 from payload_placement import signed_pitch,place_payload
 from collision_geometry import convex_mesh
@@ -24,13 +25,18 @@ packing=json.loads(a.placement_plan.read_text()) if a.placement_plan else None
 if packing is not None and (packing.get('pad_id')!=pad_id or a.placement_object not in packing['placements']):raise RuntimeError('Invalid placement reservation')
 rclpy.init();n=rclpy.create_node('inclined_plan_only');latest={}
 n.create_subscription(JointState,'/joint_states',lambda msg:latest.update(q=[msg.position[msg.name.index(k)] for k in names],t=time.monotonic()) if all(k in msg.name for k in names) else None,10)
+class EndpointCollision(RuntimeError):
+ pass
+
+state_validity_clients={}
+
 def call(path,typ,req):
  if typ is GetMotionPlan:
   motion=req.motion_plan_request
   for label,qstate in [('출발 자세',motion.start_state),('목표 자세',state([j.position for j in motion.goal_constraints[0].joint_constraints]))]:
    vreq=GetStateValidity.Request();vreq.group_name='arm';vreq.robot_state=qstate
    valid=call('/check_state_validity',GetStateValidity,vreq)
-   if not valid.valid:raise RuntimeError(label+' collision '+str([(c.contact_body_1,c.contact_body_2) for c in valid.contacts]))
+   if not valid.valid:raise EndpointCollision(label+' collision '+str([(c.contact_body_1,c.contact_body_2) for c in valid.contacts]))
   goal=[j.position for j in motion.goal_constraints[0].joint_constraints]
   home=m['poses']['home']
   if motion.planner_id=='PTP' or (len(goal)==len(home) and np.max(np.abs(np.asarray(goal)-home))<1e-6):
@@ -40,12 +46,18 @@ def call(path,typ,req):
    print('안전점검 실패: Pilz 홈 경로 거부. 재탐색합니다: RRT-Connect',flush=True)
    motion.pipeline_id='ompl';motion.planner_id='RRTConnectkConfigDefault'
   return raw_plan(req,'RRT-Connect 경로 탐색 및 안전점검')
- c=n.create_client(typ,path)
+ keep_client=typ is GetStateValidity
+ if keep_client:
+  if path not in state_validity_clients:state_validity_clients[path]=n.create_client(typ,path)
+  c=state_validity_clients[path]
+ else:
+  c=n.create_client(typ,path)
  try:
   assert c.wait_for_service(timeout_sec=20),path;f=c.call_async(req);rclpy.spin_until_future_complete(n,f,timeout_sec=30)
   if not f.done():raise RuntimeError('Timeout '+path)
   return f.result()
- finally:n.destroy_client(c)
+ finally:
+  if not keep_client:n.destroy_client(c)
 def raw_plan(req,label):
  c=n.create_client(GetMotionPlan,'/plan_kinematic_path')
  try:
@@ -93,25 +105,58 @@ try:
   from turntable_wait import review_wait_pose
   manifest=json.loads((s/'session.json').read_text())
   review_wait_pose(n,start,ctx['source_scan'],set(manifest.get('batch_assume_completed',[])))
- # 접근 경로: 시작 자세 -> 접근 자세 바로 위(TRANSIT_UP_M) 경유 자세(높이 유지) -> 수직 하강. 팔이 접힌 채 낮게 쓸고 가는 경로를 막는다.
- qh_solution=solve_axis(fk,lo,hi,fk(qa)[:3,3]+[0,0,TRANSIT_UP_M],fk(qa)[:3,0],seed=qa)
- if qh_solution is None:raise RuntimeError('Transit pose above target IK unavailable')
- qh=np.asarray(qh_solution[0],float)
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qh)])]
- plan=call('/plan_kinematic_path',GetMotionPlan,req).motion_plan_response
- result['approach_plan_error']=plan.error_code.val
- if plan.error_code.val!=1:raise RuntimeError('Approach plan rejected '+str(plan.error_code.val))
- _tj=plan.trajectory.joint_trajectory;_idx=[list(_tj.joint_names).index(k) for k in names]
- transit_z=min_tcp_z(fk,[[pt.positions[i] for i in _idx] for pt in _tj.points]);result['transit_min_tcp_z_m']=transit_z
- if transit_z<TRANSIT_MIN_TCP_Z_M:raise RuntimeError('Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(transit_z*1000,TRANSIT_MIN_TCP_Z_M*1000))
- result['start_q_rad']=list(map(float,start));result['transit_q_rad']=qh.tolist()
- cached['transit_above_target']={'joint_names':list(plan.trajectory.joint_trajectory.joint_names),'start':list(map(float,start)),'goal':list(map(float,qh)),'scaling':scaling,'trajectory':message_to_ordereddict(plan.trajectory)}
- _cfg=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
- _t,_descent,_,_=contact_samples(fk,lo,hi,qh,qa,[float(_cfg[k]['max_velocity'])*vscale for k in names],[float(_cfg[k]['max_acceleration'])*ascale for k in names])
- for q in _descent:
-  _r=GetStateValidity.Request();_r.group_name='arm';_r.robot_state=state(q);_v=call('/check_state_validity',GetStateValidity,_r)
-  if not _v.valid:raise RuntimeError('Transit descent collision '+str([(c.contact_body_1,c.contact_body_2) for c in _v.contacts]))
- result['transit_descent_samples']=len(_descent)
+ # Review the approach from the current stage start at several candidate heights.
+ approach=fk(qa);transit_attempts=[]
+ result['transit_attempts']=transit_attempts
+ limits=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
+ velocities=[float(limits[k]['max_velocity'])*vscale for k in names]
+ accelerations=[float(limits[k]['max_acceleration'])*ascale for k in names]
+ found_ik=False
+ for rise in transit_height_candidates(float(approach[2,3])):
+  attempt={'rise_m':rise};transit_attempts.append(attempt)
+  solution=solve_axis(fk,lo,hi,approach[:3,3]+[0,0,rise],approach[:3,0],seed=qa)
+  if solution is None:
+   attempt['error']='IK unavailable';continue
+  found_ik=True;qh=np.asarray(solution[0],float)
+  req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.allowed_planning_time=a.planning_seconds;r.num_planning_attempts=1;r.max_velocity_scaling_factor=vscale;r.max_acceleration_scaling_factor=ascale;r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=k,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for k,q in zip(names,qh)])]
+  try:
+   plan=call('/plan_kinematic_path',GetMotionPlan,req).motion_plan_response
+  except EndpointCollision as exc:
+   attempt['error']=str(exc);continue
+  if plan.error_code.val!=1:
+   attempt['error']='Approach plan rejected '+str(plan.error_code.val);continue
+  path=plan.trajectory.joint_trajectory
+  indices=[list(path.joint_names).index(k) for k in names]
+  if not path.points:
+   attempt['error']='Approach plan rejected: empty trajectory';continue
+  transit_z=min_tcp_z(fk,[[pt.positions[i] for i in indices] for pt in path.points])
+  if transit_z<TRANSIT_MIN_TCP_Z_M:
+   attempt['error']='Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(transit_z*1000,TRANSIT_MIN_TCP_Z_M*1000)
+   continue
+  try:
+   descent_profile=contact_samples(fk,lo,hi,qh,qa,velocities,accelerations)
+   descent=descent_profile[1]
+  except RuntimeError as exc:
+   attempt['error']='Transit descent unavailable: '+str(exc);continue
+  for q in descent:
+   request=GetStateValidity.Request();request.group_name='arm';request.robot_state=state(q)
+   valid=call('/check_state_validity',GetStateValidity,request)
+   if not valid.valid:
+    attempt['error']='Transit descent collision '+str([(c.contact_body_1,c.contact_body_2) for c in valid.contacts])
+    break
+  else:
+   attempt['selected']=True
+   result.update(start_q_rad=list(map(float,start)),transit_q_rad=qh.tolist(),
+                 transit_rise_m=rise,transit_min_tcp_z_m=transit_z,
+                 approach_plan_error=plan.error_code.val,transit_descent_samples=len(descent))
+   cached['transit_above_target']={'joint_names':list(plan.trajectory.joint_trajectory.joint_names),'start':list(map(float,start)),'goal':list(map(float,qh)),'scaling':scaling,'trajectory':message_to_ordereddict(plan.trajectory)}
+   cached['approach_3cm']={'profile':'fixed_axis','joint_names':names,'start':qh.tolist(),'goal':list(map(float,qa)),
+                         'scaling':scaling,'trajectory':message_to_ordereddict(trajectory_from_samples(names,descent_profile))}
+   break
+ else:
+  if not found_ik:raise RuntimeError('Transit pose above target IK unavailable at every candidate height')
+  errors=[a['error'] for a in transit_attempts if a['error']!='IK unavailable']
+  raise RuntimeError('No safe transit height: '+' | '.join(dict.fromkeys(errors)))
  # Only intended cup/object contact is exempt. Other-object/table collisions remain active.
  acm=copy.deepcopy(original.allowed_collision_matrix)
  for key in ['scanned_block','cup_tip','tool_link_cup_visual_link']:
@@ -122,11 +167,21 @@ try:
  for key in ['cup_tip','tool_link_cup_visual_link']:
   i=acm.entry_names.index(key);j=acm.entry_names.index('scanned_block');acm.entry_values[i].enabled[j]=True;acm.entry_values[j].enabled[i]=True
  scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=acm;apply(scene)
- cfg=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits'];times,positions,v,acc=contact_samples(fk,lo,hi,qa,qc,[float(cfg[k]['max_velocity'])*vscale for k in names],[float(cfg[k]['max_acceleration'])*ascale for k in names])
+ cfg=limits
+ contact_scaling={'velocity':min(vscale,SLOW_CONTACT_SCALING[0]),
+                  'acceleration':min(ascale,SLOW_CONTACT_SCALING[1])}
+ contact_profile=contact_samples(fk,lo,hi,qa,qc,
+     [float(cfg[k]['max_velocity'])*contact_scaling['velocity'] for k in names],
+     [float(cfg[k]['max_acceleration'])*contact_scaling['acceleration'] for k in names])
+ times,positions,_,_=contact_profile
  for q in positions:
   req=GetStateValidity.Request();req.group_name='arm';req.robot_state=state(q);valid=call('/check_state_validity',GetStateValidity,req)
   if not valid.valid:raise RuntimeError('Contact collision '+str([(c.contact_body_1,c.contact_body_2) for c in valid.contacts]))
  result.update(contact_samples=len(positions),contact_duration_s=float(times[-1]))
+ cached['continuous_contact_approach']={'profile':'fixed_axis','joint_names':names,'start':list(map(float,qa)),
+     'goal':list(map(float,qc)),'scaling':contact_scaling,
+     'trajectory':message_to_ordereddict(trajectory_from_samples(names,contact_profile))}
+
  # Keep the actual inclined pickup pitch while carrying the body upright.
  wc=yaml.safe_load((s/'workcell_snapshot.yaml').read_text());P=np.load(s/'analysis/cloud.npz')['points'];low=np.percentile(P,.5,0);high=np.percentile(P,99.5,0);low[2]=wc['turntable']['top_height_m'];low[:2]-=.002;high+=.002;dims=high-low;O=np.eye(4);from payload_placement import centered_payload_origin;O[:3,3]=centered_payload_origin(P,(high+low)/2);L=np.linalg.inv(fk(qc))@O;j1=(W@np.r_[[-.0177,.0177,.1598],1])[:3];pitch=signed_pitch(fk(qc),j1);target=None if trash else np.array(wc['pads'][pad_key]['center_table_m'])
  if not trash:target[:2]+=wc['place_correction_m'].get('pad_ID'+str(pad_id),[0.,0.])
@@ -204,7 +259,8 @@ try:
     mr.pipeline_id='pilz_industrial_motion_planner';mr.planner_id='PTP'
    response=call('/plan_kinematic_path',GetMotionPlan,request).motion_plan_response
    if response.error_code.val!=1:raise RuntimeError('Trash empty return path rejected')
-   cached['return_to_initial_home']={'joint_names':list(response.trajectory.joint_trajectory.joint_names),'start':placed.tolist(),'goal':list(map(float,start)),'scaling':scaling,'trajectory':message_to_ordereddict(response.trajectory)}
+   return_label='return_to_stage_start_after_trash' if a.finish_above else 'return_to_initial_home'
+   cached[return_label]={'joint_names':list(response.trajectory.joint_trajectory.joint_names),'start':placed.tolist(),'goal':list(map(float,start)),'scaling':scaling,'trajectory':message_to_ordereddict(response.trajectory)}
   result['exit_q_rad']=list(map(float,start))
   result.update(success=True,destination='trash_drop',trash_goal_q_rad=placed.tolist(),object_origin_table=O.tolist(),predicted_placed_object_pose_table=None,finish_above=a.finish_above,empty_retreat_and_return_checked=True,scope='approach/contact/attached lift/trash transfer/empty return reviewed; no physical release performed; bin interior/fall not modeled')
   (s/'reviewed_trajectories.json').write_text(json.dumps(cached,indent=2));raise SystemExit(0)

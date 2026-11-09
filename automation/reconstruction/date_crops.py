@@ -24,3 +24,50 @@ def collect_date_crops(session,manifest,objects):
                 crop=image[y0:y1,x0:x1].copy();crop[~foreground[y0:y1,x0:x1]]=128
                 candidates[obj.name].append((score,camera,view['path']+'/'+camera,crop))
     return candidates
+
+
+
+def initial_date_views(ranked, angles):
+    """Keep two bright label views and add a distant view if the top three cluster."""
+    selected = ranked[:3]
+    if len(selected) < 3:
+        return selected
+
+    def angle(candidate):
+        return angles.get(candidate[2].rsplit('/', 1)[0])
+
+    reference = angle(selected[0])
+    if reference is None or any(angle(candidate) is None for candidate in selected):
+        return selected
+
+    def separation(candidate):
+        return abs((angle(candidate) - reference + 180) % 360 - 180)
+
+    if any(separation(candidate) > 65 for candidate in selected[1:]):
+        return selected
+    alternatives = [candidate for candidate in ranked[3:]
+                    if angle(candidate) is not None and candidate[0] >= .35 * selected[0][0]
+                    and separation(candidate) >= 90]
+    if alternatives:
+        selected[2] = max(alternatives, key=lambda candidate: (separation(candidate), candidate[0]))
+    return selected
+
+
+
+def additional_date_views(ranked, angles, observations):
+    """Prefer angles near a partial reading. Consensus still uses its own thresholds."""
+    def angle(evidence_id):
+        return angles.get(evidence_id.rsplit('/', 1)[0])
+
+    hints = [angle(row['evidence_id']) for row in observations
+             if row.get('date_text') and row.get('confidence', 0) >= .8]
+    hints = [value for value in hints if value is not None]
+    if not hints:
+        return initial_date_views(ranked, angles)
+
+    def rank(candidate):
+        value = angle(candidate[2])
+        distance = min(abs((value - hint + 180) % 360 - 180) for hint in hints) if value is not None else float('inf')
+        return distance, -candidate[0]
+
+    return sorted(ranked, key=rank)[:3]

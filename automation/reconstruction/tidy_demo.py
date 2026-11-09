@@ -213,24 +213,43 @@ def main(argv=None):
         from planning_feedback import calculating, retry_safe
 
         def stage(name, action):
-            trial.event('stage_started', stage=name); print(name, flush=True)
+            trial.event('stage_started', stage=name)
+            print(name, flush=True)
             start = time.monotonic()
+
+            def emit(message, **kwargs):
+                now = time.monotonic()
+                total = now - started
+                message += f' · 전체 누적 {total:.1f}초'
+                print(message, **kwargs)
+                with (trial.directory/'execution.log').open('a') as stream:
+                    stream.write(message+'\n')
+                status = {'stage': name, 'state': 'calculating',
+                          'elapsed_seconds': now-start, 'total_seconds': total}
+                temporary = trial.directory/'current_status.tmp'
+                temporary.write_text(json.dumps(status, ensure_ascii=False))
+                temporary.replace(trial.directory/'current_status.json')
+
+            def finish_stage(status):
+                now = time.monotonic()
+                row = {'stage': name, 'seconds': now-start, 'total_seconds': now-started,
+                       'status': status}
+                stages.append(row)
+                label = '단계 완료' if status == 'complete' else '단계 실패'
+                message = f"{label}: {name} · 단계 {row['seconds']:.1f}초 · 전체 누적 {row['total_seconds']:.1f}초"
+                print(message, flush=True)
+                with (trial.directory/'execution.log').open('a') as stream:
+                    stream.write(message+'\n')
+                if status == 'complete':
+                    trial.event('stage_complete', **row)
+
             try:
-                def emit(message, **kwargs):
-                    print(message, **kwargs)
-                    with (trial.directory/'execution.log').open('a') as stream:
-                        stream.write(message+'\n')
-                    status = {'stage':name, 'state':'calculating', 'elapsed_seconds':time.monotonic()-start}
-                    temporary = trial.directory/'current_status.tmp'
-                    temporary.write_text(json.dumps(status, ensure_ascii=False)); temporary.replace(trial.directory/'current_status.json')
                 with calculating(name, emit=emit):
                     value = action()
             except BaseException:
-                stages.append({'stage': name, 'seconds': time.monotonic()-start, 'status': 'stopped'})
-                print('단계 실패: '+name, flush=True)
+                finish_stage('stopped')
                 raise
-            stages.append({'stage': name, 'seconds': time.monotonic()-start, 'status': 'complete'})
-            trial.event('stage_complete', **stages[-1])
+            finish_stage('complete')
             return value
 
         def run(*command):
@@ -362,6 +381,10 @@ def main(argv=None):
         for lock in (scan_lock, demo_lock):
             if lock is not None:
                 fcntl.flock(lock, fcntl.LOCK_UN); lock.close()
+        if args.execute:
+            total = result['total_seconds']
+            minutes, seconds = divmod(round(total), 60)
+            print(f'전체 소요 시간 {minutes}분 {seconds:02d}초 ({total:.1f}초)', flush=True)
         print('기록:', trial.directory, flush=True)
 
 
