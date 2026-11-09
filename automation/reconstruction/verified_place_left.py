@@ -114,7 +114,7 @@ def acm_for(object_id,support):
 
 from grip_retry import SLOW_CONTACT_SCALING
 from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None):
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None,stop_on_seal=False):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
  continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
@@ -181,10 +181,14 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
  if not handle or not handle.accepted:raise RuntimeError('Execution rejected')
  if pump_client is not None:
   pre_suction_gate=PreSuctionTrigger(pump_target,pump_normal,lambda:pump_client.call_async(Trigger.Request()))
- lost=False;bad=0;f=handle.get_result_async();end=time.monotonic()+120
+ lost=False;bad=0;f=handle.get_result_async();end=time.monotonic()+120;sealed_early=False;seal_good=0;seal_last=0.
  while not f.done() and time.monotonic()<end:
   rclpy.spin_once(node,timeout_sec=.05)
   if holding and (not vac or time.monotonic()-vac['t']>.5):lost=True;handle.cancel_goal_async()
+  # 재접근 중 압력이 기준(HELD_DIFF)을 새 값 2개 연속 넘으면 남은 거리를 더 누르지 않고 그 자리에서 멈춘다.
+  if stop_on_seal and not sealed_early and vac and vac['t']>seal_last and time.monotonic()-vac['t']<.3:
+   seal_last=vac['t'];seal_good=seal_good+1 if vac['value']<=HELD_DIFF else 0
+   if seal_good>=2:sealed_early=True;status['stopped_on_seal']={'label':label,'pressure_diff':vac['value']};handle.cancel_goal_async()
  if not f.done():handle.cancel_goal_async();raise RuntimeError('Execution timeout; cancel requested')
  handle=None
  if pump_client is not None:
@@ -195,7 +199,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
    if not gate.future.done() or not gate.future.result().success:raise RuntimeError('Pre-suction pump command failed')
    status['pre_suction']={'threshold_m':.005,'observed_distance_m':gate.distance,'sensor_gate':False,'motion_stopped_for_trigger':False}
   finally:node.destroy_client(pump_client)
- if f.result().result.error_code.val!=1 or lost:raise RuntimeError('Execution failed or suction lost; holding state retained')
+ if (f.result().result.error_code.val!=1 and not sealed_early) or lost:raise RuntimeError('Execution failed or suction lost; holding state retained')
  if holding:vacuum_ok()
  return fresh()
 
@@ -448,7 +452,7 @@ try:
    target=final_advance_target(initial_contact[:3,3],normal)
    q=fresh();retry_goal=ik(target,q,axis=initial_contact[:3,0])
    record={'attempt':1,'step_m':FINAL_ADVANCE_M,'total_additional_approach_m':FINAL_ADVANCE_M,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 8 mm inward-normal advance after 1 s without suction'};status['retries'].append(record)
-   move(retry_goal,'grip_retry_8mm_after_1s',True,speed_cap=SLOW_5MM_SCALING);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_8mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
+   move(retry_goal,'grip_retry_8mm_after_1s',True,speed_cap=SLOW_5MM_SCALING,stop_on_seal=True);_adv=float(np.linalg.norm(fk(fresh())[:3,3]-initial_contact[:3,3])*1000);record['advanced_mm']=_adv;record['stopped_on_seal']=status.pop('stopped_on_seal',None);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_8mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
    if grip.success:
     _stable,_detail=seal_stable();record['seal_check']=_detail
     if not _stable:grip=type('G',(),{'success':False,'message':'unstable seal after retry '+str(_detail)})()

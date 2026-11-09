@@ -84,10 +84,13 @@ def read_occupancy(world_to_table):
             raise RuntimeError('패드 점유 확인 실패: 장면 서비스 연결 없음')
         request = GetPlanningScene.Request()
         request.components.components = C.WORLD_OBJECT_GEOMETRY|C.ROBOT_STATE_ATTACHED_OBJECTS
-        future = client.call_async(request)
-        rclpy.spin_until_future_complete(node, future, executor=executor, timeout_sec=10)
+        # 읽기 전용 조회라 한 번 더 보내도 안전하다. 서비스 연결은 확인됐는데 응답만 안 오는 경우(응답 경로 발견 지연)가 간헐적으로 있어 1회 재시도한다.
+        for attempt in range(2):
+            future = client.call_async(request)
+            rclpy.spin_until_future_complete(node, future, executor=executor, timeout_sec=10)
+            if future.done() and future.result() is not None:break
         if not future.done() or future.result() is None:
-            raise RuntimeError('패드 점유 확인 실패: 장면 응답 없음')
+            raise RuntimeError('패드 점유 확인 실패: 장면 응답 없음 (2회 시도)')
         scene = future.result().scene
         if scene.robot_state.attached_collision_objects:
             raise RuntimeError('물체 부착 상태: 새 패드 예약·자동 재시작 금지')
@@ -258,13 +261,15 @@ def clear_confirmed_empty_pads(audit_directory, *, reset_all_scans=False):
                 from vacuum_thresholds import HELD_DIFF
                 got={}
                 sub=node.create_subscription(Int32,'/vacuum/diff',lambda m:got.update(v=m.data,t=time.monotonic()),10)
+                executor.add_node(node)   # 이 노드가 executor에 들어 있어야 구독 콜백이 실제로 실행된다
                 try:
                     end=time.monotonic()+3
                     while time.monotonic()<end:
                         executor.spin_once(timeout_sec=.1)
                         if got and time.monotonic()-got['t']<.3:break
                     return None if not got or time.monotonic()-got['t']>.5 else got['v']>HELD_DIFF
-                finally:node.destroy_subscription(sub)
+                finally:
+                    executor.remove_node(node);node.destroy_subscription(sub)
             return reset_previous_scan_scene(query,apply,audit_directory,
                 clear_markers=lambda:delete_scan_markers(node,executor),not_holding=not_holding)
         return reset_empty_pad_scene(query,apply,audit_directory)

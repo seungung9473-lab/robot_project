@@ -56,7 +56,11 @@ def patch(points,n,d,radius=.0125,margin=.003,max_tilt=90.,center_point=None,pre
         if not len(eligible):eligible=np.flatnonzero(clear>=radius+margin)
         if len(eligible):
             heights=(center+grid[:,0,None]*u+grid[:,1,None]*v)[:,2]
-            indices=eligible[np.argsort(heights[eligible])[-64:][::-1]]
+            # 가장 높은 곳 근처(1.5 mm 이내)만 후보로 두고, 그 안에서 가장자리 여유가 큰 점들 중 면 중심에 가까운 점을 우선한다.
+            # (이전: 높이만 보고 64개를 골라 평평한 윗면에서는 잡음 때문에 임의의 가장자리 쪽이 선택되어 물체 중심을 벗어났다.)
+            band=eligible[heights[eligible]>=heights[eligible].max()-.0015]
+            good=band[clear[band]>=clear[band].max()-.0015]
+            indices=good[np.argsort(np.linalg.norm(grid[good],axis=1))[:64]]
     tree=cKDTree(xy);projected=np.column_stack([(p-center)@u,(p-center)@v]);plane_residual=p@n+d
     aa=np.linspace(0,2*np.pi,64,endpoint=False);rr=np.linspace(0,radius,9)
     disk_offsets=np.array([r*np.array([np.cos(a),np.sin(a)]) for r in rr for a in aa])
@@ -66,7 +70,8 @@ def patch(points,n,d,radius=.0125,margin=.003,max_tilt=90.,center_point=None,pre
         res=res[np.abs(res)<.008]
         rms=float(np.sqrt(np.mean(res**2))*1000) if len(res) else 1e9
         record={'point_table_m':point.tolist(),'normal_table':n.tolist(),'plane_d':d,'tilt_deg':tilt,'boundary_clearance_mm':float(clear[idx]*1000),'coverage':coverage,'patch_rms_mm':rms,'inliers':len(inliers),'plane_inlier_tolerance_mm':PLANE_INLIER_TOLERANCE_M*1000,'patch_rms_limit_mm':PATCH_RMS_LIMIT_MM,'edge_margin_mm':margin*1000,'geometry_pass':bool(clear[idx]>=radius+margin and coverage>.9 and rms<PATCH_RMS_LIMIT_MM)}
-        rank=lambda r:(r['geometry_pass'],r['point_table_m'][2],r['boundary_clearance_mm']) if prefer_high else (r['geometry_pass'],r['boundary_clearance_mm'])
+        record['center_distance_mm']=float(np.linalg.norm(g)*1000)
+        rank=lambda r:(r['geometry_pass'],-r['center_distance_mm'],r['boundary_clearance_mm']) if prefer_high else (r['geometry_pass'],r['boundary_clearance_mm'])
         if best is None or rank(record)>rank(best):best=record
     return best
 

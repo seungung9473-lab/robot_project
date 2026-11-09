@@ -23,3 +23,12 @@ def test_check_is_wired_into_all_three_grip_paths():
     assert text.count('seal_stable()')>=4   # 정의 1 + 첫 흡착·기다린 뒤·재접근 후 3
     assert "status['seal_check_first']" in text and "waited['seal_check']" in text and "record['seal_check']" in text
     assert SEAL_STABLE_S==1.0
+
+
+def test_retry_advance_stops_as_soon_as_the_seal_forms():
+    text=(R/'verified_place_left.py').read_text()
+    assert 'stop_on_seal=True' in text                                    # 8 mm 재접근에서만 켠다
+    i=text.index('def move(');body=text[i:i+6500]
+    assert 'seal_good>=2' in body and 'handle.cancel_goal_async()' in body  # 새 값 2개 연속 기준 이하면 이동 취소
+    assert "and not sealed_early" in body                                  # 일부러 취소한 이동은 실패로 보지 않는다
+    assert "record['advanced_mm']" in text and "record['stopped_on_seal']" in text

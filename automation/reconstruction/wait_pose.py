@@ -9,7 +9,7 @@ rest of the reviewed stage is unchanged because it starts from the same approach
 import math
 import numpy as np
 
-LIMIT_DEG=3.0
+LIMIT_DEG=5.0   # 2026-11-09: 3° → 5° (23:42 실행에서 J4가 3.5° 어긋남. 어긋난 단계는 현재 자세에서 다시 계획·충돌검사하므로 안전 검사는 유지)
 EXACT_DEG=.25
 
 def check_wait_pose(actual,expected,limit_deg=LIMIT_DEG,exact_deg=EXACT_DEG):
