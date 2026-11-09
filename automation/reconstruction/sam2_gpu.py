@@ -1,5 +1,5 @@
 """GPU SAM2 inference with shared image features and batched independent prompts."""
-import json,time,hashlib,contextlib
+import json, time
 from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw

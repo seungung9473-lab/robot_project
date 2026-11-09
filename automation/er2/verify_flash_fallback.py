@@ -1,5 +1,5 @@
 """Simulate ER2 retirement, then test real Flash on an already cropped image."""
-import datetime,json,time
+import datetime, json
 from pathlib import Path
 import cv2
 from check_connection import load_key,request,APIError

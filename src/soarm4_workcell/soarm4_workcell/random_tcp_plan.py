@@ -1,5 +1,5 @@
 """Prepare 50 random TCP/axis IK goals and collision-reviewed routes. No execution."""
-import sys,time,json,argparse
+import sys, time, argparse
 from pathlib import Path
 import numpy as np
 import rclpy

@@ -1,5 +1,5 @@
 """Rebuild aligned raw points and audit shape retention; read-only robot operation."""
-import argparse,json,sys
+import argparse, json
 from pathlib import Path
 import cv2,numpy as np
 from scipy.spatial.transform import Rotation

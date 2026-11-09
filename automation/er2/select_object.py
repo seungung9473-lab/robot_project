@@ -2,7 +2,7 @@
 """ER2 cropped-image selection and local overlay only. No ROS or actuation."""
 import argparse,base64,datetime,hashlib,json,math,time
 from pathlib import Path
-import cv2,numpy as np
+import cv2
 from check_connection import load_key,MODEL
 from model_router import generate
 R=Path(__file__).resolve().parent

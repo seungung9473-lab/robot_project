@@ -1,8 +1,7 @@
 """Register measured workcell TF, visual markers and MoveIt world objects.
 No controller, trajectory, serial, vacuum or torque interface is used.
 """
-import json,time
-from pathlib import Path
+import time
 import numpy as np
 import rclpy
 from rclpy.node import Node

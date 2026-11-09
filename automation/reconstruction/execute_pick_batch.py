@@ -4,7 +4,7 @@ Contact points/angles are never refitted or visually checked after rotation.
 """
 import argparse,json,sys,subprocess,time,fcntl,math
 from pathlib import Path
-import numpy as np,yaml
+import numpy as np
 from batch_search import require_complete
 from batch_inputs import fingerprints
 from turntable_wait import review_wait_pose
