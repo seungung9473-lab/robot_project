@@ -48,6 +48,8 @@ def validate_actual(plan,key,points):
     if np.max(np.linalg.norm(p-center,axis=1))>plan['radius_m']-plan['edge_margin_m']+1e-8:raise ValueError('Actual placement exceeds pad edge')
     for other,item in plan['placements'].items():
         if other!=key and not separated(p,np.array(item['reserved_polygon_table_m']),plan['object_gap_m']):raise ValueError('Actual placement overlaps another reserved position')
+    for item in plan.get('occupied',[]):
+        if not separated(p,np.asarray(item['polygon_table_m']),plan['object_gap_m']):raise ValueError('Actual placement overlaps existing placed object '+item['id'])
     for other,item in plan.get('completed',{}).items():
         if other!=key and not separated(p,footprint(item['points_table_m']),plan['object_gap_m']):raise ValueError('Actual placement overlaps an already placed object')
     return p

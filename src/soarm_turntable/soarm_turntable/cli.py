@@ -1,4 +1,4 @@
-import argparse,json,math,time
+import argparse, math
 import rclpy
 from rclpy.action import ActionClient
 from control_msgs.action import FollowJointTrajectory

@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from sensor_msgs.msg import JointState
-from moveit_msgs.msg import RobotState,Constraints,JointConstraint,DisplayTrajectory
+from moveit_msgs.msg import RobotState, Constraints, JointConstraint
 from moveit_msgs.srv import GetMotionPlan,GetStateValidity,ApplyPlanningScene,GetPlanningScene
 from moveit_msgs.msg import CollisionObject,PlanningSceneComponents
 from shape_msgs.msg import SolidPrimitive
@@ -30,7 +30,7 @@ def call(c,req,seconds=45):
 def state(q):return RobotState(joint_state=JointState(name=names,position=q))
 try:
  # Register an approximate object proxy; no table/cup collision exemptions.
- cfg=yaml.safe_load(Path('/home/seungung9473/robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(cfg['T_table_world']);T=np.eye(4);T[:3,3]=json.loads(Path(os.environ['SOARM_PAYLOAD_JSON']).read_text())['center_table_m'];T=np.linalg.inv(W)@T;pose=Pose();pose.position.x,pose.position.y,pose.position.z=map(float,T[:3,3]);quat=Rotation.from_matrix(T[:3,:3]).as_quat();pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w=map(float,quat)
+ cfg=yaml.safe_load(Path('/home/wanjae/robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(cfg['T_table_world']);T=np.eye(4);T[:3,3]=json.loads(Path(os.environ['SOARM_PAYLOAD_JSON']).read_text())['center_table_m'];T=np.linalg.inv(W)@T;pose=Pose();pose.position.x,pose.position.y,pose.position.z=map(float,T[:3,3]);quat=Rotation.from_matrix(T[:3,:3]).as_quat();pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w=map(float,quat)
  co=CollisionObject();co.id='scanned_object_proxy';co.header.frame_id='world';co.operation=CollisionObject.ADD;co.primitives=[SolidPrimitive(type=SolidPrimitive.BOX,dimensions=json.loads(Path(os.environ['SOARM_PAYLOAD_JSON']).read_text())['dimensions_m'])];co.primitive_poses=[pose];reqscene=ApplyPlanningScene.Request();reqscene.scene.is_diff=True;reqscene.scene.world.collision_objects=[co]
  if not call(n.create_client(ApplyPlanningScene,'/apply_planning_scene'),reqscene).success:raise RuntimeError('Object proxy registration failed')
  scene_req=GetPlanningScene.Request();scene_req.components.components=PlanningSceneComponents.WORLD_OBJECT_GEOMETRY

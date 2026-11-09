@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from sensor_msgs.msg import JointState
-from moveit_msgs.msg import RobotState,Constraints,JointConstraint,DisplayTrajectory,CollisionObject,AttachedCollisionObject,PlanningSceneComponents,AllowedCollisionEntry
+from moveit_msgs.msg import RobotState, Constraints, JointConstraint, CollisionObject, AttachedCollisionObject, PlanningSceneComponents, AllowedCollisionEntry
 from shape_msgs.msg import SolidPrimitive
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Int32
@@ -15,7 +15,7 @@ import json,yaml,numpy as np
 from pathlib import Path
 from scipy.spatial.transform import Rotation
 from scipy.optimize import least_squares
-m=json.loads(Path('/home/seungung9473/robot_ws/src/soarm4_description/config/model.json').read_text());d=yaml.safe_load(Path('/home/seungung9473/robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(d['T_table_world']);B=np.eye(4);B[:3,:3]=Rotation.from_euler('z',m['robot_base_yaw']).as_matrix();B[:3,3]=m['robot_base_xyz']
+m=json.loads(Path('/home/wanjae/robot_ws/src/soarm4_description/config/model.json').read_text());d=yaml.safe_load(Path('/home/wanjae/robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(d['T_table_world']);B=np.eye(4);B[:3,:3]=Rotation.from_euler('z',m['robot_base_yaw']).as_matrix();B[:3,3]=m['robot_base_xyz']
 def fk(q):
  T=W@B
  for j,a in zip(m['joints'],q):

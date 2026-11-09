@@ -30,7 +30,7 @@ ros2 topic echo /joint_states --once
 ros2 topic echo /vacuum/diff --once
 ```
 
-motor_test.py 및 별도의 soarm4_live는 함께 실행하지 않습니다. 이 브리지가 모터 포트를 단독으로 사용하면서 상태를 발행합니다. 하드웨어 제어를 켜기 전에는 현재 실제 자세의 계획 리미트 포함 여부, 모터 방향, 궤적 취소/정지 처리 등을 별도로 검증해야 합니다. 이 작업은 MoveIt Execute를 연결하거나 실행 모드의 전체 동작을 승인한 작업이 아닙니다.
+motor_test.py는 현재 브리지와 함께 실행하지 않습니다. 구형 soarm4_live 패키지는 제거했습니다. 이 브리지가 모터 포트를 단독으로 사용하면서 상태를 발행합니다. 하드웨어 제어를 켜기 전에는 현재 실제 자세의 계획 리미트 포함 여부, 모터 방향, 궤적 취소/정지 처리 등을 별도로 검증해야 합니다. 이 작업은 MoveIt Execute를 연결하거나 실행 모드의 전체 동작을 승인한 작업이 아닙니다.
 
 필수 의존성 중 ros-jazzy-control-msgs가 없으면 빌드 후에도 실행 시 ModuleNotFoundError가 납니다.
 

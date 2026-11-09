@@ -1,0 +1,23 @@
+schema_version: 1
+status: original_settings_restored
+motor_id: 3
+motor_model_reported_by_user: STS3250
+P: 32
+D: 32
+I: 0
+integral_limit_raw: 0
+positive_deadband: 0
+negative_deadband: 0
+eeprom_readback_verified: true
+source_record: /home/seungung9473/robot_ws/test_data/runs/20261108_201255_a831409d/result.json
+previous_I: 0
+previous_integral_limit_raw: 0
+auto_apply_on_launch: false
+note: Original I and integral limit restored; final readback torque=1. Trial history
+  preserved. No automatic application.
+validation_record: /home/seungung9473/robot_ws/test_data/runs/20261108_201412_57e82e2e
+home_j3_error_deg: 0.263671875
+internal_min_angle_counts: 0
+internal_max_angle_counts: 4095
+restore_record: /home/seungung9473/robot_ws/test_data/runs/20261108_202300_7fb47349/result.json
+final_readback_record: /home/seungung9473/robot_ws/test_data/runs/20261108_202344_4577c61c/result.json

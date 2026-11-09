@@ -1,5 +1,6 @@
 """Explicit full cycle: home -> stopped scan -> Gemini/SAM2 -> QR/date routes -> reviewed motion."""
 import argparse,json,os,subprocess,sys,time,uuid,fcntl
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 R=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
@@ -12,14 +13,14 @@ def control_preflight():
  try:
   for node in ['servo_bridge','esp32_bridge','xl330_turntable']:
    c=n.create_client(GetParameters,'/'+node+'/get_parameters')
-   if not c.wait_for_service(timeout_sec=10):raise RuntimeError(node+' is not connected')
+   if not c.wait_for_service(timeout_sec=10):raise RuntimeError(node+' is not connected. 먼저 ros2 launch soarm_pipeline desktop_ready.launch.py allow_execution:=true 로 장치를 준비하세요.')
    req=GetParameters.Request();req.names=['read_only'];f=c.call_async(req);rclpy.spin_until_future_complete(n,f,timeout_sec=10)
    if not f.done() or f.result() is None or len(f.result().values)!=1 or f.result().values[0].type!=1:raise RuntimeError(node+' mode is unknown')
    if f.result().values[0].bool_value:raise RuntimeError(node+' is read-only; enable control before starting a physical cycle')
    n.destroy_client(c)
   end=time.monotonic()+3
   while (not vac or time.monotonic()-vac['t']>.5) and time.monotonic()<end:rclpy.spin_once(n,timeout_sec=.05)
-  if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=-200:raise RuntimeError('Fresh empty-cup confirmation missing; no automatic home/scan')
+  if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:raise RuntimeError('Fresh empty-cup confirmation missing; no automatic home/scan')
  finally:n.destroy_node();rclpy.shutdown()
 
 def main():
@@ -30,11 +31,16 @@ def main():
  if a.reference_date:
   from datetime import date
   a.reference_date=date.fromisoformat(a.reference_date).isoformat()
+ from desktop_runtime import require_cuda_profile, gpu_python
+ runtime=require_cuda_profile();os.environ['SOARM_SAM2_DEVICE']='cuda';os.environ['SOARM_SAM2_PYTHON']=gpu_python();trial.event('sam2_runtime',**runtime);print('CUDA/FP32: '+runtime['gpu_name'],flush=True)
  control_preflight();out=R/'expiry_cycles'/('cycle_'+time.strftime('%Y%m%d_%H%M%S')+'_'+uuid.uuid4().hex[:6]);out.mkdir(parents=True);state={'status':'starting','robot_motion_requested':True};log=out/'cycle.json';trial.attach(log)
  def stage(name):trial.event('stage',stage=name);state['stage']=name;log.write_text(json.dumps(state,ensure_ascii=False,indent=2));print(name,flush=True)
  def run(*cmd):subprocess.run(list(map(str,cmd)),check=True)
  lock=(R/'scan_pick_cycle.lock').open('w');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  try:
+  from scan_scene_reset import clear_previous_scan_scene
+  stage('clear_previous_turntable_and_pad_scans')
+  clear_previous_scan_scene(trial.directory);trial.attach(trial.directory/'previous_scan_reset.json');trial.attach(trial.directory/'previous_scan_reset_before.json')
   stage('home');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
   stage('scan_12_stopped_angles');run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*range(0,360,30),'--timeout',60,'--output',out/'scans')
   scans=[s for s in (out/'scans').iterdir() if (s/'session.json').exists()]

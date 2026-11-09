@@ -1,6 +1,6 @@
 # 실제 엔코더를 사용하는 MoveIt 실행 연결
 
-이전 planning.launch.py는 계속 가상 상태 미리보기용입니다. 실제 로봇은 hardware.launch.py를 사용합니다. 이 launch에는 가상 관절 발행기나 모터 드라이버가 없고, 별도로 실행한 soarm_bridge의 실제 /joint_states, /tf, /arm_controller/follow_joint_trajectory를 사용합니다. 동일 포트를 여는 motor_test.py, soarm4_live를 함께 실행하지 않습니다.
+이전 planning.launch.py는 계속 가상 상태 미리보기용입니다. 실제 로봇은 hardware.launch.py를 사용합니다. 이 launch에는 가상 관절 발행기나 모터 드라이버가 없고, 별도로 실행한 soarm_bridge의 실제 /joint_states, /tf, /arm_controller/follow_joint_trajectory를 사용합니다. 동일 포트를 여는 motor_test.py를 함께 실행하지 않습니다. 구형 soarm4_live 패키지는 제거했습니다.
 
 ## 읽기 전용으로 실제 상태에서 계획만 확인
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Offline FCL triangle-mesh collision audit. Never communicates with motors."""
 from pathlib import Path
-import os,sys,json,math,time,hashlib,itertools,argparse,xml.etree.ElementTree as ET
+import sys, json, time, hashlib, itertools, argparse, xml.etree.ElementTree as ET
 import numpy as np
 import fcl,trimesh
 ROOT=Path(__file__).resolve().parents[1]

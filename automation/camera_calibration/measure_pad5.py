@@ -1,5 +1,5 @@
 """Passive ROS image observer; never sends camera or motor commands."""
-import sys,time,json,datetime,os
+import sys, time, json, datetime
 from pathlib import Path
 import cv2,numpy as np,rclpy
 from sensor_msgs.msg import Image,CameraInfo

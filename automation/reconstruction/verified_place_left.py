@@ -1,5 +1,6 @@
 """Two reconstructed objects -> robot left/right pads, with attached-body planning."""
 import argparse,copy,json,math,os,subprocess,sys,time
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np
 from scipy.optimize import least_squares
@@ -18,7 +19,7 @@ from motion.kinematics import fk,m,W
 from placement_geometry import load_context
 ROOT=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
-p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');p.add_argument('--resume-held',type=Path);p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');p.add_argument('--inclined',action='store_true');p.add_argument('--pad',type=int,choices=[5,6],default=5);p.add_argument('session',type=Path);args=p.parse_args();session=args.session.resolve();out=session/('placement_left_'+time.strftime('%Y%m%d_%H%M%S'));out.mkdir(exist_ok=False)
+p=argparse.ArgumentParser();p.add_argument('--execute',action='store_true');p.add_argument('--resume-held',type=Path);p.add_argument('--finish-above',action='store_true',help='After release, retreat and wait above the pad instead of HOME');p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');p.add_argument('--inclined',action='store_true');p.add_argument('--pad',type=int,choices=[5,6],default=5);p.add_argument('session',type=Path);args=p.parse_args();session=args.session.resolve();out=session/('placement_left_'+time.strftime('%Y%m%d_%H%M%S'));out.mkdir(exist_ok=False)
 trial=start_trial('physical_pick_place' if args.execute else 'pick_place_preview',physical=args.execute,source=session);trial.attach(out/'execution.json');trial.attach(session/'candidate.json');trial.attach(session/'inclined_context.json');trial.attach(session/'collision_plan_check.json')
 packing_path=args.placement_plan or (session/'placement_plan.json');packing=json.loads(packing_path.read_text()) if packing_path.exists() else None
 packing_key=args.placement_object
@@ -29,7 +30,7 @@ if packing is not None:
 ctx=load_context(session);names=['joint'+str(i) for i in range(1,5)];lo=np.array([j['limit']['lower'] for j in m['joints']],float);hi=np.array([j['limit']['upper'] for j in m['joints']],float)
 rclpy.init();node=rclpy.create_node('verified_suction_trial');latest={};vac={};turn={};holding=False;handle=None;bad=0;lost=False
 pre_suction_gate=None
-status={'success':False,'phases':[],'placements':[],'pressure_settings':{'grip_diff':-200,'hold_diff':-200,'max_feedback_age_s':.5,'bad_consecutive_samples':2}}
+status={'success':False,'phases':[],'placements':[],'pressure_settings':{'grip_diff':HELD_DIFF,'hold_diff':HELD_DIFF,'max_feedback_age_s':.5,'bad_consecutive_samples':2}}
 def joint(msg):
  if all(n in msg.name for n in names):
   latest.update(q=[float(msg.position[msg.name.index(n)]) for n in names],t=time.monotonic())
@@ -38,7 +39,7 @@ def joint(msg):
 def pressure(msg):
  global bad,lost
  trial.sample('vacuum',diff=int(msg.data))
- vac.update(value=msg.data,t=time.monotonic());bad=bad+1 if msg.data>-200 else 0
+ vac.update(value=msg.data,t=time.monotonic());bad=bad+1 if msg.data>HELD_DIFF else 0
  if handle is not None and holding and bad>=2:lost=True;handle.cancel_goal_async()
 node.create_subscription(JointState,'/joint_states',joint,10);node.create_subscription(Int32,'/vacuum/diff',pressure,10);node.create_subscription(String,'/turntable/state',lambda msg:turn.update(json.loads(msg.data)),10)
 def call(name,req=None,typ=Trigger,timeout=45):
@@ -84,12 +85,20 @@ def ik(target,seed,axis=None,payload=None):
  if not candidates:raise RuntimeError('IK unreachable '+str(target))
  return min(candidates,key=lambda q:np.linalg.norm(q-seed)).tolist()
 def vacuum_ok():
- if not vac or time.monotonic()-vac['t']>.5 or vac['value']>-200:raise RuntimeError('Vacuum not confirmed')
+ if not vac or time.monotonic()-vac['t']>.5 or vac['value']>HELD_DIFF:raise RuntimeError('Vacuum not confirmed')
+def seal_stable():
+ """흡착 판정 뒤 SEAL_STABLE_S 동안 새 압력 값이 모두 HELD_DIFF 이하로 유지되는지 확인(약한 붙음은 들기 전에 거른다)."""
+ from seal_stability import SEAL_STABLE_S,evaluate
+ samples=[];last=0.;end=time.monotonic()+SEAL_STABLE_S
+ while time.monotonic()<end:
+  rclpy.spin_once(node,timeout_sec=.05)
+  if vac and vac['t']>last and time.monotonic()-vac['t']<.3:last=vac['t'];samples.append((vac['t'],vac['value']))
+ return evaluate(samples,HELD_DIFF)
 def wait_vacuum():
  deadline=time.monotonic()+3;since=time.monotonic();good=0
  while time.monotonic()<deadline:
   rclpy.spin_once(node,timeout_sec=.05)
-  if vac and vac['t']>since and time.monotonic()-vac['t']<.3 and vac['value']<=-200:
+  if vac and vac['t']>since and time.monotonic()-vac['t']<.3 and vac['value']<=HELD_DIFF:
    good+=1;since=vac['t']
    if good>=2:return
  raise RuntimeError('Fresh stable suction confirmation missing')
@@ -103,22 +112,21 @@ def acm_for(object_id,support):
  i=acm.entry_names.index(object_id);j=acm.entry_names.index(support);acm.entry_values[i].enabled[j]=acm.entry_values[j].enabled[i]=True
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
-def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
+from grip_retry import SLOW_CONTACT_SCALING
+from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
+def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None,stop_on_seal=False):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
- if vertical and pump_target is None and np.linalg.norm(fk(goal)[:3,3]-fk(start)[:3,3])>.011:
-  begin=fk(start)[:3,3];end=fk(goal)[:3,3];count=int(np.ceil(np.linalg.norm(end-begin)/.01))
-  for step in range(1,count+1):
-   target=begin+(end-begin)*step/count;segment=goal if step==count else ik(target,fresh(),axis=fk(goal)[:3,0]);move(segment,label+' '+str(step)+'_of_'+str(count),True)
-  return fresh()
+ continuous_retreat=vertical and not holding and pump_target is None and label.startswith('empty_retreat_from_pad_ID')
  phase(label)
  for q in [start,goal]:
   req=GetStateValidity.Request();req.group_name='arm';req.robot_state=state(q);res=call('/check_state_validity',req,GetStateValidity)
   if not res.valid:raise RuntimeError('Invalid pose '+str([(c.contact_body_1,c.contact_body_2) for c in res.contacts]))
  sc=call('/soarm4/rviz_scaling');sc=json.loads(sc.message) if sc.success else None
  if not sc:raise RuntimeError('No RViz scaling')
- req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='ompl';r.planner_id='RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
- if pump_target is not None:
+ if speed_cap:sc={'velocity':min(float(sc['velocity']),speed_cap[0]),'acceleration':min(float(sc['acceleration']),speed_cap[1])}  # 느리게 접근: 현재 RViz 비율보다 클 수 없음
+ req=GetMotionPlan.Request();r=req.motion_plan_request;r.group_name='arm';r.pipeline_id='pilz_industrial_motion_planner' if ptp else 'ompl';r.planner_id='PTP' if ptp else 'RRTConnectkConfigDefault';r.num_planning_attempts=1;r.allowed_planning_time=8.;r.max_velocity_scaling_factor=float(sc['velocity']);r.max_acceleration_scaling_factor=float(sc['acceleration']);r.start_state=state(start);r.goal_constraints=[Constraints(joint_constraints=[JointConstraint(joint_name=n,position=float(q),tolerance_above=.0001,tolerance_below=.0001,weight=1.) for n,q in zip(names,goal)])]
+ if vertical:
   from normal_contact_trajectory import contact_samples
   from moveit_msgs.msg import RobotTrajectory
   from trajectory_msgs.msg import JointTrajectoryPoint
@@ -147,11 +155,14 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
   else:
    res=call('/plan_kinematic_path',req,GetMotionPlan).motion_plan_response
    if res.error_code.val!=1:raise RuntimeError('Planning failed '+str(res.error_code.val))
+ if min_tcp_z is not None:
+  _tj=res.trajectory.joint_trajectory;_idx=[_tj.joint_names.index(n) for n in names];_z=min(float(fk([pt.positions[i] for i in _idx])[2,3]) for pt in _tj.points)
+  if _z<min_tcp_z:raise RuntimeError('Transit path rejected: tool tip dips to %.0f mm, below %.0f mm clearance'%(_z*1000,min_tcp_z*1000))
  if vertical:
   a=fk(start)[:3,3];b=fk(goal)[:3,3];trajectory=res.trajectory.joint_trajectory;indices=[trajectory.joint_names.index(n) for n in names]
   for point in trajectory.points:
    pos=fk([point.positions[i] for i in indices])[:3,3]
-   if pump_target is not None:
+   if vertical:
     line=b-a;length=np.linalg.norm(line);direction=line/max(length,1e-9);along=float((pos-a)@direction);lateral=np.linalg.norm(pos-a-direction*along)
     if lateral>.001 or not -.001<=along<=length+.001:raise RuntimeError('Contact path leaves surface-normal corridor')
     T=fk([point.positions[i] for i in indices]);axis_error=np.degrees(np.arccos(np.clip(T[:3,0]@fk(goal)[:3,0],-1,1)))
@@ -170,10 +181,14 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
  if not handle or not handle.accepted:raise RuntimeError('Execution rejected')
  if pump_client is not None:
   pre_suction_gate=PreSuctionTrigger(pump_target,pump_normal,lambda:pump_client.call_async(Trigger.Request()))
- lost=False;bad=0;f=handle.get_result_async();end=time.monotonic()+120
+ lost=False;bad=0;f=handle.get_result_async();end=time.monotonic()+120;sealed_early=False;seal_good=0;seal_last=0.
  while not f.done() and time.monotonic()<end:
   rclpy.spin_once(node,timeout_sec=.05)
   if holding and (not vac or time.monotonic()-vac['t']>.5):lost=True;handle.cancel_goal_async()
+  # 재접근 중 압력이 기준(HELD_DIFF)을 새 값 2개 연속 넘으면 남은 거리를 더 누르지 않고 그 자리에서 멈춘다.
+  if stop_on_seal and not sealed_early and vac and vac['t']>seal_last and time.monotonic()-vac['t']<.3:
+   seal_last=vac['t'];seal_good=seal_good+1 if vac['value']<=HELD_DIFF else 0
+   if seal_good>=2:sealed_early=True;status['stopped_on_seal']={'label':label,'pressure_diff':vac['value']};handle.cancel_goal_async()
  if not f.done():handle.cancel_goal_async();raise RuntimeError('Execution timeout; cancel requested')
  handle=None
  if pump_client is not None:
@@ -182,9 +197,9 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None):
    if gate.future is None:raise RuntimeError('Pre-suction threshold was not observed; no lift')
    rclpy.spin_until_future_complete(node,gate.future,timeout_sec=3)
    if not gate.future.done() or not gate.future.result().success:raise RuntimeError('Pre-suction pump command failed')
-   status['pre_suction']={'threshold_m':.0015,'observed_distance_m':gate.distance,'sensor_gate':False,'motion_stopped_for_trigger':False}
+   status['pre_suction']={'threshold_m':.005,'observed_distance_m':gate.distance,'sensor_gate':False,'motion_stopped_for_trigger':False}
   finally:node.destroy_client(pump_client)
- if f.result().result.error_code.val!=1 or lost:raise RuntimeError('Execution failed or suction lost; holding state retained')
+ if (f.result().result.error_code.val!=1 and not sealed_early) or lost:raise RuntimeError('Execution failed or suction lost; holding state retained')
  if holding:vacuum_ok()
  return fresh()
 
@@ -216,9 +231,12 @@ def pad_clearance(view,pad):
    polygon=np.array(packing['placements'][packing_key]['reserved_polygon_table_m']);hull=ConvexHull(polygon);inside=np.all(P[:,:,:2]@hull.equations[:,:2].T+hull.equations[:,2]<=.002,axis=2)
    surface=valid&inside&(np.abs(P[:,:,2]-pad['center_table_m'][2])<.012);obstacle=obstacle&inside
   checks[cam]={'surface_pixels':int(surface.sum()),'elevated_pixels':int(obstacle.sum())}
- if max(c['surface_pixels'] for c in checks.values())<100 or any(c['elevated_pixels']>=40 for c in checks.values()):raise RuntimeError('Left pad obstructed or not observed sufficiently')
+ from pad_clearance_policy import judge_pad
+ try:status['pad_clearance_mode']=judge_pad(checks,packing is not None)
+ finally:status['pad_clearance_counts']=checks
  return checks
 
+stage_start_q=None
 def dispose_at_trash():
  global holding,restore_acm
  from trash_destination import load_trash_pose,arrival_confirmed
@@ -237,9 +255,14 @@ def dispose_at_trash():
  if not released.success:raise RuntimeError('Trash release not confirmed')
  holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];gone=CollisionObject();gone.id=object_id;gone.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[gone];apply(req)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
- phase('home');res=call('/soarm4/go_home',timeout=120)
- if not res.success:raise RuntimeError('Home failed '+res.message)
- status.update(success=True,holding=False,pump='OFF after confirmed trash release',final_q=fresh(),scope='pick -> taught trash pose -> vent -> home; falling object/bin contents not visually verified');phase('complete')
+ if args.finish_above:
+  if stage_start_q is None:raise RuntimeError('Stage start pose unknown; cannot return after trash release')
+  move(stage_start_q,'return_to_stage_start_after_trash',ptp=True)  # 폐기 후 이 물체 시작 자세(이전 대기 자세/HOME)로 후퇴
+  phase('wait_above_destination')
+ else:
+  phase('home');res=call('/soarm4/go_home',timeout=120)
+  if not res.success:raise RuntimeError('Home failed '+res.message)
+ status.update(success=True,holding=False,pump='OFF after confirmed trash release',final_q=fresh(),scope='pick -> taught trash pose -> vent -> wait above' if args.finish_above else 'pick -> taught trash pose -> vent -> home; falling object/bin contents not visually verified');phase('complete')
 
 # An explicitly requested held-object continuation never replays the approach,
 # rotates the table, restarts the pump, or estimates a new attachment transform.
@@ -293,7 +316,7 @@ if args.resume_held is not None:
   if np.degrees(np.arccos(np.clip(placed[2,2],-1,1)))>1:raise RuntimeError('Held placement would tilt payload')
   vertices=np.array([[v.x,v.y,v.z] for v in co.meshes[0].vertices]);placed_vertices=vertices@placed[:3,:3].T+placed[:3,3]
   if np.max(np.linalg.norm(placed_vertices[:,:2]-pad_nominal[:2],axis=1))>pad['diameter_m']/2-.002:raise RuntimeError('Held payload footprint exceeds pad')
-  status.update(resumed_from=str(previous),pad_id=args.pad,attachment_transform_preserved=True,scope='held contact -> lift -> ID6 release -> home; no camera/table/approach replay')
+  status.update(resumed_from=str(previous),pad_id=args.pad,attachment_transform_preserved=True,scope=f'held contact -> lift -> ID{args.pad} release -> '+('wait above' if args.finish_above else 'home')+'; no camera/table/approach replay')
   acm_for(object_id,'workcell_turntable');q=fresh();begin=fk(q)
   move(ik(begin[:3,3]+[0,0,float(candidate.get('lift_clearance_m',.055))],q,axis=begin[:3,0]),'resume_held_lift',True)
   status['lift']={'encoder_height_change_mm':float((fk(fresh())[2,3]-begin[2,3])*1000)}
@@ -304,10 +327,13 @@ if args.resume_held is not None:
   if not released.success:raise RuntimeError('Release not confirmed')
   holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];apply(req)
   placed_object=copy.deepcopy(co);placed_object.id='placed_pad_'+str(args.pad)+'_'+out.name;placed_object.header.frame_id='world';placed_object.operation=CollisionObject.ADD;placed_object.mesh_poses=[pose(np.linalg.inv(W)@np.array(status['predicted_placed_object_pose_table']))];req=scene_request();removal=CollisionObject();removal.id=object_id;removal.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[placed_object,removal];apply(req)
-  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip');q=fresh();move(ik(fk(q)[:3,3]+[0,0,.03],q,axis=fk(q)[:3,0]),'empty_retreat_from_pad_ID'+str(args.pad),True)
+  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip');q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),'empty_retreat_from_pad_ID'+str(args.pad),True)
   req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
-  phase('home');res=call('/soarm4/go_home',timeout=120)
-  if not res.success:raise RuntimeError('Home failed '+res.message)
+  if args.finish_above:
+   phase('wait_above_destination')
+  else:
+   phase('home');res=call('/soarm4/go_home',timeout=120)
+   if not res.success:raise RuntimeError('Home failed '+res.message)
   status.update(success=True,holding=False,pump='OFF after confirmed release',final_q=fresh());phase('complete')
  except BaseException as exc:
   status.update(success=False,error=str(exc),holding=holding,notice='Keep pump and torque after held error');phase('failed');raise
@@ -344,7 +370,7 @@ try:
  while (not turn or not vac) and time.monotonic()<deadline:rclpy.spin_once(node,timeout_sec=.05)
  expected_turn=manifest.get('aligned_turntable_angle_deg',0.) if args.inclined else 0.
  if not turn or abs(turn['angle_deg']-expected_turn)>1 or turn['zero_count']!=manifest['return_to_zero']['state']['zero_count']:raise RuntimeError('Turntable pose or zero changed')
- if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=-200:raise RuntimeError('Vacuum baseline not clear')
+ if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:raise RuntimeError('Vacuum baseline not clear')
  assert np.linalg.norm(fk(q)[:3,3]-(W@(arm.fk(q)@tcp_point(wc)))[:3])<1e-6
  above=point+normal*float(candidate.get('approach_clearance_m',.03))
  if args.inclined:
@@ -369,7 +395,7 @@ try:
   for other in current_others:
    obj=CollisionObject();obj.id=other['id'];obj.header.frame_id='world';obj.operation=CollisionObject.ADD;obj.primitives=[SolidPrimitive(type=SolidPrimitive.BOX,dimensions=other['dims'])];transform=np.eye(4);transform[:3,3]=other['center_table_m'];obj.primitive_poses=[pose(np.linalg.inv(W)@transform)];req.scene.world.collision_objects.append(obj)
    if other.get('mesh_cloud_file'):
-    observed=np.load(other['mesh_cloud_file'])['points'];obj.primitives=[];obj.primitive_poses=[];obj.meshes=[convex_mesh(observed,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',.001)))];obj.mesh_poses=[pose(np.linalg.inv(W)@transform)]
+    observed=np.load(other['mesh_cloud_file'])['points'];obj.primitives=[];obj.primitive_poses=[];obj.meshes=[convex_mesh(observed,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',OBSTACLE_PADDING_M)))];obj.mesh_poses=[pose(np.linalg.inv(W)@transform)]
    color=ObjectColor();color.id=other['id'];color.color.r,color.color.g,color.color.b=map(float,np.asarray(other.get('rgb_255',[100,100,100]))/255.);color.color.a=.001;req.scene.object_colors.append(color)
  apply(req)
  if args.inclined:
@@ -385,7 +411,7 @@ try:
   if packing is not None:
    from pad_packing import validate_actual
    validate_actual(packing,packing_key,corners)
-  status.update(surface_point_table_m=point.tolist(),source_candidate=str(candidate_file),before_measurement=before,fresh_measurement=now,predicted_pad_place_q_deg=np.degrees(predicted_place).tolist(),scope=f'scan surface pick -> pad ID{args.pad} -> release -> retreat -> home')
+  status.update(surface_point_table_m=point.tolist(),source_candidate=str(candidate_file),before_measurement=before,fresh_measurement=now,predicted_pad_place_q_deg=np.degrees(predicted_place).tolist(),scope=f'scan surface pick -> pad ID{args.pad} -> release -> retreat -> '+('wait above' if args.finish_above else 'home'))
  else:
   status.update(surface_point_table_m=point.tolist(),source_candidate=str(candidate_file),before_measurement=before,fresh_measurement=now,destination='trash_drop')
  if not args.execute:phase('preflight_only');raise SystemExit(0)
@@ -396,23 +422,42 @@ try:
   while not(out/'READY').exists():
    if time.monotonic()>deadline:raise RuntimeError('Recorder not ready')
    rclpy.spin_once(node,timeout_sec=.05)
- move(qa.tolist(),'approach_3cm')
+ stage_start_q=[float(x) for x in fresh()]
+ _check=session/'collision_plan_check.json'
+ if not _check.exists() or 'transit_q_rad' not in json.loads(_check.read_text()):raise RuntimeError('Reviewed transit pose missing; replan the batch')
+ qh=json.loads(_check.read_text())['transit_q_rad']
+ move(qh,'transit_above_target',min_tcp_z=TRANSIT_MIN_TCP_Z_M);status['transit_q_rad']=qh
+ move(qa.tolist(),'approach_3cm',True)
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
- move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal)
- phase('grip_resting');grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
+ move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
+ phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
+ if grip.success:
+  _stable,_detail=seal_stable();status['seal_check_first']=_detail
+  if not _stable:grip=type('G',(),{'success':False,'message':'unstable seal '+str(_detail)})()
  if not grip.success:
-  from grip_retry import retry_targets
-  q=fresh();initial_contact=fk(q);status['retries']=[]
-  for attempt,target in enumerate(retry_targets(initial_contact[:3,3],normal),1):
-   # Keep pump ON. No stale sensor data may authorize another inward step.
+  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 1초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 8mm 더 전진해 1회 재흡착.
+  from grip_retry import final_advance_target,SUCTION_WAIT_S,SLOW_5MM_SCALING,FINAL_ADVANCE_M
+  q=fresh();initial_contact=fk(q);status['retries']=[];wait_end=t_grip0+SUCTION_WAIT_S;good=0;since=0.
+  while time.monotonic()<wait_end and good<2:
    rclpy.spin_once(node,timeout_sec=.05)
-   if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('Pressure feedback stale; no further retry')
+   if vac and vac['t']>since and time.monotonic()-vac['t']<.3:
+    since=vac['t'];good=good+1 if vac['value']<=HELD_DIFF else 0
+  waited={'attempt':0,'wait_s':SUCTION_WAIT_S,'pressure_diff':vac.get('value'),'success':good>=2};status['retries'].append(waited)
+  if good>=2:
+   _stable,_detail=seal_stable();waited['seal_check']=_detail
+   if _stable:grip=type('G',(),{'success':True,'message':f"diff={vac['value']} after waiting"})()
+   else:good=0   # 기다려서 붙은 것도 약하면 아래 8mm 재접근으로 넘어간다
+  if good<2:
+   if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('Pressure feedback stale; no further advance')
+   target=final_advance_target(initial_contact[:3,3],normal)
    q=fresh();retry_goal=ik(target,q,axis=initial_contact[:3,0])
-   record={'attempt':attempt,'step_m':.001,'total_additional_approach_m':attempt*.001,'target_table_m':target.tolist(),'reference':'first failed actual TCP; bounded absolute inward-normal offsets'};status['retries'].append(record)
-   move(retry_goal,'grip_retry_'+str(attempt)+'_of_3',True);phase('grip_retry_resting_'+str(attempt));grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
-   if grip.success:break
+   record={'attempt':1,'step_m':FINAL_ADVANCE_M,'total_additional_approach_m':FINAL_ADVANCE_M,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 8 mm inward-normal advance after 1 s without suction'};status['retries'].append(record)
+   move(retry_goal,'grip_retry_8mm_after_1s',True,speed_cap=SLOW_5MM_SCALING,stop_on_seal=True);_adv=float(np.linalg.norm(fk(fresh())[:3,3]-initial_contact[:3,3])*1000);record['advanced_mm']=_adv;record['stopped_on_seal']=status.pop('stopped_on_seal',None);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_8mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
+   if grip.success:
+    _stable,_detail=seal_stable();record['seal_check']=_detail
+    if not _stable:grip=type('G',(),{'success':False,'message':'unstable seal after retry '+str(_detail)})()
   if not grip.success:
-   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed after three1mm retries; no lift')
+   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed or seal unstable after 8 mm extra advance; no lift')
  holding=True;wait_vacuum();q=fresh();Tcontact=fk(q)
  if args.inclined:
   radial=Tcontact[:2,3]-j1;radial/=np.linalg.norm(radial);payload_pitch=math.atan2(float(Tcontact[:2,0]@radial),float(-Tcontact[2,0]))
@@ -421,8 +466,7 @@ try:
   attached.object.primitives=[];attached.object.primitive_poses=[];attached.object.meshes=[observed_mesh];attached.object.mesh_poses=[pose(L)]
  req=scene_request();req.scene.robot_state.attached_collision_objects=[attached];apply(req);acm_for(object_id,'workcell_turntable')
  target=Tcontact[:3,3]+[0,0,float(candidate.get('lift_clearance_m',.04))];move(ik(target,q,axis=Tcontact[:3,0]),'lift_clearance_40mm',True);q=fresh();status['lift']={'tcp_contact_m':Tcontact[:3,3].tolist(),'tcp_lifted_m':fk(q)[:3,3].tolist(),'encoder_height_change_mm':float((fk(q)[2,3]-Tcontact[2,3])*1000),'pressure_diff':vac['value']};phase('holding_before_transfer')
- end=time.monotonic()+2
- while time.monotonic()<end:rclpy.spin_once(node,timeout_sec=.05);vacuum_ok()
+ vacuum_ok()
  # Disable the source support exemption before planning the payload transfer.
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req)
  if is_trash:
@@ -438,10 +482,13 @@ try:
   packing.setdefault('completed',{})[packing_key]={'collision_id':placed_object.id,'points_table_m':actual_points.tolist(),'execution_file':str(out/'execution.json')};temporary=packing_path.with_suffix('.tmp');temporary.write_text(json.dumps(packing,indent=2)+'\n');temporary.replace(packing_path)
  acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip')
  acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
- q=fresh();move(ik(fk(q)[:3,3]+[0,0,.03],q,axis=fk(q)[:3,0]),f'empty_retreat_from_pad_ID{args.pad}',True)
+ q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),f'empty_retreat_from_pad_ID{args.pad}',True)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
- phase('home');res=call('/soarm4/go_home',timeout=120)
- if not res.success:raise RuntimeError('Home failed '+res.message)
+ if args.finish_above:
+  phase('wait_above_destination')
+ else:
+  phase('home');res=call('/soarm4/go_home',timeout=120)
+  if not res.success:raise RuntimeError('Home failed '+res.message)
  status.update(success=True,holding=False,pump='OFF after confirmed release',final_q=fresh());phase('complete')
 except BaseException as exc:
  if isinstance(exc,SystemExit) and exc.code==0:raise

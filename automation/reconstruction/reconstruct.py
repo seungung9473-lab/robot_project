@@ -3,6 +3,7 @@ import argparse,json,math
 from pathlib import Path
 import cv2,numpy as np
 from placement_geometry import load_context,object_region
+from depth_mask import erode_depth_mask
 from scipy.spatial.transform import Rotation
 from scipy.spatial import cKDTree
 from scipy.sparse import coo_matrix
@@ -30,7 +31,7 @@ def ply(path,p,c):
   for x,rgb in zip(p,c):f.write(' '.join(map(str,[*x,*rgb]))+'\n')
 
 def main():
- a=argparse.ArgumentParser();a.add_argument('session',type=Path);a.add_argument('--reference-angle',type=float,default=None);a.add_argument('--direction',type=int,choices=[-1,1],required=True);a.add_argument('--output',type=Path);a.add_argument('--mask-root',type=Path);args=a.parse_args();root=Path(__file__).resolve().parent.parent;out=args.output or args.session/'reconstruction';out.mkdir(parents=True,exist_ok=True)
+ a=argparse.ArgumentParser();a.add_argument('session',type=Path);a.add_argument('--reference-angle',type=float,default=None);a.add_argument('--direction',type=int,choices=[-1,1],required=True);a.add_argument('--output',type=Path);a.add_argument('--mask-root',type=Path);a.add_argument('--no-preview',action='store_true',help='Skip optional merged preview and plot; retain measured camera clouds');args=a.parse_args();root=Path(__file__).resolve().parent.parent;out=args.output or args.session/'reconstruction';out.mkdir(parents=True,exist_ok=True)
  context=load_context(args.session);cal=context['calibrations'];center=np.array(context['axis_point_table_m']);manifest=json.loads((args.session/'session.json').read_text());views=manifest['views'];cloud={c:[] for c in ['cam1','cam2']};rows=[]
  if not views:raise RuntimeError('No completed views')
  reference=float(views[0]['angle_deg']) if args.reference_angle is None else float(args.reference_angle)
@@ -41,7 +42,7 @@ def main():
    if args.mask_root:
     mask_path=args.mask_root/view['path']/(c+'_mask.png');mask=cv2.imread(str(mask_path),cv2.IMREAD_GRAYSCALE)
     if mask is None or mask.shape!=raw.shape:raise RuntimeError('Missing or mismatched SAM2 mask '+str(mask_path))
-    ok &= mask>127
+    ok &= erode_depth_mask(mask>127)
    if not ok.any():
     rows.append({'view':view['path'],'camera':c,'points':0,'measured_angle_deg':m['turntable']['angle_deg'],'reason':'target not visible'});continue
    pixels=np.column_stack([u[ok],v[ok]]).astype(np.float64);rays=cv2.undistortPoints(pixels.reshape(-1,1,2),K,D).reshape(-1,2);p=np.column_stack([rays*z[ok,None],z[ok]]);T=np.array(cal[c][f'T_table_{c}_color_optical']);p=p@T[:3,:3].T+T[:3,3];color=rgb[ok]
@@ -55,13 +56,16 @@ def main():
   if not parts:continue
   p,color=voxel(np.vstack([x[0] for x in parts]),np.vstack([x[1] for x in parts]));ply(out/(c+'_object.ply'),p,color);np.savez_compressed(out/(c+'_object.npz'),points=p,colors=color);combined.append((p,color));report['clouds'][c]={'points':len(p),'object_center_table_m':((np.percentile(p,99,axis=0)+np.percentile(p,1,axis=0))/2).tolist(),'robust_extent_mm':((np.percentile(p,99,axis=0)-np.percentile(p,1,axis=0))*1000).tolist()}
  if not combined:raise RuntimeError('No object depth in ROI')
- p,col=voxel(np.vstack([x[0] for x in combined]),np.vstack([x[1] for x in combined]));ply(out/'combined_preview.ply',p,col)
- import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
- fig=plt.figure(figsize=(10,5))
- for i,c in enumerate(['cam1','cam2']):
-  ax=fig.add_subplot(1,2,i+1,projection='3d');f=out/(c+'_object.npz')
-  if f.exists():
-   d=np.load(f);p=d['points'];stride=max(1,len(p)//10000);p=p[::stride]-center;ax.scatter(p[:,0]*1000,p[:,1]*1000,p[:,2]*1000,c=d['colors'][::stride]/255,s=1);ax.set_box_aspect((1,1,1))
-  ax.set_title(c+' observed surface');ax.set_xlabel('X (mm)');ax.set_ylabel('Y (mm)');ax.set_zlabel('Z above disc (mm)')
- fig.tight_layout();fig.savefig(out/'preview.png',dpi=160);plt.close(fig);(out/'report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report['clouds']));print(out)
+ if not args.no_preview:
+  p,col=voxel(np.vstack([x[0] for x in combined]),np.vstack([x[1] for x in combined]));ply(out/'combined_preview.ply',p,col)
+  import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
+  fig=plt.figure(figsize=(10,5))
+  for i,c in enumerate(['cam1','cam2']):
+   ax=fig.add_subplot(1,2,i+1,projection='3d');f=out/(c+'_object.npz')
+   if f.exists():
+    d=np.load(f);p=d['points'];stride=max(1,len(p)//10000);p=p[::stride]-center;ax.scatter(p[:,0]*1000,p[:,1]*1000,p[:,2]*1000,c=d['colors'][::stride]/255,s=1);ax.set_box_aspect((1,1,1))
+   ax.set_title(c+' observed surface');ax.set_xlabel('X (mm)');ax.set_ylabel('Y (mm)');ax.set_zlabel('Z above disc (mm)')
+  fig.tight_layout();fig.savefig(out/'preview.png',dpi=160);plt.close(fig)
+ report['preview_generated']=not args.no_preview
+ (out/'report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report['clouds']));print(out)
 if __name__=='__main__':main()

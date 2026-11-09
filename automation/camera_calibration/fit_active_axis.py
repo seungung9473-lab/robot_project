@@ -1,5 +1,5 @@
 from pathlib import Path
-import itertools,json,numpy as np,cv2,datetime
+import itertools, json, numpy as np, cv2
 r=Path(__file__).resolve().parent;sp=Path(json.loads((r/'turntable_marker/active_rescan.json').read_text())['series_file']);s=json.loads(sp.read_text());out={'series_file':str(sp),'calibrations':s['calibrations'],'reported_angles_deg':[o['reported_angle_deg'] for o in s['observations']],'angle_source':s['angle_source'],'axis_point_convention':'point on axis at mean observed marker height; not motor origin','independently_validated':False,'validated_for_robot_execution':False,'cameras':{}}
 def mean_rotation(rotations):
  U,_,V=np.linalg.svd(np.mean(rotations,axis=0));return U@np.diag([1,1,np.linalg.det(U@V)])@V

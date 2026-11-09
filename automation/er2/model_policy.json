@@ -1,11 +1,28 @@
 {
-  "primary": "gemini-robotics-er-2-preview",
+  "primary": "gemini-3.8-flash",
   "fallback": "gemini-3.8-flash",
-  "fallback_enabled": true,
-  "fallback_http_statuses": [404, 408, 410, 500, 502, 503, 504],
+  "fallback_enabled": false,
+  "fallback_http_statuses": [
+    404,
+    408,
+    410,
+    500,
+    502,
+    503,
+    504
+  ],
   "fallback_on_timeout": true,
   "fallback_on_invalid_output": true,
-  "never_fallback_http_statuses": [400, 401, 402, 403, 429],
-  "max_requests_per_task": 2,
-  "start_with_primary_each_task": true
+  "never_fallback_http_statuses": [
+    400,
+    401,
+    402,
+    403,
+    429
+  ],
+  "max_requests_per_task": 3,
+  "start_with_primary_each_task": true,
+  "retry_same_model_once": true,
+  "request_timeout_s": 150,
+  "same_model_retries": 2
 }

@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from sensor_msgs.msg import JointState
-from moveit_msgs.msg import RobotState,Constraints,JointConstraint,DisplayTrajectory
+from moveit_msgs.msg import RobotState, Constraints, JointConstraint
 from moveit_msgs.srv import GetMotionPlan,GetStateValidity
 from moveit_msgs.action import ExecuteTrajectory
 from std_srvs.srv import Trigger
@@ -14,7 +14,7 @@ import json,yaml,numpy as np
 from pathlib import Path
 from scipy.spatial.transform import Rotation
 from scipy.optimize import least_squares
-m=json.loads(Path('/home/seungung9473/robot_ws/src/soarm4_description/config/model.json').read_text());d=yaml.safe_load(Path('/home/seungung9473/robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(d['T_table_world']);B=np.eye(4);B[:3,:3]=Rotation.from_euler('z',m['robot_base_yaw']).as_matrix();B[:3,3]=m['robot_base_xyz']
+m=json.loads((Path.home()/'robot_ws/src/soarm4_description/config/model.json').read_text());d=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text());W=np.array(d['T_table_world']);B=np.eye(4);B[:3,:3]=Rotation.from_euler('z',m['robot_base_yaw']).as_matrix();B[:3,3]=m['robot_base_xyz']
 def fk(q):
  T=W@B
  for j,a in zip(m['joints'],q):
@@ -37,7 +37,7 @@ def call(c,req,seconds=45):
  if not f.done():raise RuntimeError('Service timed out')
  return f.result()
 def state(q):return RobotState(joint_state=JointState(name=names,position=q))
-ROOT=Path('/home/seungung9473/robot_ws/automation/reconstruction')
+ROOT=Path(__file__).resolve().parent
 settings=json.loads((ROOT/'contact_settings.json').read_text())
 candidate_path=Path(os.environ.get('SOARM_SUCTION_CANDIDATES',str(ROOT/'multiview/20261101_194509_024461/reconstruction_sam2/suction_candidates.json')))
 candidate_report=json.loads(candidate_path.read_text());candidate=candidate_report['selected_candidate']

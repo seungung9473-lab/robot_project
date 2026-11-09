@@ -1,6 +1,0 @@
-cmake_minimum_required(VERSION 3.8)
-project(soarm4_live)
-find_package(ament_cmake REQUIRED)
-install(DIRECTORY launch config rviz DESTINATION share/${PROJECT_NAME})
-install(PROGRAMS scripts/live_encoders.py DESTINATION lib/${PROJECT_NAME})
-ament_package()

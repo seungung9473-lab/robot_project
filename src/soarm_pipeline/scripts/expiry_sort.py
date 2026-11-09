@@ -11,4 +11,10 @@ def find_entry():
     raise RuntimeError('Workspace automation/reconstruction/run_qr_expiry_cycle.py missing')
 
 if __name__=='__main__':
-    os.execv(sys.executable,[sys.executable,str(find_entry()),*sys.argv[1:]])
+    entry=find_entry()
+    runtime=sys.executable
+    if '--execute' in sys.argv[1:]:
+        sys.path.insert(0,str(entry.parent))
+        from desktop_runtime import gpu_python
+        runtime=gpu_python(entry.parents[2])
+    os.execv(runtime,[runtime,str(entry),*sys.argv[1:]])

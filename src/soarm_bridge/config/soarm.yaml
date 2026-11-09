@@ -56,6 +56,12 @@ servo_bridge:
     max_speed: 4000
     goal_tolerance_counts: 15
     settle_timeout: 3.0
+    # 50-pose encoder test: tighten bounded endpoint feedback correction; no zero/TCP offset change.
+    fine_correction_iterations: 5
+    fine_tolerance_counts: 1
+    fine_max_counts: 4
+    # J1 alone reached the old 4-count command bound in the 10-cycle test.
+    fine_max_counts_per_joint: [8, 4, 4, 4]
     turntable_id: 0
     turntable_speed: 600
     read_only: false
@@ -66,8 +72,8 @@ servo_bridge:
 esp32_bridge:
   ros__parameters:
     port: /dev/esp32
-    hold_diff: -200
-    grip_diff: -200   # 2026-11-05 사용자 요청: 흡착·유지 기준 -200
+    hold_diff: -150
+    grip_diff: -150   # 2026-11-09 사용자 요청: -200 → -100 → -150 (-106 약한 밀착이 들기 중 풀려 올림)
     release_diff: -50
     grip_timeout: 5.0
     release_timeout: 3.0

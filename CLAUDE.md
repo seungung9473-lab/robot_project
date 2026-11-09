@@ -42,7 +42,7 @@ SO-ARM101 기반 4축 로봇팔 + 진공 흡착 + 회전 턴테이블 + D415 카
 ### 진공 (ESP32-S3, /dev/esp32)
 - 펌프 GPIO12, 솔레노이드 밸브 GPIO9, 압력센서 OUT → 10k/20k 분압 → GPIO10
 - 압력센서 XGZP6847A (정상 확인됨: 대기 2.5 V, 흡입 시 감소)
-- diff 기준(원시값, kPa 아님): 흡착 시작 ≤ −300 (11/3부터, 원래 −400), 운반 유지 ≤ −300, 해제 확인 > −50
+- diff 기준(원시값, kPa 아님): 흡착 시작·운반 유지 ≤ −150 (11/9 사용자 요청: −200 → −100 → −150, 11/3 −300 · 원래 −400), 해제 확인 > −50. 스크립트 값은 automation/reconstruction/vacuum_thresholds.py 한 곳
 - 운반 중에는 펌프 계속 ON, 밸브로 해제
 - 흡착 실패 시: 현재 엔코더 기준 컵 위치에서 면 쪽으로 1 mm 접근해 1회만 재시도
 - T 분배 피팅은 11/2에 베이스 안으로 옮김 (팔 움직일 때 튜브 빠짐 방지)
@@ -84,13 +84,12 @@ SO-ARM101 기반 4축 로봇팔 + 진공 흡착 + 회전 턴테이블 + D415 카
 | soarm4_description | URDF v5.7, 메시, 관절 한계, config/model.json·servo_map.yaml |
 | soarm4_moveit_config | MoveIt 2 계획(OMPL), 세부 충돌 검사, 실물 실행, HOME/STOP/토크 패널, 픽앤플레이스 편집기 |
 | soarm_bridge | 서보 브리지 + ESP32 진공 브리지, dual_d415 실행 |
-| soarm4_live | 엔코더 읽기 전용 표시 |
 | soarm_turntable | XL330 제어, 환경 세팅, 정지 촬영·회전 스캔 (scan.py) |
 | soarm4_workcell | 테이블 좌표계 배치, 충돌 물체 등록 (preview/scene/live launch) |
 
 - 읽기 전용 확인: `ros2 launch soarm_bridge bringup.launch.py read_only:=true rviz:=true`
 - 실물 제어: `ros2 launch soarm4_moveit_config hardware_bringup.launch.py allow_execution:=true` (기동만으로는 안 움직임, Execute 눌러야 움직임)
-- 포트 하나 = 프로그램 하나 (motor_test.py, soarm4_live, 브리지 동시 실행 금지)
+- 포트 하나 = 프로그램 하나 (motor_test.py, 브리지 동시 실행 금지)
 - 각 패키지의 README_KO.md / HARDWARE_KO.md / PICK_PLACE_KO.md / SCAN_KO.md 가 최신 문서. handoff/README_인계.md 는 10/20 옛날 문서.
 
 ## 7. 비전 파이프라인 (코드 일부는 저장소 밖, 친구 노트북 ~/문서/ChatGPT/라파 대회/ 의 reconstruction/, er2/)
@@ -112,7 +111,6 @@ SO-ARM101 기반 4축 로봇팔 + 진공 흡착 + 회전 턴테이블 + D415 카
 ## 9. 알려진 빌드·환경 이슈
 - `Duplicate package names` → handoff/ 때문. `--base-paths src`
 - `Cannot locate rosdep definition for [ament_python]` → `--skip-keys ament_python`
-- soarm4_live `can't find .../config` → 빈 폴더라 git에서 빠짐. config/.gitkeep 추가함
 - RViz 종료(Ctrl+C) 때 move_group Segmentation fault → 종료 중에만 나는 것, 무시
 - ros-jazzy-control-msgs 없으면 실행 시 ModuleNotFoundError
 

@@ -35,12 +35,20 @@ class Trial:
         self.telemetry=(self.directory/'telemetry.jsonl').open('a',buffering=65536)
         self.summary={'schema_version':1,'trial_id':self.id,'parent_trial_id':os.environ.get('SOARM_TEST_PARENT_ID'),'started_at':stamp(),'kind':kind,'physical_execution_requested':bool(physical),'source':str(Path(source).resolve()) if source else None,'outcome':'running','error':None,'telemetry_max_hz_per_signal':10,'retrospective':False,'artifacts':[]}
         atomic_json(self.directory/'summary.json',self.summary);self.event('started');refresh_index(self.root)
+        self.track_evaluation()
         if install_hooks:
             os.environ['SOARM_TEST_PARENT_ID']=self.id
             previous=sys.excepthook
             def hook(typ,value,tb):
                 self.summary.update(outcome='interrupted' if issubclass(typ,KeyboardInterrupt) else 'failed',error=typ.__name__+': '+str(value));self.finish();previous(typ,value,tb)
             sys.excepthook=hook;atexit.register(self.finish)
+
+    def track_evaluation(self):
+        from success_evaluation import register
+        registration=register(self.directory,self.root)
+        if registration:
+            self.summary['success_evaluation']=registration
+            atomic_json(self.directory/'summary.json',self.summary)
 
     def event(self,name,**data):
         if not self.closed:self.events.write(json.dumps({'at':stamp(),'elapsed_s':time.monotonic()-self.started,'event':name,**data},ensure_ascii=False,allow_nan=False)+'\n')
@@ -79,6 +87,8 @@ class Trial:
         self.event('finished',outcome=self.summary['outcome'],error=self.summary['error'])
         atomic_json(self.directory/'results.json',snapshots);atomic_json(self.directory/'summary.json',self.summary)
         self.telemetry.close();self.events.close();self.closed=True;refresh_index(self.root)
+        try:self.track_evaluation()
+        except Exception as exc:print('평가 집계 갱신 실패 · 원본 기록 보존: '+str(exc),file=sys.stderr)
 
 def start_trial(kind,physical=False,source=None):return Trial(kind,physical,source)
 

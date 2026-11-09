@@ -7,7 +7,7 @@
   "expired_destination": "trash_drop",
   "closer_nonexpired_pad_id": 5,
   "farther_nonexpired_pad_id": 6,
-  "valid_on_expiry_date": true,
+  "valid_on_expiry_date": false,
   "equal_reference_distances": "both ID5; reserve nonoverlapping slots",
   "more_than_two_distinct_nonexpired_dates": "stop; require grouping rule",
   "unreadable_or_conflicting_qr": "do_not_move",

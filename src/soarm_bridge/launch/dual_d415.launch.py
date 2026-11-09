@@ -13,9 +13,10 @@ def generate_launch_description():
             'camera_namespace':'camera','camera_name':name,'serial_no':LaunchConfiguration(serial),
             'enable_color':'true','enable_depth':'true',
             'rgb_camera.color_profile':LaunchConfiguration(profile),'depth_module.depth_profile':LaunchConfiguration(depth),
-            'align_depth.enable':'true','pointcloud.enable':'true','publish_tf':'true',
+            'align_depth.enable':'true','pointcloud.enable':LaunchConfiguration('pointcloud'),'publish_tf':'true',
         }.items())
     return LaunchDescription([
+        DeclareLaunchArgument('pointcloud',default_value='true',choices=['true','false']),
         DeclareLaunchArgument('rgb_profile',default_value='640x480x15'),
         DeclareLaunchArgument('rgb_profile1',default_value=LaunchConfiguration('rgb_profile')),
         DeclareLaunchArgument('rgb_profile2',default_value=LaunchConfiguration('rgb_profile')),
