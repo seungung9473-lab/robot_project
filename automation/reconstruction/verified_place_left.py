@@ -104,7 +104,7 @@ def acm_for(object_id,support):
  req=scene_request();req.scene.allowed_collision_matrix=acm;apply(req);return original
 
 from grip_retry import SLOW_CONTACT_SCALING
-from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,min_tcp_z
+from transit_clearance import RETREAT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
 def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=None,ptp=False,min_tcp_z=None):
  global handle,lost,bad,pre_suction_gate
  start=fresh()
@@ -380,7 +380,7 @@ try:
   for other in current_others:
    obj=CollisionObject();obj.id=other['id'];obj.header.frame_id='world';obj.operation=CollisionObject.ADD;obj.primitives=[SolidPrimitive(type=SolidPrimitive.BOX,dimensions=other['dims'])];transform=np.eye(4);transform[:3,3]=other['center_table_m'];obj.primitive_poses=[pose(np.linalg.inv(W)@transform)];req.scene.world.collision_objects.append(obj)
    if other.get('mesh_cloud_file'):
-    observed=np.load(other['mesh_cloud_file'])['points'];obj.primitives=[];obj.primitive_poses=[];obj.meshes=[convex_mesh(observed,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',.001)))];obj.mesh_poses=[pose(np.linalg.inv(W)@transform)]
+    observed=np.load(other['mesh_cloud_file'])['points'];obj.primitives=[];obj.primitive_poses=[];obj.meshes=[convex_mesh(observed,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',OBSTACLE_PADDING_M)))];obj.mesh_poses=[pose(np.linalg.inv(W)@transform)]
    color=ObjectColor();color.id=other['id'];color.color.r,color.color.g,color.color.b=map(float,np.asarray(other.get('rgb_255',[100,100,100]))/255.);color.color.a=.001;req.scene.object_colors.append(color)
  apply(req)
  if args.inclined:

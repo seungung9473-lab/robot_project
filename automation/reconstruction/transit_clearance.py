@@ -6,6 +6,9 @@ cup and arm clear every object before the turntable rotates and before the next 
 Planning (check_inclined_motion) and execution (verified_place_left) must use this same value.
 """
 RETREAT_UP_M=0.10
+# 다른 물체(턴테이블 위 이웃·이미 놓은 물체)의 충돌 형상을 키우는 여유. 기본 1 mm에서 4 mm로 올려 이동 중 이웃 물체와 더 떨어지게 한다.
+# 패드 위 물체 사이 실제 간격(간격 2 mm + 발자국 여유 2.5 mm×2 = 7 mm)보다 작아야 배치 계획이 막히지 않는다. 집는 물체·든 물체에는 적용하지 않는다.
+OBSTACLE_PADDING_M=0.004
 
 # Approach to the next object: first go to a pose TRANSIT_UP_M straight above the approach pose (same elbow/wrist
 # configuration as the approach), keep the cup tip above TRANSIT_MIN_TCP_Z_M on the way (turntable top 59 mm + tallest object

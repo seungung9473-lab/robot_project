@@ -1,5 +1,5 @@
 """Temporarily apply predicted aligned geometry and plan; never execute actions."""
-from transit_clearance import RETREAT_UP_M,TRANSIT_UP_M,TRANSIT_MIN_TCP_Z_M,min_tcp_z
+from transit_clearance import RETREAT_UP_M,TRANSIT_UP_M,TRANSIT_MIN_TCP_Z_M,OBSTACLE_PADDING_M,min_tcp_z
 import argparse,copy,json,time
 from pathlib import Path
 import numpy as np,yaml,rclpy
@@ -79,7 +79,7 @@ try:
  for other in ctx['other_objects']:
   o=CollisionObject();o.id=other['id'];o.header.frame_id='world';o.operation=CollisionObject.ADD;o.primitives=[SolidPrimitive(type=SolidPrimitive.BOX,dimensions=other['dims'])];T=np.eye(4);T[:3,3]=other['center_table_m'];o.primitive_poses=[pose(np.linalg.inv(W)@T)]
   if other.get('mesh_cloud_file'):
-   obs=np.load(other['mesh_cloud_file'])['points'];o.primitives=[];o.primitive_poses=[];o.meshes=[convex_mesh(obs,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',.001)))];o.mesh_poses=[pose(np.linalg.inv(W)@T)]
+   obs=np.load(other['mesh_cloud_file'])['points'];o.primitives=[];o.primitive_poses=[];o.meshes=[convex_mesh(obs,np.array(other['center_table_m']),padding_m=float(other.get('padding_m',OBSTACLE_PADDING_M)))];o.mesh_poses=[pose(np.linalg.inv(W)@T)]
   scene.world.collision_objects.append(o);introduced.append(o.id)
  for placed_entry in ctx.get('virtual_placements',[]):
   obj=CollisionObject();obj.id=placed_entry['collision_id'];obj.header.frame_id='world';obj.operation=CollisionObject.ADD

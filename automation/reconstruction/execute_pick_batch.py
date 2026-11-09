@@ -8,6 +8,7 @@ import numpy as np
 from batch_search import require_complete
 from batch_inputs import fingerprints
 from turntable_wait import review_wait_pose
+from wait_pose import check_wait_pose
 R=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
 
@@ -74,7 +75,10 @@ def main():
     scanner.arm_reference=list(scanner.arm[1]);
     if plan.get('finish_above'):
      expected_q=stage['start_q_rad']
-     if np.max(np.abs(np.array(scanner.arm[1])-expected_q))>math.radians(1):raise RuntimeError('Actual waiting pose differs from reviewed stage start')
+     offset=check_wait_pose(scanner.arm[1],expected_q)
+     if offset['replan_first_move']:
+      print('대기 자세가 검토 시작 자세와 최대 %.1f° 다름: 이 단계 첫 이동은 현재 자세에서 다시 계획·충돌검사합니다'%offset['max_deg'],flush=True)
+      trial.event('wait_pose_offset_replan',stage=index+1,object=stage['object'],max_deg=offset['max_deg'],per_joint_deg=offset['per_joint_deg'])
      review_wait_pose(scanner,scanner.arm[1],source,set(completed),require_empty=True)
     state=scanner.state();scanner.reference_zero=state['zero_count'];scanner.reference_stop=state['stop_generation'];scanner.guard_arm()
     if state['zero_count']!=manifest['return_to_zero']['state']['zero_count']:raise RuntimeError('Turntable zero changed')
