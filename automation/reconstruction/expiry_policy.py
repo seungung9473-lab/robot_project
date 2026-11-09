@@ -3,6 +3,11 @@ from datetime import date,datetime
 from zoneinfo import ZoneInfo
 import re,math
 
+# 2026-11-10 사용자 결정: 유통기한 당일 것도 폐기한다(기한 당일 = 만료). 이전에는 당일까지 유효로 보았다.
+DISCARD_ON_EXPIRY_DATE=True
+def is_expired(expiry,today):
+ return expiry<=today if DISCARD_ON_EXPIRY_DATE else expiry<today
+
 def today_seoul():return datetime.now(ZoneInfo('Asia/Seoul')).date()
 
 def parse_qr_expiry(text):
@@ -38,14 +43,14 @@ def printed_consensus(observations,today=None):
  if not others:return top
  if len(top_sources)<MIN_MAJORITY_SOURCES:return None
  if len(others)>1 or len(others[0][1])>MAX_OUTLIER_SOURCES:return None
- if (others[0][0]<today)!=(top<today):return None  # 폐기 여부가 갈리는 충돌은 절대 무시하지 않는다
+ if is_expired(others[0][0],today)!=is_expired(top,today):return None  # 폐기 여부가 갈리는 충돌은 절대 무시하지 않는다
  return top
 
 def classify(observations,today=None,**unused):
  today=today or today_seoul();numeric=printed_consensus(observations,today);dates=[];seen=set()
  if numeric is not None:
-  expired=numeric<today
-  return {'status':'expired' if expired else 'not_expired','expiry_date':numeric.isoformat(),'today':today.isoformat(),'remaining_days':(numeric-today).days,'destination':'trash_drop' if expired else None,'destination_pad_id':None,'date_source':'printed_numeric','rule':'Printed MM.DD uses execution year; valid through expiry date'}
+  expired=is_expired(numeric,today)
+  return {'status':'expired' if expired else 'not_expired','expiry_date':numeric.isoformat(),'today':today.isoformat(),'remaining_days':(numeric-today).days,'destination':'trash_drop' if expired else None,'destination_pad_id':None,'date_source':'printed_numeric','rule':'Printed MM.DD uses execution year; expired on and after the expiry date (discard on the day)'}
  for item in observations:
   if not isinstance(item,dict):continue
   source=item.get('evidence_id')
@@ -59,8 +64,8 @@ def classify(observations,today=None,**unused):
   seen.add(source);dates.append(value)
  if len(dates)<2:return {'status':'unknown','reason':'Require matching QR reads from two distinct observations','today':today.isoformat()}
  if len(set(dates))!=1:return {'status':'unknown','reason':'Conflicting QR expiry dates; do not move','today':today.isoformat()}
- expiry=dates[0];expired=expiry<today
- return {'status':'expired' if expired else 'not_expired','expiry_date':expiry.isoformat(),'today':today.isoformat(),'remaining_days':(expiry-today).days,'destination':'trash_drop' if expired else None,'destination_pad_id':None,'date_source':'qr_fallback','rule':'Valid through expiry date; QR year = 2000 + YY'}
+ expiry=dates[0];expired=is_expired(expiry,today)
+ return {'status':'expired' if expired else 'not_expired','expiry_date':expiry.isoformat(),'today':today.isoformat(),'remaining_days':(expiry-today).days,'destination':'trash_drop' if expired else None,'destination_pad_id':None,'date_source':'qr_fallback','rule':'Expired on and after the expiry date (discard on the day); QR year = 2000 + YY'}
 
 def rank_destinations(decisions,reference_date=None,pad_ids=None):
  # pad_ids={'discount':id,'regular':id} comes from the 할인/정규 stickers read on the pads; default keeps the fixed ID5/ID6 layout.
@@ -83,6 +88,6 @@ def validate_route(route,today=None):
  today=today or today_seoul()
  if decision.get('status')=='unknown':raise ValueError('Date uncertain; execution blocked')
  expiry=date.fromisoformat(decision['expiry_date']);trash=route.get('destination')=='trash_drop'
- if trash!=(expiry<today):raise ValueError('Expiry state changed; classify and plan again')
+ if trash!=is_expired(expiry,today):raise ValueError('Expiry state changed; classify and plan again')
  if decision.get('today')!=today.isoformat():raise ValueError('Calendar day changed; classify and plan again')
  if not trash and route.get('destination_pad_id') not in [5,6]:raise ValueError('No ranked destination')
