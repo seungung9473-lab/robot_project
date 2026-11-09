@@ -63,6 +63,14 @@ class Scanner(Node):
         if self.arm is None or time.monotonic()-self.arm[0]>1:raise RuntimeError('스캔 중 로봇팔 피드백 유실')
         if any(not math.isfinite(q) or abs(q-r)>math.radians(.5) for q,r in zip(self.arm[1],self.arm_reference)):raise RuntimeError('스캔 중 로봇팔 움직임 감지 · 턴테이블 중단')
     def spin(self,seconds=.02):self._scan_executor.spin_once(timeout_sec=seconds);self.guard_arm()
+    def refresh_arm(self,max_age=.3,timeout=3.):
+        """긴 비스핀 작업(구름 읽기·서비스 대기) 뒤 밀린 메시지를 먼저 처리한다. guard_arm 없이 돌리므로 오래된 시각 때문에 곧바로 '피드백 유실'로 멈추지 않는다.
+        팔 피드백이 실제로 끊겼으면 timeout 뒤에 그대로 실패한다."""
+        end=time.monotonic()+timeout
+        while time.monotonic()<end:
+            if self.arm is not None and time.monotonic()-self.arm[0]<=max_age:return
+            self._scan_executor.spin_once(timeout_sec=.02)
+        raise RuntimeError('스캔 중 로봇팔 피드백 유실')
     def await_future(self,f,timeout):
         end=time.monotonic()+timeout
         while not f.done():

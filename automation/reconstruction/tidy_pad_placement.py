@@ -59,6 +59,19 @@ def jointly_choose(options, gap=.002):
     return visit(0)
 
 
+# 한 집기 후보(턴테이블 각도)가 예약 후보를 32개 다 차지하면, 그 집기 자세가 IK로 불가능할 때 다른 각도를 한 번도 못 써 본다
+# (2026-11-10 00:50 실행: object_3 후보 6개가 전부 같은 집기 자세 → 같은 IK 실패 반복). 집기 후보마다 상한을 둔다.
+MAX_PER_PICKUP_OPTION=4
+
+def alternative_candidates(candidates, chosen, limit=5):
+    """다른 집기 후보(각도)의 첫 자리를 먼저, 그다음 같은 집기 후보의 다른 자리."""
+    rest=[c for c in candidates if c is not chosen];seen={chosen['pickup_option_index']};first=[];later=[]
+    for c in rest:
+        if c['pickup_option_index'] in seen:later.append(c)
+        else:seen.add(c['pickup_option_index']);first.append(c)
+    return (first+later)[:limit]
+
+
 def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, time_limit=40.):
     """Search full pad on a 2mm grid; retain every observed hull vertex and margins."""
     from payload_placement import centered_payload_origin, signed_pitch
@@ -138,7 +151,7 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
                 # Reserve positions distributed across the pad, rather than six near-identical centers.
                 if any(np.linalg.norm(np.asarray(c['offset_xy_m'])-offset)<.003 for c in candidates):continue
                 candidates.append(candidate)
-                if len(candidates)>=32:break
+                if len(candidates)>=32 or sum(1 for c in candidates if c['pickup_option_index']==index)>=MAX_PER_PICKUP_OPTION:break
             if timed_out or len(candidates)>=32:break
         options[key]=candidates
         print(f'패드 {pad_id}: {key} 점유 회피·외곽·IK 통과 위치 {len(candidates)}개',flush=True)
@@ -157,7 +170,7 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
         if ids:message+=f' · 점유 물체 {ids} · 같은 장면 재스캔 반복 안 함'
         if timed_out:message+=' · 배치 탐색 시간 한도 도달'
         raise StaticPlacementRejected(message,retryable=not bool(ids),reason=reason,blocked_ids=ids)
-    alternatives={key:[c for c in options[key] if c is not chosen[key]][:5] for key in object_keys} if len(object_keys)==1 else {}
+    alternatives={key:alternative_candidates(options[key],chosen[key]) for key in object_keys} if len(object_keys)==1 else {}
     plan={'version':2,'pad_id':pad_id,'stacking':False,'pad_center_table_m':pad.tolist(),'radius_m':radius,
           'edge_margin_m':.002,'object_gap_m':.002,'search_step_m':.002,
           'placements':chosen,'alternatives':alternatives,'completed':{},'source_scan':str(session),

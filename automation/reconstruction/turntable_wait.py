@@ -36,6 +36,7 @@ def review_wait_pose(node,q,source,completed,require_empty=False):
     env=rotation_envelope(clouds,wc['turntable']['axis_point_table_m'],wc['turntable']['top_height_m'])
     def spin_until(future,timeout):
         if hasattr(node,'_scan_executor'):
+            if hasattr(node,'refresh_arm'):node.refresh_arm()   # 구름 읽기·서비스 대기 중 스캐너를 못 돌려 팔 피드백 시각이 1초 넘게 낡을 수 있다
             end=time.monotonic()+timeout
             while not future.done() and time.monotonic()<end:node.spin(.05)
         else:rclpy.spin_until_future_complete(node,future,timeout_sec=timeout)

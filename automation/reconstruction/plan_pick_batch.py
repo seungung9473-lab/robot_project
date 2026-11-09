@@ -36,7 +36,7 @@ def main():
   if not all(k in reservation['placements'] for k in keys):raise ValueError('Pad reservation does not cover all requested objects')
   # A stale or legacy reservation cannot bypass the current placed-obstacle check.
   validate_reserved(reservation,occupancy)
- failures={};exit_poses={};environment=PlanningEnvironment(s)
+ failures={};pick_failures=set();exit_poses={};environment=PlanningEnvironment(s)
  def evaluate(key,done,placed):
   entry=next(x for x in report['objects'] if x['object']==key)
   trash=routes[key].get('destination')=='trash_drop';reservation=None if trash else pad_plans.get(routes[key]['destination_pad_id'])
@@ -50,6 +50,10 @@ def main():
    reservation_data=json.loads(reservation.read_text()) if reservation else None
    start_q=exit_poses.get(tuple(done));snapshot={'environment_digest':environment.snapshot(),'batch_start_q':start_q}
    token=geometry_key(key,index,done,placed,reservation_data,snapshot)
+   pick_token=(key,index,tuple(map(float,start_q)) if start_q is not None else None,tuple(done))
+   if pick_token in pick_failures:
+    print(f'재탐색: {key} 후보 {index} · 집기 접근 자세가 불가능해 같은 집기 후보의 다른 놓기 위치는 건너뜀',flush=True)
+    yield {'success':False,'review':{'object':key,'option':index,'error':'pick-side IK unavailable (skipped)','pick_side_skip':True}};continue
    if token in failures:
     review={**failures[token],'memo_reused':True}
     print(f'재탐색: {key} 후보 {index} · 동일 조건의 기존 검사 결과 재사용 (시간 초과는 불가능 판정 아님)',flush=True)
@@ -91,6 +95,7 @@ def main():
    review={'object':key,'option':index,'angle_deg':opt['turntable_angle_deg'],'previously_placed':list(done),'success':bool(returncode==0 and check.get('success')),'error':check.get('error'),'log':str(log)};print(json.dumps(review,ensure_ascii=False),flush=True);trial_record.event('candidate_review',**review)
    if not review['success']:
     failures[token]=review
+    if 'Transit pose above target IK unavailable' in str(review.get('error') or ''):pick_failures.add(pick_token)  # 놓는 자리와 무관한 집기쪽 실패
     print('안전점검 실패: '+str(review['error'])+' · 재탐색합니다: 다른 놓기 위치·자세·순서',flush=True)
     yield {'success':False,'review':review}
     if invariant_source_overlap(review.get('error')):break
