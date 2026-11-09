@@ -1,5 +1,6 @@
 """Prepare inclined pick; --execute explicitly enables home/table/pick/place motion."""
 import argparse,json,subprocess,sys,time,fcntl,uuid
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np,yaml
 from inclined_geometry import rotate_surface
@@ -60,7 +61,7 @@ try:
  deadline=time.monotonic()+15
  while not vac and time.monotonic()<deadline:rclpy.spin_once(check_node,timeout_sec=.05)
  if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('No fresh vacuum feedback before home')
- if vac['value']<=-200:raise RuntimeError('Possible held object: no home or table rotation')
+ if vac['value']<=HELD_DIFF:raise RuntimeError('Possible held object: no home or table rotation')
 finally:check_node.destroy_node();rclpy.try_shutdown()
 # Check future aligned scene without actuating anything before home/table motion.
 placement_args=[] if a.placement_plan is None else ['--placement-plan',a.placement_plan.resolve(),'--placement-object',a.placement_object or obj['object']]

@@ -1,5 +1,6 @@
 """Explicit full cycle: home -> stopped scan -> Gemini/SAM2 -> QR/date routes -> reviewed motion."""
 import argparse,json,os,subprocess,sys,time,uuid,fcntl
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 R=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
@@ -19,7 +20,7 @@ def control_preflight():
    n.destroy_client(c)
   end=time.monotonic()+3
   while (not vac or time.monotonic()-vac['t']>.5) and time.monotonic()<end:rclpy.spin_once(n,timeout_sec=.05)
-  if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=-200:raise RuntimeError('Fresh empty-cup confirmation missing; no automatic home/scan')
+  if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:raise RuntimeError('Fresh empty-cup confirmation missing; no automatic home/scan')
  finally:n.destroy_node();rclpy.shutdown()
 
 def main():

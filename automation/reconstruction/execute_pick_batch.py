@@ -3,6 +3,7 @@
 Contact points/angles are never refitted or visually checked after rotation.
 """
 import argparse,json,sys,subprocess,time,fcntl,math
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np
 from batch_search import require_complete
@@ -42,7 +43,7 @@ def main():
    rclpy.spin_once(guard,timeout_sec=.05)
    if 'q' in feedback and 'diff' in feedback and time.monotonic()-feedback['qt']<.3 and time.monotonic()-feedback['pt']<.5:break
   if 'q' not in feedback or 'diff' not in feedback or time.monotonic()-feedback.get('qt',0)>.3 or time.monotonic()-feedback.get('pt',0)>.5:raise RuntimeError('Fresh initial joint/pressure feedback missing')
-  if feedback['diff']<=-200:raise RuntimeError('Possible held object; no automatic batch start')
+  if feedback['diff']<=HELD_DIFF:raise RuntimeError('Possible held object; no automatic batch start')
   if np.max(abs(np.array(feedback['q'])-[0,math.pi,-math.pi,0]))>math.radians(1):raise RuntimeError('Start the batch from the verified home pose')
  finally:guard.destroy_node();rclpy.shutdown()
  plan['execution_performed']=True;plan['execution_status']='running'

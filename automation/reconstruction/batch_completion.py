@@ -1,5 +1,6 @@
 """A single final HOME after successful, released batch stages."""
 import time
+from vacuum_thresholds import HELD_DIFF
 
 
 def go_home_empty():
@@ -12,7 +13,7 @@ def go_home_empty():
     try:
         deadline=time.monotonic()+5
         while len(pressure)<2 and time.monotonic()<deadline:rclpy.spin_once(node,timeout_sec=.05)
-        if len(pressure)<2 or time.monotonic()-pressure[-1][0]>.5 or any(v<=-200 for _,v in pressure[-2:]):
+        if len(pressure)<2 or time.monotonic()-pressure[-1][0]>.5 or any(v<=HELD_DIFF for _,v in pressure[-2:]):
             raise RuntimeError('Final HOME blocked: fresh empty-cup confirmation missing')
         client=node.create_client(Trigger,'/soarm4/go_home')
         if not client.wait_for_service(timeout_sec=8):raise RuntimeError('Final HOME service unavailable')

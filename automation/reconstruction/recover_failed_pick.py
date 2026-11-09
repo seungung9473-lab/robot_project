@@ -1,5 +1,6 @@
 """After confirmed release, retreat along the attempted face normal and home."""
 import json,time,sys,copy
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np,rclpy,yaml
 from rclpy.action import ActionClient
@@ -30,7 +31,7 @@ def apply(scene):
 def state(q):return RobotState(joint_state=JointState(name=names,position=list(map(float,q))),is_diff=True)
 start=time.monotonic()
 while time.monotonic()-start<3:rclpy.spin_once(n,timeout_sec=.05)
-assert latest and vac and time.monotonic()-latest['t']<.3 and time.monotonic()-vac['t']<.5 and vac['v']>-200,'Release/fresh state required'
+assert latest and vac and time.monotonic()-latest['t']<.3 and time.monotonic()-vac['t']<.5 and vac['v']>HELD_DIFF,'Release/fresh state required'
 q=latest['q'];T=fk(q);sol=solve_axis(fk,lo,hi,T[:3,3]+normal*.015,T[:3,0],seed=q);assert sol is not None,'No retreat IK'
 req=GetPlanningScene.Request();req.components.components=PlanningSceneComponents.ALLOWED_COLLISION_MATRIX;original=call('/get_planning_scene',GetPlanningScene,req).scene.allowed_collision_matrix;acm=copy.deepcopy(original)
 for key in ['scanned_block','cup_tip','tool_link_cup_visual_link']:

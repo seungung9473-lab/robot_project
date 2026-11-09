@@ -1,5 +1,6 @@
 """Two reconstructed objects -> robot left/right pads, with attached-body planning."""
 import argparse,copy,json,math,os,subprocess,sys,time
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np
 from scipy.optimize import least_squares
@@ -29,7 +30,7 @@ if packing is not None:
 ctx=load_context(session);names=['joint'+str(i) for i in range(1,5)];lo=np.array([j['limit']['lower'] for j in m['joints']],float);hi=np.array([j['limit']['upper'] for j in m['joints']],float)
 rclpy.init();node=rclpy.create_node('verified_suction_trial');latest={};vac={};turn={};holding=False;handle=None;bad=0;lost=False
 pre_suction_gate=None
-status={'success':False,'phases':[],'placements':[],'pressure_settings':{'grip_diff':-200,'hold_diff':-200,'max_feedback_age_s':.5,'bad_consecutive_samples':2}}
+status={'success':False,'phases':[],'placements':[],'pressure_settings':{'grip_diff':HELD_DIFF,'hold_diff':HELD_DIFF,'max_feedback_age_s':.5,'bad_consecutive_samples':2}}
 def joint(msg):
  if all(n in msg.name for n in names):
   latest.update(q=[float(msg.position[msg.name.index(n)]) for n in names],t=time.monotonic())
@@ -38,7 +39,7 @@ def joint(msg):
 def pressure(msg):
  global bad,lost
  trial.sample('vacuum',diff=int(msg.data))
- vac.update(value=msg.data,t=time.monotonic());bad=bad+1 if msg.data>-200 else 0
+ vac.update(value=msg.data,t=time.monotonic());bad=bad+1 if msg.data>HELD_DIFF else 0
  if handle is not None and holding and bad>=2:lost=True;handle.cancel_goal_async()
 node.create_subscription(JointState,'/joint_states',joint,10);node.create_subscription(Int32,'/vacuum/diff',pressure,10);node.create_subscription(String,'/turntable/state',lambda msg:turn.update(json.loads(msg.data)),10)
 def call(name,req=None,typ=Trigger,timeout=45):
@@ -84,12 +85,12 @@ def ik(target,seed,axis=None,payload=None):
  if not candidates:raise RuntimeError('IK unreachable '+str(target))
  return min(candidates,key=lambda q:np.linalg.norm(q-seed)).tolist()
 def vacuum_ok():
- if not vac or time.monotonic()-vac['t']>.5 or vac['value']>-200:raise RuntimeError('Vacuum not confirmed')
+ if not vac or time.monotonic()-vac['t']>.5 or vac['value']>HELD_DIFF:raise RuntimeError('Vacuum not confirmed')
 def wait_vacuum():
  deadline=time.monotonic()+3;since=time.monotonic();good=0
  while time.monotonic()<deadline:
   rclpy.spin_once(node,timeout_sec=.05)
-  if vac and vac['t']>since and time.monotonic()-vac['t']<.3 and vac['value']<=-200:
+  if vac and vac['t']>since and time.monotonic()-vac['t']<.3 and vac['value']<=HELD_DIFF:
    good+=1;since=vac['t']
    if good>=2:return
  raise RuntimeError('Fresh stable suction confirmation missing')
@@ -357,7 +358,7 @@ try:
  while (not turn or not vac) and time.monotonic()<deadline:rclpy.spin_once(node,timeout_sec=.05)
  expected_turn=manifest.get('aligned_turntable_angle_deg',0.) if args.inclined else 0.
  if not turn or abs(turn['angle_deg']-expected_turn)>1 or turn['zero_count']!=manifest['return_to_zero']['state']['zero_count']:raise RuntimeError('Turntable pose or zero changed')
- if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=-200:raise RuntimeError('Vacuum baseline not clear')
+ if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:raise RuntimeError('Vacuum baseline not clear')
  assert np.linalg.norm(fk(q)[:3,3]-(W@(arm.fk(q)@tcp_point(wc)))[:3])<1e-6
  above=point+normal*float(candidate.get('approach_clearance_m',.03))
  if args.inclined:
@@ -425,7 +426,7 @@ try:
   while time.monotonic()<wait_end and good<2:
    rclpy.spin_once(node,timeout_sec=.05)
    if vac and vac['t']>since and time.monotonic()-vac['t']<.3:
-    since=vac['t'];good=good+1 if vac['value']<=-200 else 0
+    since=vac['t'];good=good+1 if vac['value']<=HELD_DIFF else 0
   waited={'attempt':0,'wait_s':SUCTION_WAIT_S,'pressure_diff':vac.get('value'),'success':good>=2};status['retries'].append(waited)
   if good>=2:grip=type('G',(),{'success':True,'message':f"diff={vac['value']} after waiting"})()
   else:

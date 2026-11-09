@@ -1,5 +1,6 @@
 """Conservative full-rotation envelope check for a stationary, empty robot arm."""
 import json,time
+from vacuum_thresholds import HELD_DIFF
 from pathlib import Path
 import numpy as np
 import yaml
@@ -48,7 +49,7 @@ def review_wait_pose(node,q,source,completed,require_empty=False):
             while len(feedback)<2 and time.monotonic()<deadline:
                 if hasattr(node,'_scan_executor'):node.spin(.05)
                 else:rclpy.spin_once(node,timeout_sec=.05)
-            if len(feedback)<2 or time.monotonic()-feedback[-1][0]>.5 or any(v<=-200 for _,v in feedback[-2:]):
+            if len(feedback)<2 or time.monotonic()-feedback[-1][0]>.5 or any(v<=HELD_DIFF for _,v in feedback[-2:]):
                 raise RuntimeError('Fresh empty-cup confirmation missing; no table rotation')
         finally:node.destroy_subscription(subscription)
     def call(path,typ,request):
