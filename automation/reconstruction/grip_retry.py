@@ -8,7 +8,7 @@ def retry_targets(first_tcp,outward_normal):
     return [origin-normal*(i*.001) for i in range(1,4)]
 
 FINAL_ADVANCE_M=.005
-SUCTION_WAIT_S=5.0
+SUCTION_WAIT_S=1.0
 
 def final_advance_target(first_tcp,outward_normal,distance_m=FINAL_ADVANCE_M):
     """Single bounded advance along the inward normal from the first actual contact TCP."""

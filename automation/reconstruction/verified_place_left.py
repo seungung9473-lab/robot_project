@@ -218,7 +218,9 @@ def pad_clearance(view,pad):
    polygon=np.array(packing['placements'][packing_key]['reserved_polygon_table_m']);hull=ConvexHull(polygon);inside=np.all(P[:,:,:2]@hull.equations[:,:2].T+hull.equations[:,2]<=.002,axis=2)
    surface=valid&inside&(np.abs(P[:,:,2]-pad['center_table_m'][2])<.012);obstacle=obstacle&inside
   checks[cam]={'surface_pixels':int(surface.sum()),'elevated_pixels':int(obstacle.sum())}
- if max(c['surface_pixels'] for c in checks.values())<100 or any(c['elevated_pixels']>=40 for c in checks.values()):raise RuntimeError('Left pad obstructed or not observed sufficiently')
+ from pad_clearance_policy import judge_pad
+ try:status['pad_clearance_mode']=judge_pad(checks,packing is not None)
+ finally:status['pad_clearance_counts']=checks
  return checks
 
 stage_start_q=None
@@ -417,7 +419,7 @@ try:
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
  phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
  if not grip.success:
-  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 5초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
+  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 1초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
   from grip_retry import final_advance_target,SUCTION_WAIT_S,SLOW_5MM_SCALING
   q=fresh();initial_contact=fk(q);status['retries']=[];wait_end=t_grip0+SUCTION_WAIT_S;good=0;since=0.
   while time.monotonic()<wait_end and good<2:

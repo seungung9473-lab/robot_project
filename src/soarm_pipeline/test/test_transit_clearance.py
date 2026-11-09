@@ -28,3 +28,7 @@ def test_neighbour_padding_is_wider_but_below_pad_gap():
         text=(R/name).read_text()
         assert "other.get('padding_m',OBSTACLE_PADDING_M)" in text
         assert "other.get('padding_m',.001)" not in text
+
+def test_suction_wait_before_5mm_advance_is_one_second():
+    from grip_retry import SUCTION_WAIT_S,FINAL_ADVANCE_M
+    assert SUCTION_WAIT_S==1.0 and FINAL_ADVANCE_M==.005

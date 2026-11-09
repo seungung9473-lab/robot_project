@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 
-MODEL='gemini-robotics-er-2-preview'
+MODEL=json.loads((Path(__file__).resolve().parent/'model_policy.json').read_text())['primary']
 BASE='https://generativelanguage.googleapis.com/v1beta/models/'
 CONFIG=Path.home()/'.config/soarm4/gemini.json'
 RESULT=Path(__file__).resolve().parent/'connection_status.json'

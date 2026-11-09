@@ -8,7 +8,11 @@ class BlockedModelOutput(RuntimeError):pass
 
 def policy():
     p=json.loads((ROOT/'model_policy.json').read_text())
-    if p['primary']!='gemini-robotics-er-2-preview' or p['fallback']!='gemini-3.8-flash':raise ValueError('Unexpected model routing policy')
+    ER2='gemini-robotics-er-2-preview';FLASH='gemini-3.8-flash'
+    er2_then_flash=p['primary']==ER2 and p['fallback']==FLASH
+    # 크레딧·할당량 사정으로 ER2를 쓰지 않을 때: Flash만 쓰고 대체 모델은 없다.
+    flash_only=p['primary']==FLASH and p['fallback']==FLASH and not p['fallback_enabled']
+    if not (er2_then_flash or flash_only):raise ValueError('Unexpected model routing policy')
     if p['max_requests_per_task']!=2:raise ValueError('Only two bounded requests supported')
     return p
 

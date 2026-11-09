@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <functional>
 #include <rviz_common/panel.hpp>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
@@ -10,6 +11,9 @@
 #include <std_msgs/msg/bool.hpp>
 #include <QPushButton>
 #include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QTreeView>
+#include <QAbstractItemModel>
 #include <QApplication>
 #include <QThread>
 #include <QLabel>
@@ -93,6 +97,27 @@ public:
    scaling_timer->stop();scaling_timer->deleteLater();
   });
   scaling_timer->start(200);
+  // MotionPlanning의 'Query Start State'는 켜진 채로 뜨는 일이 있어(설정 파일은 false) 시작 후 한 번 끈다.
+  // 화면 표시용 시작 상태 마커일 뿐 계획·실행 로직과 무관하다. 사용자가 다시 켜는 것은 막지 않는다.
+  auto* query_timer=new QTimer(this);int* query_tries=new int(0);
+  connect(query_timer,&QTimer::timeout,this,[this,query_timer,query_tries](){
+   ++(*query_tries);
+   for(auto* tree:this->window()->findChildren<QTreeView*>()){
+    auto* model=tree->model();if(!model)continue;
+    std::function<bool(const QModelIndex&)> visit=[&](const QModelIndex& parent)->bool{
+     for(int r=0;r<model->rowCount(parent);++r){
+      QModelIndex name=model->index(r,0,parent);
+      if(model->data(name).toString()=="Query Start State"){
+       QModelIndex value=model->index(r,1,parent);
+       if(model->data(value,Qt::CheckStateRole).toInt()==Qt::Checked)model->setData(value,Qt::Unchecked,Qt::CheckStateRole);
+       return true;}
+      if(visit(name))return true;}
+     return false;};
+    if(visit(QModelIndex())){RCLCPP_INFO(node_->get_logger(),"Query Start State unchecked at startup");query_timer->stop();query_timer->deleteLater();delete query_tries;return;}
+   }
+   if(*query_tries>50){query_timer->stop();query_timer->deleteLater();delete query_tries;}
+  });
+  query_timer->start(400);
   edit_pub_=node_->create_publisher<std_msgs::msg::String>("/soarm4/pick_place/edit",10);QPointer<HomePanel> guard(this);
   diff_sub_=node_->create_subscription<std_msgs::msg::Int32>("/vacuum/diff",10,[guard](std_msgs::msg::Int32::ConstSharedPtr m){if(!guard)return;int value=m->data;QMetaObject::invokeMethod(guard,[guard,value](){if(guard){guard->diff_=value;guard->have_pressure_=true;guard->pressure_elapsed_.start();}},Qt::QueuedConnection);});
   hold_sub_=node_->create_subscription<std_msgs::msg::Bool>("/vacuum/holding",10,[guard](std_msgs::msg::Bool::ConstSharedPtr m){if(!guard)return;bool value=m->data;QMetaObject::invokeMethod(guard,[guard,value](){if(guard)guard->holding_=value;},Qt::QueuedConnection);});
