@@ -7,7 +7,7 @@ sys.path.insert(0,str(R))
 from vacuum_thresholds import HELD_DIFF,RELEASE_CONFIRM_DIFF
 
 def test_threshold_values_and_ordering():
-    assert HELD_DIFF==-100 and RELEASE_CONFIRM_DIFF==-50
+    assert HELD_DIFF==-150 and RELEASE_CONFIRM_DIFF==-50
     assert HELD_DIFF<RELEASE_CONFIRM_DIFF   # 붙음 기준이 해제 확인 기준보다 더 낮아야 한다(사이에 여유)
 
 def test_bridge_params_use_same_threshold():

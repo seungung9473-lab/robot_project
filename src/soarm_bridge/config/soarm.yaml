@@ -72,8 +72,8 @@ servo_bridge:
 esp32_bridge:
   ros__parameters:
     port: /dev/esp32
-    hold_diff: -100
-    grip_diff: -100   # 2026-11-09 사용자 요청: diff -100까지 잘 붙어 흡착·유지 기준 -100 (11/5에는 -200)
+    hold_diff: -150
+    grip_diff: -150   # 2026-11-09 사용자 요청: -200 → -100 → -150 (-106 약한 밀착이 들기 중 풀려 올림)
     release_diff: -50
     grip_timeout: 5.0
     release_timeout: 3.0

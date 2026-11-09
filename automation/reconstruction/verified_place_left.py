@@ -86,6 +86,14 @@ def ik(target,seed,axis=None,payload=None):
  return min(candidates,key=lambda q:np.linalg.norm(q-seed)).tolist()
 def vacuum_ok():
  if not vac or time.monotonic()-vac['t']>.5 or vac['value']>HELD_DIFF:raise RuntimeError('Vacuum not confirmed')
+def seal_stable():
+ """흡착 판정 뒤 SEAL_STABLE_S 동안 새 압력 값이 모두 HELD_DIFF 이하로 유지되는지 확인(약한 붙음은 들기 전에 거른다)."""
+ from seal_stability import SEAL_STABLE_S,evaluate
+ samples=[];last=0.;end=time.monotonic()+SEAL_STABLE_S
+ while time.monotonic()<end:
+  rclpy.spin_once(node,timeout_sec=.05)
+  if vac and vac['t']>last and time.monotonic()-vac['t']<.3:last=vac['t'];samples.append((vac['t'],vac['value']))
+ return evaluate(samples,HELD_DIFF)
 def wait_vacuum():
  deadline=time.monotonic()+3;since=time.monotonic();good=0
  while time.monotonic()<deadline:
@@ -419,24 +427,33 @@ try:
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}
  phase('grip_resting');t_grip0=time.monotonic();grip=call('/vacuum/grip',timeout=12);status['first_grip']=grip.message
+ if grip.success:
+  _stable,_detail=seal_stable();status['seal_check_first']=_detail
+  if not _stable:grip=type('G',(),{'success':False,'message':'unstable seal '+str(_detail)})()
  if not grip.success:
-  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 1초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 5mm 더 전진해 1회 재흡착.
-  from grip_retry import final_advance_target,SUCTION_WAIT_S,SLOW_5MM_SCALING
+  # 흡착 실패: 펌프 ON 유지, 첫 흡착 시도부터 1초 동안 압력 확인 -> 그래도 실패면 접촉 TCP에서 법선 방향으로 8mm 더 전진해 1회 재흡착.
+  from grip_retry import final_advance_target,SUCTION_WAIT_S,SLOW_5MM_SCALING,FINAL_ADVANCE_M
   q=fresh();initial_contact=fk(q);status['retries']=[];wait_end=t_grip0+SUCTION_WAIT_S;good=0;since=0.
   while time.monotonic()<wait_end and good<2:
    rclpy.spin_once(node,timeout_sec=.05)
    if vac and vac['t']>since and time.monotonic()-vac['t']<.3:
     since=vac['t'];good=good+1 if vac['value']<=HELD_DIFF else 0
   waited={'attempt':0,'wait_s':SUCTION_WAIT_S,'pressure_diff':vac.get('value'),'success':good>=2};status['retries'].append(waited)
-  if good>=2:grip=type('G',(),{'success':True,'message':f"diff={vac['value']} after waiting"})()
-  else:
+  if good>=2:
+   _stable,_detail=seal_stable();waited['seal_check']=_detail
+   if _stable:grip=type('G',(),{'success':True,'message':f"diff={vac['value']} after waiting"})()
+   else:good=0   # 기다려서 붙은 것도 약하면 아래 8mm 재접근으로 넘어간다
+  if good<2:
    if not vac or time.monotonic()-vac['t']>.5:raise RuntimeError('Pressure feedback stale; no further advance')
    target=final_advance_target(initial_contact[:3,3],normal)
    q=fresh();retry_goal=ik(target,q,axis=initial_contact[:3,0])
-   record={'attempt':1,'step_m':.005,'total_additional_approach_m':.005,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 5 mm inward-normal advance after 5 s without suction'};status['retries'].append(record)
-   move(retry_goal,'grip_retry_5mm_after_5s',True,speed_cap=SLOW_5MM_SCALING);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_5mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
+   record={'attempt':1,'step_m':FINAL_ADVANCE_M,'total_additional_approach_m':FINAL_ADVANCE_M,'target_table_m':target.tolist(),'reference':'first actual contact TCP; one 8 mm inward-normal advance after 1 s without suction'};status['retries'].append(record)
+   move(retry_goal,'grip_retry_8mm_after_1s',True,speed_cap=SLOW_5MM_SCALING);record['speed_scaling']={'velocity':SLOW_5MM_SCALING[0],'acceleration':SLOW_5MM_SCALING[1]};phase('grip_retry_resting_8mm');grip=call('/vacuum/grip',timeout=12);record.update(success=grip.success,pressure_result=grip.message)
+   if grip.success:
+    _stable,_detail=seal_stable();record['seal_check']=_detail
+    if not _stable:grip=type('G',(),{'success':False,'message':'unstable seal after retry '+str(_detail)})()
   if not grip.success:
-   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed 5 s after contact and after 5mm extra advance; no lift')
+   released=call('/vacuum/release',timeout=15);status['release_after_failed_retry']=released.message;raise RuntimeError('Grip failed or seal unstable after 8 mm extra advance; no lift')
  holding=True;wait_vacuum();q=fresh();Tcontact=fk(q)
  if args.inclined:
   radial=Tcontact[:2,3]-j1;radial/=np.linalg.norm(radial);payload_pitch=math.atan2(float(Tcontact[:2,0]@radial),float(-Tcontact[2,0]))

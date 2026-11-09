@@ -252,7 +252,20 @@ def clear_confirmed_empty_pads(audit_directory, *, reset_all_scans=False):
     try:
         if reset_all_scans:
             from scan_scene_reset import reset_previous_scan_scene, delete_scan_markers
+            def not_holding():
+                # 압력이 "붙어 있지 않음"을 새 값으로 확인했을 때만 True. 값이 없거나 낡았으면 None(= 모름 → 중단).
+                from std_msgs.msg import Int32
+                from vacuum_thresholds import HELD_DIFF
+                got={}
+                sub=node.create_subscription(Int32,'/vacuum/diff',lambda m:got.update(v=m.data,t=time.monotonic()),10)
+                try:
+                    end=time.monotonic()+3
+                    while time.monotonic()<end:
+                        executor.spin_once(timeout_sec=.1)
+                        if got and time.monotonic()-got['t']<.3:break
+                    return None if not got or time.monotonic()-got['t']>.5 else got['v']>HELD_DIFF
+                finally:node.destroy_subscription(sub)
             return reset_previous_scan_scene(query,apply,audit_directory,
-                clear_markers=lambda:delete_scan_markers(node,executor))
+                clear_markers=lambda:delete_scan_markers(node,executor),not_holding=not_holding)
         return reset_empty_pad_scene(query,apply,audit_directory)
     finally:executor.shutdown();node.destroy_node();context.shutdown()

@@ -5,7 +5,9 @@ from pathlib import Path
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
 
-MODEL=json.loads((Path(__file__).resolve().parent/'model_policy.json').read_text())['primary']
+_POLICY=json.loads((Path(__file__).resolve().parent/'model_policy.json').read_text())
+MODEL=_POLICY['primary']
+REQUEST_TIMEOUT_S=float(_POLICY.get('request_timeout_s',45))   # 영상 24장 날짜 판독은 보통 15~40초 걸려 45초 한도에 자주 닿는다
 BASE='https://generativelanguage.googleapis.com/v1beta/models/'
 CONFIG=Path.home()/'.config/soarm4/gemini.json'
 RESULT=Path(__file__).resolve().parent/'connection_status.json'
@@ -44,7 +46,7 @@ def request(key,method,path,payload=None):
     data=None if payload is None else json.dumps(payload).encode()
     req=Request(BASE+path,data=data,headers=headers,method=method)
     try:
-        with urlopen(req,timeout=45) as response:return json.load(response)
+        with urlopen(req,timeout=REQUEST_TIMEOUT_S) as response:return json.load(response)
     except HTTPError as exc:
         try:
             body=json.loads(exc.read().decode());error=body.get('error',{});code=error.get('status','HTTP_ERROR');message=str(error.get('message','')).replace(key,'[REDACTED]')

@@ -50,14 +50,32 @@ def delete_scan_markers(node, executor):
     node.destroy_publisher(publisher)
 
 
-def reset_previous_scan_scene(query, apply, audit_directory, *, stop_display=stop_previous_display, clear_markers):
+def stale_attached(attached, not_holding):
+    """Attached scan blocks left by an aborted pick are removed only when the pressure sensor shows the cup is NOT holding.
+    Anything else attached, a held object, or no fresh pressure reading still stops the new run (nothing is guessed)."""
+    found=[(a.object.id, a.link_name) for a in attached]
+    if not found:return []
+    if all(i in SCAN_IDS for i,_ in found) and not_holding is not None and not_holding() is True:return found
+    raise RuntimeError('부착 물체가 있어 이전 스캔 초기화 중단 (흡착 해제 확인 없음: 컵 상태를 확인하세요)')
+
+
+def reset_previous_scan_scene(query, apply, audit_directory, *, stop_display=stop_previous_display, clear_markers, not_holding=None):
     from moveit_msgs.msg import PlanningScene, CollisionObject
     from rosidl_runtime_py.convert import message_to_ordereddict
     from test_data_recorder import atomic_json
     folder=Path(audit_directory);folder.mkdir(parents=True,exist_ok=True)
     before=query()
-    if before.robot_state.attached_collision_objects:
-        raise RuntimeError('부착 물체가 있어 이전 스캔 초기화 중단')
+    detached=stale_attached(before.robot_state.attached_collision_objects, not_holding)
+    if detached:
+        from moveit_msgs.msg import AttachedCollisionObject
+        scene=PlanningScene();scene.is_diff=True;scene.robot_state.is_diff=True
+        for oid,link in detached:
+            ao=AttachedCollisionObject();ao.link_name=link;ao.object=CollisionObject();ao.object.id=oid;ao.object.operation=CollisionObject.REMOVE
+            scene.robot_state.attached_collision_objects.append(ao)
+            world=CollisionObject();world.id=oid;world.header.frame_id='world';world.operation=CollisionObject.REMOVE;scene.world.collision_objects.append(world)
+        apply(scene);before=query()
+        if before.robot_state.attached_collision_objects:raise RuntimeError('이전 부착 물체 제거 확인 실패; 새 실행 중단')
+        print('이전 실행에서 남은 부착 물체 제거(압력으로 비어 있음 확인): '+', '.join(i for i,_ in detached),flush=True)
     atomic_json(folder/'previous_scan_reset_before.json', message_to_ordereddict(before))
     stopped=stop_display()
     ids=scan_object_ids(before.world.collision_objects)
@@ -73,7 +91,7 @@ def reset_previous_scan_scene(query, apply, audit_directory, *, stop_display=sto
     actual={o.id for o in after.world.collision_objects}
     report={'success':not remaining and kept.issubset(actual), 'removed_ids':ids,
             'remaining_scan_models':remaining, 'retained_ids':sorted(actual),
-            'stopped_display_pids':stopped, 'cleared_marker_namespace':'reconstructed_pair_rgb',
+            'stopped_display_pids':stopped,'detached_stale_attached':[i for i,_ in detached], 'cleared_marker_namespace':'reconstructed_pair_rgb',
             'past_files_deleted':False, 'motor_commands_sent':False,
             'scope':'new full cycle only; old scan invalidated; fresh scan required'}
     atomic_json(folder/'previous_scan_reset.json',report)

@@ -29,6 +29,16 @@ def test_neighbour_padding_is_wider_but_below_pad_gap():
         assert "other.get('padding_m',OBSTACLE_PADDING_M)" in text
         assert "other.get('padding_m',.001)" not in text
 
-def test_suction_wait_before_5mm_advance_is_one_second():
+def test_suction_wait_before_8mm_advance_is_one_second():
     from grip_retry import SUCTION_WAIT_S,FINAL_ADVANCE_M
-    assert SUCTION_WAIT_S==1.0 and FINAL_ADVANCE_M==.005
+    assert SUCTION_WAIT_S==1.0 and FINAL_ADVANCE_M==.008
+
+
+def test_final_advance_is_bounded_and_used_by_the_retry():
+    import numpy as np
+    import pytest
+    from grip_retry import final_advance_target,FINAL_ADVANCE_M
+    t=final_advance_target(np.array([1.,0.,.1]),np.array([0.,0.,1.]))
+    assert abs(float(np.linalg.norm(t-np.array([1.,0.,.1])))-FINAL_ADVANCE_M)<1e-9
+    with pytest.raises(ValueError):final_advance_target(np.array([1.,0.,.1]),np.array([0.,0.,1.]),.009)
+    assert 'step_m\':FINAL_ADVANCE_M' in (R/'verified_place_left.py').read_text()

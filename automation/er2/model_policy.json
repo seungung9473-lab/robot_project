@@ -22,5 +22,6 @@
   ],
   "max_requests_per_task": 2,
   "start_with_primary_each_task": true,
-  "retry_same_model_once": true
+  "retry_same_model_once": true,
+  "request_timeout_s": 90
 }

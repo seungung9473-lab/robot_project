@@ -107,3 +107,10 @@ class FlashRetryTests(unittest.TestCase):
    self.assertEqual(len(calls),1)
  def test_saved_policy_allows_one_retry(self):
   self.assertTrue(BASE.get('retry_same_model_once'));model_router.policy()
+
+class RequestTimeoutTests(unittest.TestCase):
+ def test_request_timeout_comes_from_policy_and_has_headroom(self):
+  import check_connection
+  self.assertEqual(check_connection.REQUEST_TIMEOUT_S,float(BASE['request_timeout_s']))
+  self.assertGreaterEqual(check_connection.REQUEST_TIMEOUT_S,60)   # 45초 한도에서 실제 호출(약 30~40초)이 자주 실패했다
+  self.assertNotIn('timeout=45',Path(check_connection.__file__).read_text())
