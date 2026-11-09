@@ -13,7 +13,9 @@ def policy():
     # 크레딧·할당량 사정으로 ER2를 쓰지 않을 때: Flash만 쓰고 대체 모델은 없다.
     flash_only=p['primary']==FLASH and p['fallback']==FLASH and not p['fallback_enabled']
     if not (er2_then_flash or flash_only):raise ValueError('Unexpected model routing policy')
-    if p['max_requests_per_task']!=2:raise ValueError('Only two bounded requests supported')
+    # ER2→Flash 전환은 2회 고정, Flash 단독은 같은 모델 재시도 횟수(same_model_retries)만큼 늘릴 수 있다(최대 3회 시도).
+    allowed=(1+int(p.get('same_model_retries',1))) if flash_only else 2
+    if p['max_requests_per_task']!=allowed or not 2<=allowed<=4:raise ValueError('Only bounded requests supported')
     return p
 
 def fallback_reason(exc,p):
@@ -25,7 +27,7 @@ def fallback_reason(exc,p):
     return None
 
 def generate(key,payload,validator,transport=None,test_context=None):
-    p=policy();transport=transport or request;attempts=[];models=[p['primary']]+([p['fallback']] if p['fallback_enabled'] else ([p['primary']] if p.get('retry_same_model_once') else []));route={'primary_model':p['primary'],'attempts':attempts,'test_context':test_context,'robot_commands_sent':False}
+    p=policy();transport=transport or request;attempts=[];models=[p['primary']]+([p['fallback']] if p['fallback_enabled'] else ([p['primary']]*int(p.get('same_model_retries',1)) if p.get('retry_same_model_once') else []));route={'primary_model':p['primary'],'attempts':attempts,'test_context':test_context,'robot_commands_sent':False}
     try:
         for index,model in enumerate(models):
             try:
@@ -40,8 +42,8 @@ def generate(key,payload,validator,transport=None,test_context=None):
                 return response,value,route
             except (APIError,InvalidModelOutput,BlockedModelOutput,TimeoutError,OSError,RuntimeError) as exc:
                 why=fallback_reason(exc,p);attempts.append({'model':model,'status':'failed','http_status':getattr(exc,'status',None),'category':why or 'not_eligible_for_fallback'})
-                if index==0 and len(models)>1 and why:
-                    route['fallback_reason']=why;print(('Gemini 응답 지연/오류 ('+why+') → 같은 모델로 1회 재시도') if models[1]==models[0] else ('ER2 사용 불가 ('+why+') → gemini-3.8-flash로 전환'),flush=True);continue
+                if index<len(models)-1 and why:
+                    route['fallback_reason']=why;print(('Gemini 응답 지연/오류 ('+why+') → 같은 모델로 재시도 %d/%d'%(index+1,len(models)-1)) if models[1]==models[0] else ('ER2 사용 불가 ('+why+') → gemini-3.8-flash로 전환'),flush=True);continue
                 route.update(success=False,fallback_used=index>0)
                 raise
         raise RuntimeError('No inference model available')

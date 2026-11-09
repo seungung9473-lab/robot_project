@@ -95,10 +95,13 @@ class FlashRetryTests(unittest.TestCase):
  def test_timeout_then_success_retries_same_model_once(self):
   calls,transport=self.run_with([TimeoutError(),response(F)])
   _,_,r=self.go(transport);self.assertEqual(calls,[F+':generateContent']*2);self.assertTrue(r['success'])
- def test_two_timeouts_stop_after_exactly_two_requests(self):
-  calls,transport=self.run_with([TimeoutError(),TimeoutError(),response(F)])
+ def test_three_timeouts_stop_after_exactly_three_requests(self):
+  calls,transport=self.run_with([TimeoutError(),TimeoutError(),TimeoutError(),response(F)])
   with self.assertRaises(TimeoutError):self.go(transport)
-  self.assertEqual(len(calls),2)
+  self.assertEqual(len(calls),3)
+ def test_two_timeouts_then_success_is_accepted(self):
+  calls,transport=self.run_with([TimeoutError(),TimeoutError(),response(F)])
+  _,_,r=self.go(transport);self.assertEqual(len(calls),3);self.assertTrue(r['success'])
  def test_server_error_is_retried_but_credit_and_quota_errors_are_not(self):
   calls,transport=self.run_with([APIError('test',503),response(F)]);self.go(transport);self.assertEqual(len(calls),2)
   for status in [400,401,402,403,429]:
