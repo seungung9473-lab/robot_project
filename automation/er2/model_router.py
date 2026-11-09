@@ -25,7 +25,7 @@ def fallback_reason(exc,p):
     return None
 
 def generate(key,payload,validator,transport=None,test_context=None):
-    p=policy();transport=transport or request;attempts=[];models=[p['primary']]+([p['fallback']] if p['fallback_enabled'] else []);route={'primary_model':p['primary'],'attempts':attempts,'test_context':test_context,'robot_commands_sent':False}
+    p=policy();transport=transport or request;attempts=[];models=[p['primary']]+([p['fallback']] if p['fallback_enabled'] else ([p['primary']] if p.get('retry_same_model_once') else []));route={'primary_model':p['primary'],'attempts':attempts,'test_context':test_context,'robot_commands_sent':False}
     try:
         for index,model in enumerate(models):
             try:
@@ -41,7 +41,7 @@ def generate(key,payload,validator,transport=None,test_context=None):
             except (APIError,InvalidModelOutput,BlockedModelOutput,TimeoutError,OSError,RuntimeError) as exc:
                 why=fallback_reason(exc,p);attempts.append({'model':model,'status':'failed','http_status':getattr(exc,'status',None),'category':why or 'not_eligible_for_fallback'})
                 if index==0 and len(models)>1 and why:
-                    route['fallback_reason']=why;print('ER2 사용 불가 ('+why+') → gemini-3.8-flash로 전환',flush=True);continue
+                    route['fallback_reason']=why;print(('Gemini 응답 지연/오류 ('+why+') → 같은 모델로 1회 재시도') if models[1]==models[0] else ('ER2 사용 불가 ('+why+') → gemini-3.8-flash로 전환'),flush=True);continue
                 route.update(success=False,fallback_used=index>0)
                 raise
         raise RuntimeError('No inference model available')

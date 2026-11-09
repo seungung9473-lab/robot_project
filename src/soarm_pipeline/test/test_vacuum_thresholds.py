@@ -29,3 +29,8 @@ def test_taught_trash_pose_calibration_hashes_are_current():
     """soarm.yaml 등 보정 파일을 바꾸면 폐기 위치 가드가 시연을 멈춘다 — 바꿀 때마다 이 테스트가 먼저 알려 준다."""
     from trash_destination import load_trash_pose
     load_trash_pose()
+
+def test_scan_waits_for_fresh_turntable_state_before_reading_references():
+    text=(ROOT/'src/soarm_turntable/soarm_turntable/scan.py').read_text()
+    i=text.index("n.arm_reference=list(n.arm[1])")
+    assert 'n.wait_fresh_state()' in text[i-400:i]

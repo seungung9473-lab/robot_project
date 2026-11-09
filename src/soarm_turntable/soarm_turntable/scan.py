@@ -187,6 +187,7 @@ def main():
             deadline=time.monotonic()+5
             while (n.arm is None or time.monotonic()-n.arm[0]>1) and time.monotonic()<deadline:n.spin()
             if n.arm is None or time.monotonic()-n.arm[0]>1:raise RuntimeError('회전 스캔에는 로봇팔 정지 감시용 /joint_states가 필요합니다')
+            n.wait_fresh_state()  # 팔 피드백을 기다리는 동안 턴테이블 상태가 밀려 낡았을 수 있어, 읽기 직전에 새 상태가 올 때까지 spin한다(없으면 그대로 실패)
             n.arm_reference=list(n.arm[1]);n.reference_zero=n.state()['zero_count'];n.reference_stop=n.state()['stop_generation'];n.guard_arm()
         manifest['status']='recording';write_json(session/'session.json',manifest)
         if a.command=='scan':
