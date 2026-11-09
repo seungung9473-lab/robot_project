@@ -402,6 +402,9 @@ try:
   Tpred=fk(qc);radial=Tpred[:2,3]-j1;radial/=np.linalg.norm(radial);payload_pitch=math.atan2(float(Tpred[:2,0]@radial),float(-Tpred[2,0]))
  if not is_trash:
   predicted_L=np.linalg.inv(fk(qc))@O;place_seed=solve(arm,wc,pad_target+[0,0,float(dims[2])])
+  if place_seed is None and packing is not None and packing['placements'][packing_key].get('placement_q_rad'):
+   # 계획 단계(tidy_pad_placement.placement_ik)가 이미 통과시킨 놓기 자세를 시드로 쓴다. 기본 시드 IK가 더 엄격해 같은 자리를 거부한 적이 있다(11/10 01:27, 패드 6 오프셋 −22 mm).
+   place_seed=np.asarray(packing['placements'][packing_key]['placement_q_rad'],float);status['place_seed_from_reservation']=True
   if place_seed is None:raise RuntimeError('Pad seed IK unreachable')
   predicted_place=payload_goal(pad_target,place_seed,predicted_L,dims);predicted_hover=payload_goal(pad_target+[0,0,.03],predicted_place,predicted_L,dims)
   placed=fk(predicted_place)@predicted_L
