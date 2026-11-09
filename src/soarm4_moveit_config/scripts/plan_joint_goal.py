@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Request OMPL planning, reject collisions along the path, then preview only."""
-import argparse,json,math,sys,time
+import argparse, json, math, sys
 from pathlib import Path
 import numpy as np
 import rclpy

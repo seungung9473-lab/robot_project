@@ -1,5 +1,5 @@
 """Stationary RGB-D capture; optional explicit turntable stop-and-shoot scanning."""
-import argparse,collections,datetime,json,math,os,shutil,tempfile,time,uuid
+import argparse, collections, datetime, json, math, os, shutil, time, uuid
 from pathlib import Path
 import cv2,numpy as np
 import rclpy

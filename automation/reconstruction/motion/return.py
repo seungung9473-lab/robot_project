@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from sensor_msgs.msg import JointState
-from moveit_msgs.msg import RobotState,Constraints,JointConstraint,DisplayTrajectory,CollisionObject,AttachedCollisionObject,PlanningSceneComponents,AllowedCollisionEntry
+from moveit_msgs.msg import RobotState, Constraints, JointConstraint, CollisionObject, AttachedCollisionObject, PlanningSceneComponents, AllowedCollisionEntry
 from shape_msgs.msg import SolidPrimitive
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Int32

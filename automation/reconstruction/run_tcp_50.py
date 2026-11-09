@@ -1,5 +1,5 @@
 """50 bounded local motions; encoder-only verification, never updates calibration."""
-import json,subprocess,sys,os
+import json, subprocess, os
 from pathlib import Path
 import numpy as np
 from test_data_recorder import start_trial,atomic_json

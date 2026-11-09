@@ -1,8 +1,7 @@
 """J3-only bounded integral trial. Requires supported arm and exclusive bus.
 Never changes zeros, angle limits, P/D, deadbands, protections, or other motors.
 """
-import json,time,subprocess,sys
-from pathlib import Path
+import json, time, subprocess
 from soarm_bridge.sts_bus import STSBus
 from test_data_recorder import start_trial,atomic_json
 

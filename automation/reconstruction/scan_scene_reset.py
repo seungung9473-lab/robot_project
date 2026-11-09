@@ -1,5 +1,4 @@
 """Clear previous scan runtime state at a new full-cycle boundary, never actuate."""
-import json
 import os
 import signal
 import time

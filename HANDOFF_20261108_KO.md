@@ -66,3 +66,7 @@ export SOARM_SAM2_PYTHON="$HOME/robot_ws/automation/reconstruction/.sam2_cpu/bin
 ## 브랜치 정리
 
 사용자 요청으로 최신 통합 스냅샷을 mybranch에 반영했다. 기존 mybranch 커밋 이력과 통합 커밋 c1082b8은 병합 이력에 보존했다. 임시 CPU 통합 브랜치는 삭제한다.
+
+## 작업 파일 정리
+
+사용자 확인 후 구형 soarm4_live 패키지와 현재 API·영점에 맞지 않는 execution_safety_test.py를 삭제했다. GPU SAM2 선택 코드는 보존했다. 현재 토크 목표 선기록 검증은 test_torque_preload.py와 최신 단위 테스트로 점검한다. 과거 데이터와 보정값은 삭제하지 않았다.

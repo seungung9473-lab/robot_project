@@ -11,7 +11,7 @@ from scipy.spatial.transform import Rotation
 from visualization_msgs.msg import Marker,MarkerArray
 from geometry_msgs.msg import Point
 from std_msgs.msg import String,ColorRGBA
-from moveit_msgs.msg import PlanningScene,ObjectColor,PlanningSceneComponents
+from moveit_msgs.msg import ObjectColor, PlanningSceneComponents
 from moveit_msgs.srv import GetPlanningScene,ApplyPlanningScene
 
 def resolve_session(value):

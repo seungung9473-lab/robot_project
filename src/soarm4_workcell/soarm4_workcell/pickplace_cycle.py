@@ -12,7 +12,6 @@ import argparse, hashlib, json, math, threading, time
 from pathlib import Path
 import numpy as np
 import rclpy
-import yaml
 from rclpy.action import ActionClient
 from rclpy.node import Node
 from geometry_msgs.msg import Pose

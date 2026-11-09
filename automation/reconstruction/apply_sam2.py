@@ -1,5 +1,5 @@
 """Offline SAM2.1 inference; one model and image encoding for all object prompts."""
-import argparse,hashlib,os,contextlib,json,time
+import argparse, hashlib, os, contextlib, json
 from pathlib import Path
 import torch
 from sam2.build_sam import build_sam2

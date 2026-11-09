@@ -1,7 +1,7 @@
 """Gemini reads printed numeric expiry labels; no geometry/action decisions."""
 import base64,hashlib,json,sys,time
 from pathlib import Path
-import cv2,numpy as np
+import cv2
 R=Path(__file__).resolve().parent;sys.path.insert(0,str(R.parent/'er2'))
 from check_connection import load_key
 from model_router import generate
