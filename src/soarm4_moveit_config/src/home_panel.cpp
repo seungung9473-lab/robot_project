@@ -97,25 +97,26 @@ public:
    scaling_timer->stop();scaling_timer->deleteLater();
   });
   scaling_timer->start(200);
-  // MotionPlanning의 'Query Start State'는 켜진 채로 뜨는 일이 있어(설정 파일은 false) 시작 후 한 번 끈다.
-  // 화면 표시용 시작 상태 마커일 뿐 계획·실행 로직과 무관하다. 사용자가 다시 켜는 것은 막지 않는다.
-  auto* query_timer=new QTimer(this);int* query_tries=new int(0);
-  connect(query_timer,&QTimer::timeout,this,[this,query_timer,query_tries](){
+  // MotionPlanning의 'Query Start State'/'Query Goal State'는 켜진 채로 뜨면 로봇 둘레에 큰 상호작용 마커(고리·화살표·구)가 생긴다.
+  // 화면 표시용일 뿐 계획·실행 로직과 무관하므로 시작 후 한 번 끈다. 사용자가 다시 켜는 것은 막지 않는다.
+  auto* query_timer=new QTimer(this);int* query_tries=new int(0);auto* query_done=new std::map<QString,bool>{{"Query Start State",false},{"Query Goal State",false}};
+  connect(query_timer,&QTimer::timeout,this,[this,query_timer,query_tries,query_done](){
    ++(*query_tries);
    for(auto* tree:this->window()->findChildren<QTreeView*>()){
     auto* model=tree->model();if(!model)continue;
-    std::function<bool(const QModelIndex&)> visit=[&](const QModelIndex& parent)->bool{
+    std::function<void(const QModelIndex&)> visit=[&](const QModelIndex& parent){
      for(int r=0;r<model->rowCount(parent);++r){
-      QModelIndex name=model->index(r,0,parent);
-      if(model->data(name).toString()=="Query Start State"){
+      QModelIndex name=model->index(r,0,parent);const QString label=model->data(name).toString();
+      auto it=query_done->find(label);
+      if(it!=query_done->end()&&!it->second){
        QModelIndex value=model->index(r,1,parent);
        if(model->data(value,Qt::CheckStateRole).toInt()==Qt::Checked)model->setData(value,Qt::Unchecked,Qt::CheckStateRole);
-       return true;}
-      if(visit(name))return true;}
-     return false;};
-    if(visit(QModelIndex())){RCLCPP_INFO(node_->get_logger(),"Query Start State unchecked at startup");query_timer->stop();query_timer->deleteLater();delete query_tries;return;}
+       it->second=true;RCLCPP_INFO(node_->get_logger(),"%s unchecked at startup",label.toStdString().c_str());}
+      visit(name);}};
+    visit(QModelIndex());
    }
-   if(*query_tries>50){query_timer->stop();query_timer->deleteLater();delete query_tries;}
+   bool all=true;for(auto& kv:*query_done)all=all&&kv.second;
+   if(all||*query_tries>50){query_timer->stop();query_timer->deleteLater();delete query_tries;delete query_done;}
   });
   query_timer->start(400);
   edit_pub_=node_->create_publisher<std_msgs::msg::String>("/soarm4/pick_place/edit",10);QPointer<HomePanel> guard(this);

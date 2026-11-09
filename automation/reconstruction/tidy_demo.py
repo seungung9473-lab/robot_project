@@ -156,7 +156,7 @@ def explain_batch_failure(session):
 
 def select_backend(path):
     root = Path(path).expanduser().resolve()
-    required = ['automation/reconstruction/run_expiry_sort.py',
+    required = ['automation/reconstruction/run_expiry_sort.py','automation/reconstruction/pad_labels.py',
                 'automation/reconstruction/apply_sam2.py',
                 'automation/reconstruction/sam2_gpu.py',
                 'automation/reconstruction/desktop_runtime.py']
@@ -265,6 +265,7 @@ def main(argv=None):
         from prepare_expiry_instances import prepare_instances
         from read_expiry_labels import read_dates
         from run_expiry_sort import route_dates
+        from pad_labels import read_pad_labels
         (backend/'automation/er2/runs').mkdir(parents=True, exist_ok=True)
         telemetry = LiveTelemetry(trial)
         for attempt in range(args.max_rescans+1):
@@ -291,6 +292,7 @@ def main(argv=None):
                 fcntl.flock(scan_lock, fcntl.LOCK_UN); scan_lock.close(); scan_lock = None
                 stage('물체 식별·GPU FP32 SAM2·면/IK 계산', lambda: prepare_instances(session))
                 stage('인쇄 날짜·QR 판독', lambda: read_dates(session))
+                stage('패드 스티커(할인·정규) 인식', lambda: read_pad_labels(session))
                 routes = stage('로컬 날짜 분류', lambda: route_dates(session))
                 result['date_routes'] = routes
                 eligible = routes['eligible_objects']

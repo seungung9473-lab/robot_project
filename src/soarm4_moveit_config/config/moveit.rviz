@@ -36,7 +36,7 @@ Visualization Manager:
     Planning Request:
       Planning Group: arm
       Query Start State: false
-      Query Goal State: true
+      Query Goal State: false
       Goal State Alpha: 0.45
     Planned Path:
       Trajectory Topic: /soarm4_plan/display_planned_path

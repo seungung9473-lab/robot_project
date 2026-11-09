@@ -62,7 +62,10 @@ def classify(observations,today=None,**unused):
  expiry=dates[0];expired=expiry<today
  return {'status':'expired' if expired else 'not_expired','expiry_date':expiry.isoformat(),'today':today.isoformat(),'remaining_days':(expiry-today).days,'destination':'trash_drop' if expired else None,'destination_pad_id':None,'date_source':'qr_fallback','rule':'Valid through expiry date; QR year = 2000 + YY'}
 
-def rank_destinations(decisions,reference_date=None):
+def rank_destinations(decisions,reference_date=None,pad_ids=None):
+ # pad_ids={'discount':id,'regular':id} comes from the 할인/정규 stickers read on the pads; default keeps the fixed ID5/ID6 layout.
+ pad_ids=pad_ids or {'discount':5,'regular':6}
+ if pad_ids['discount']==pad_ids['regular'] or {pad_ids['discount'],pad_ids['regular']}!={5,6}:raise ValueError('Pad labels must map to the two calibrated pads')
  reference_date=reference_date or today_seoul();valid=[o for o in decisions if o['status']=='not_expired']
  # The user specified comparing TWO non-expired dates, not a fixed-day threshold.
  distinct={o['expiry_date'] for o in valid}
@@ -70,7 +73,7 @@ def rank_destinations(decisions,reference_date=None):
  distances={key:abs((date.fromisoformat(key)-reference_date).days) for key in distinct}
  nearest=min(distances.values()) if distances else None
  for o in valid:
-  gap=distances[o['expiry_date']];o.update(destination='pad5' if gap==nearest else 'pad6',destination_pad_id=5 if gap==nearest else 6,reference_date=reference_date.isoformat(),distance_to_reference_days=gap)
+  gap=distances[o['expiry_date']];pid=pad_ids['discount'] if gap==nearest else pad_ids['regular'];o.update(destination='pad%d'%pid,destination_pad_id=pid,pad_label='할인' if gap==nearest else '정규',reference_date=reference_date.isoformat(),distance_to_reference_days=gap)
  # Equal distances (including equal dates) share ID5; no arbitrary far label.
  return decisions
 

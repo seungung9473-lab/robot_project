@@ -42,7 +42,10 @@ class Scanner(Node):
         values=dict(zip(m.name,m.position))
         if all('joint'+str(i) in values for i in range(1,5)):self.arm=(time.monotonic(),[values['joint'+str(i)] for i in range(1,5)])
     def state(self):
-        if not self.states or time.monotonic()-self.states[-1][0]>.35:raise RuntimeError('턴테이블 상태 수신 없음/지연')
+        if not self.states or time.monotonic()-self.states[-1][0]>.35:
+            now=time.monotonic();age=(now-self.states[-1][0]) if self.states else float('inf');recent=sum(1 for t,_ in self.states if now-t<2.)
+            # 원인 분석용: 마지막 상태가 얼마나 오래됐는지, 최근 2초에 몇 개 왔는지(정상이면 약 20개)를 남긴다.
+            raise RuntimeError('턴테이블 상태 수신 없음/지연 (마지막 상태 %s초 전, 최근 2초 %d개)'%('없음' if not self.states else '%.2f'%age,recent))
         s=self.states[-1][1]
         if s.get('hardware_error',1):raise RuntimeError('턴테이블 하드웨어 오류')
         if self.reference_zero is not None and s.get('zero_count')!=self.reference_zero:raise RuntimeError('스캔 중 영점 변경 감지')

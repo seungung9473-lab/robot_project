@@ -28,14 +28,16 @@ def route_dates(session,policy=None):
   if key not in completed:eligible.append(key)
  from datetime import date
  reference=today if policy.get('reference_date','today')=='today' else date.fromisoformat(policy['reference_date'])
- rank_destinations(decisions,reference)
+ from pad_labels import load_pad_labels
+ pad_ids=load_pad_labels(s)   # 패드 스티커(할인·정규) 인식 결과. 없으면 기본 ID5=할인, ID6=정규
+ rank_destinations(decisions,reference,pad_ids)
  for decision in decisions:
   if decision['status']=='not_expired':by_key[decision['object']].update(destination=decision['destination'],destination_pad_id=decision['destination_pad_id'],expiry_decision={k:v for k,v in decision.items() if k!='object'})
  # An object omitted by the reader must not inherit a color-based route.
  for key,route in by_key.items():
   if key not in seen:route.update(destination=None,destination_pad_id=None,route_status='date_not_read_keep_as_obstacle')
  if any(o.get('destination')=='trash_drop' for o in by_key.values()):load_trash_pose()
- report={'today':today.isoformat(),'timezone':'Asia/Seoul','policy':policy,'objects':decisions,'eligible_objects':eligible,'robot_commands_sent':False};(s/'expiry_route_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));routes['routing_policy']='expiry date overrides all color routes';source.write_text(json.dumps(routes,ensure_ascii=False,indent=2));return report
+ report={'today':today.isoformat(),'timezone':'Asia/Seoul','pad_labels':pad_ids or 'default_fixed_ID5_discount_ID6_regular','policy':policy,'objects':decisions,'eligible_objects':eligible,'robot_commands_sent':False};(s/'expiry_route_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));routes['routing_policy']='expiry date overrides all color routes';source.write_text(json.dumps(routes,ensure_ascii=False,indent=2));return report
 
 def main():
  ap=argparse.ArgumentParser();ap.add_argument('session',type=Path);ap.add_argument('--read-dates',action='store_true');ap.add_argument('--recognize',action='store_true',help='Gemini object identification and SAM2 preprocessing; uses configured API');ap.add_argument('--reference-date',help='YYYY-MM-DD comparison date; expired status always uses real today');ap.add_argument('--execute',action='store_true');a=ap.parse_args();s=a.session.resolve();trial=start_trial('expiry_recognition_and_sort',physical=a.execute,source=s)
