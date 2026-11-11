@@ -69,6 +69,34 @@ def phase(s):
  status['phases'].append({'phase':s,'time':time.time(),'pressure_diff':vac.get('value'),'pressure_age_s':time.monotonic()-vac['t'] if vac else None});(out/'phase.txt').write_text(s)
  if args.execute:(out/'execution.json').write_text(json.dumps(status,ensure_ascii=False,indent=2))
  print(s,flush=True)
+def release_on_pad(pad_id):
+ release_with_retry(f'패드 {pad_id}',f'release_on_pad_ID{pad_id}')
+
+
+def release_with_retry(destination, release_phase, still_at_destination=None):
+ release_pose=fresh()
+ if still_at_destination is not None and not still_at_destination(release_pose):
+  raise RuntimeError(f'{destination} 흡착 해제 중단 · 지정 위치 이탈')
+ status['release_attempts']=[]
+ for number in (1,2):
+  phase(release_phase if number==1 else 'retry_'+release_phase)
+  released=call('/vacuum/release',timeout=15)
+  status['release']=released.message
+  status['release_attempts'].append({'attempt':number,'success':released.success,'response':released.message})
+  if released.success:return
+  if number==1:
+   if not released.message.removeprefix('diff=').lstrip('-').isdigit() or not released.message.startswith('diff='):
+    break
+   actual=fresh()
+   if (max(abs(a-b) for a,b in zip(actual,release_pose))>=math.radians(1)
+       or (still_at_destination is not None and not still_at_destination(actual))):
+    raise RuntimeError(f'{destination} 흡착 해제 실패 · 팔 위치가 바뀌어 재시도 중단 ({released.message})')
+   if not vac or time.monotonic()-vac['t']>.5:
+    raise RuntimeError(f'{destination} 흡착 해제 실패 · 최신 압력값 없음 ({released.message})')
+   print(f'{destination} 해제 미확인 ({released.message}) · 현재 자세에서 해제 1회 재시도',flush=True)
+ raise RuntimeError(f'{destination} 흡착 해제 미확인 ({released.message}) · 후퇴 전 중단')
+
+
 def state(q):return RobotState(joint_state=JointState(name=names,position=list(map(float,q))),is_diff=True)
 def apply(req):
  if not call('/apply_planning_scene',req,ApplyPlanningScene).success:raise RuntimeError('Scene update failed')
@@ -92,8 +120,22 @@ def ik(target,seed,axis=None,payload=None):
   if np.linalg.norm(error(s.x)[:3])<.002 and np.linalg.norm(error(s.x)[3:])<.001:candidates.append(s.x)
  if not candidates:raise RuntimeError('IK unreachable '+str(target))
  return min(candidates,key=lambda q:np.linalg.norm(q-seed)).tolist()
-def vacuum_ok():
- if not vac or time.monotonic()-vac['t']>.5 or vac['value']>HELD_DIFF:raise RuntimeError('Vacuum not confirmed')
+def vacuum_ok(retry_before_lift=False):
+ age=time.monotonic()-vac['t'] if vac else None
+ if age is None or age>.5:raise RuntimeError('Vacuum feedback missing or stale')
+ if vac['value']<=HELD_DIFF:return
+ if not retry_before_lift:raise RuntimeError(f"Vacuum not confirmed (diff={vac['value']}, limit={HELD_DIFF})")
+ # The payload is still supported. Retry the seal at the same pose.
+ phase('흡착 약화 · 상승 전 현재 위치에서 1회 재흡착')
+ retry=status['pre_lift_regrip']={'initial_diff':vac['value'],'success':False}
+ grip=call('/vacuum/grip',timeout=12)
+ retry['grip_result']=grip.message
+ if not grip.success:raise RuntimeError(f'상승 전 재흡착 실패 ({grip.message})')
+ stable,detail=seal_stable()
+ retry['seal_check']=detail
+ if not stable:raise RuntimeError(f'상승 전 재흡착 불안정 ({detail})')
+ vacuum_ok()
+ retry['success']=True
 def seal_stable():
  """흡착 판정 뒤 SEAL_STABLE_S 동안 새 압력 값이 모두 HELD_DIFF 이하로 유지되는지 확인(약한 붙음은 들기 전에 거른다)."""
  from seal_stability import SEAL_STABLE_S,evaluate
@@ -182,7 +224,6 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
     if axis_error>1.:raise RuntimeError('Contact path changes cup orientation')
    elif np.linalg.norm(pos[:2]-b[:2])>np.linalg.norm(a[:2]-b[:2])+.001 or not min(a[2],b[2])-.001<=pos[2]<=max(a[2],b[2])+.001:raise RuntimeError('Path leaves vertical corridor')
  if max(abs(a-b) for a,b in zip(fresh(),start))>math.radians(1):raise RuntimeError('Actual start changed during planning')
- if holding:vacuum_ok()
  action=ActionClient(node,ExecuteTrajectory,'/execute_trajectory')
  if not action.wait_for_server(timeout_sec=8):raise RuntimeError('Execution unavailable')
  pump_client=None
@@ -190,6 +231,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
   from continuous_pre_suction import PreSuctionTrigger
   pump_client=node.create_client(Trigger,'/vacuum/pump_on')
   if not pump_client.wait_for_service(timeout_sec=8):raise RuntimeError('Pre-suction pump service unavailable')
+ if holding:vacuum_ok(retry_before_lift=label=='lift_clearance_40mm')
  # Compare the measured pose against the trajectory actually being dispatched.
  joint_path=res.trajectory.joint_trajectory
  first_positions=dict(zip(joint_path.joint_names,joint_path.points[0].positions))
@@ -197,6 +239,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
  if max(abs(q-first_positions[name]) for q,name in zip(actual,names))>=math.radians(1):
   raise RuntimeError('Actual pose no longer matches trajectory start within 1 degree')
  if require_empty:require_empty_cup()
+ if holding:vacuum_ok()
  goalmsg=ExecuteTrajectory.Goal();goalmsg.trajectory=res.trajectory;f=action.send_goal_async(goalmsg);rclpy.spin_until_future_complete(node,f,timeout_sec=8);handle=f.result()
  if not handle or not handle.accepted:raise RuntimeError('Execution rejected')
  if pump_client is not None:
@@ -270,9 +313,8 @@ def dispose_at_trash():
  while time.monotonic()<deadline:
   actual=fresh();vacuum_ok()
   if not arrival_confirmed(actual,goal):raise RuntimeError('Trash release blocked: actual joints not at taught drop pose')
- phase('release_at_trash_drop');status['drop_q_rad']=fresh();status['destination']='trash_drop'
- released=call('/vacuum/release',timeout=15);status['release']=released.message
- if not released.success:raise RuntimeError('Trash release not confirmed')
+ status['drop_q_rad']=fresh();status['destination']='trash_drop'
+ release_with_retry('폐기 위치','release_at_trash_drop',lambda actual:arrival_confirmed(actual,goal))
  holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];gone=CollisionObject();gone.id=object_id;gone.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[gone];apply(req)
  req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req);restore_acm=None
  if args.finish_above:
@@ -343,8 +385,8 @@ if args.resume_held is not None:
   req=scene_request();req.scene.allowed_collision_matrix=restore_acm;apply(req)
   move(hover,'transfer_to_pad_ID'+str(args.pad))
   acm_for(object_id,'workcell_'+pad_key);move(place_q,'lower_payload_to_pad_ID'+str(args.pad),True)
-  phase('release_on_pad_ID'+str(args.pad));status['predicted_placed_object_pose_table']=(fk(fresh())@L).tolist();released=call('/vacuum/release',timeout=15);status['release']=released.message
-  if not released.success:raise RuntimeError('Release not confirmed')
+  status['predicted_placed_object_pose_table']=(fk(fresh())@L).tolist()
+  release_on_pad(args.pad)
   holding=False;remove=AttachedCollisionObject();remove.link_name='cup_tip';remove.object.id=object_id;remove.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[remove];apply(req)
   placed_object=copy.deepcopy(co);placed_object.id='placed_pad_'+str(args.pad)+'_'+out.name;placed_object.header.frame_id='world';placed_object.operation=CollisionObject.ADD;placed_object.mesh_poses=[pose(np.linalg.inv(W)@np.array(status['predicted_placed_object_pose_table']))];req=scene_request();removal=CollisionObject();removal.id=object_id;removal.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[placed_object,removal];apply(req)
   acm_for(placed_object.id,'tool_link_cup_visual_link');acm_for(placed_object.id,'cup_tip');q=fresh();move(ik(fk(q)[:3,3]+[0,0,RETREAT_UP_M],q,axis=fk(q)[:3,0]),'empty_retreat_from_pad_ID'+str(args.pad),True)
@@ -495,9 +537,9 @@ try:
  if is_trash:
   dispose_at_trash();raise SystemExit(0)
  hover=payload_goal(pad_target+[0,0,.03],fresh(),L,dims);move(hover,'transfer_to_pad_ID'+str(args.pad))
- acm_for(object_id,'workcell_'+pad_key);place_q=payload_goal(pad_target,fresh(),L,dims);move(place_q,f'lower_payload_to_pad_ID{args.pad}',True);phase(f'release_on_pad_ID{args.pad}');status['predicted_placed_object_pose_table']= (fk(fresh())@L).tolist();released=call('/vacuum/release',timeout=15);status['release']=released.message
-
- if not released.success:raise RuntimeError('Release not confirmed')
+ acm_for(object_id,'workcell_'+pad_key);place_q=payload_goal(pad_target,fresh(),L,dims);move(place_q,f'lower_payload_to_pad_ID{args.pad}',True)
+ status['predicted_placed_object_pose_table']=(fk(fresh())@L).tolist()
+ release_on_pad(args.pad)
  holding=False;attached=AttachedCollisionObject();attached.link_name='cup_tip';attached.object.id=object_id;attached.object.operation=CollisionObject.REMOVE;req=scene_request();req.scene.robot_state.attached_collision_objects=[attached];apply(req)
  placed_object=copy.deepcopy(co);placed_object.id='placed_pad_'+str(args.pad)+'_'+out.name;placed_object.operation=CollisionObject.ADD;placed_pose=pose(np.linalg.inv(W)@np.array(status['predicted_placed_object_pose_table']));placed_object.mesh_poses=[placed_pose] if placed_object.meshes else [];placed_object.primitive_poses=[placed_pose] if placed_object.primitives else [];req=scene_request();removal=CollisionObject();removal.id=object_id;removal.operation=CollisionObject.REMOVE;req.scene.world.collision_objects=[placed_object,removal];apply(req)
  if packing is not None:

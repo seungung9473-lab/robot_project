@@ -5,11 +5,33 @@ from pathlib import Path
 R=Path(__file__).resolve().parent
 from test_data_recorder import start_trial
 
-def control_preflight():
+def control_preflight(*, zero_pressure=False):
  import rclpy
  from rcl_interfaces.srv import GetParameters
  from std_msgs.msg import Int32
- rclpy.init();n=rclpy.create_node('expiry_control_preflight');vac={};n.create_subscription(Int32,'/vacuum/diff',lambda m:vac.update(value=m.data,t=time.monotonic()),10)
+ from std_srvs.srv import Trigger
+ rclpy.init();n=rclpy.create_node('expiry_control_preflight');vac={}
+ samples=[]
+
+ def receive_pressure(message):
+  vac.update(value=message.data,t=time.monotonic())
+  if zero_pressure:
+   samples.append((vac['t'],message.data))
+
+ def vacuum_command(name):
+  client=n.create_client(Trigger,'/vacuum/'+name)
+  try:
+   if not client.wait_for_service(timeout_sec=5):
+    raise RuntimeError(f'진공 {name} 서비스 연결 안 됨')
+   future=client.call_async(Trigger.Request())
+   rclpy.spin_until_future_complete(n,future,timeout_sec=5)
+   response=future.result() if future.done() else None
+   if response is None or not response.success:
+    raise RuntimeError(f'진공 {name} 실패: '+(response.message if response else '응답 없음'))
+  finally:
+   n.destroy_client(client)
+
+ n.create_subscription(Int32,'/vacuum/diff',receive_pressure,10)
  try:
   for node in ['servo_bridge','esp32_bridge','xl330_turntable']:
    c=n.create_client(GetParameters,'/'+node+'/get_parameters')
@@ -21,6 +43,17 @@ def control_preflight():
   end=time.monotonic()+3
   while (not vac or time.monotonic()-vac['t']>.5) and time.monotonic()<end:rclpy.spin_once(n,timeout_sec=.05)
   if not vac or time.monotonic()-vac['t']>.5 or vac['value']<=HELD_DIFF:raise RuntimeError('Fresh empty-cup confirmation missing; no automatic home/scan')
+  if zero_pressure:
+   vacuum_command('off')
+   vacuum_command('zero')
+   after=time.monotonic()+.4
+   deadline=after+5
+   while time.monotonic()<deadline:
+    rclpy.spin_once(n,timeout_sec=.05)
+    recent=[value for received,value in samples if received>after][-3:]
+    if len(recent)==3 and all(abs(value)<=50 for value in recent):
+     return recent
+   raise RuntimeError(f"압력 영점 확인 실패 · 마지막 diff={vac.get('value', '수신 없음')}")
  finally:n.destroy_node();rclpy.shutdown()
 
 def main():

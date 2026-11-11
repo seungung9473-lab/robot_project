@@ -44,6 +44,8 @@ class Trial:
             sys.excepthook=hook;atexit.register(self.finish)
 
     def track_evaluation(self):
+        if os.environ.get('SOARM_SKIP_SUCCESS_EVALUATION') == '1':
+            return
         from success_evaluation import register
         registration=register(self.directory,self.root)
         if registration:

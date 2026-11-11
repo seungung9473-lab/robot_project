@@ -145,6 +145,15 @@ def explain_batch_failure(session):
     if not candidates:
         return '전체 경로 계획 실패. execution.log를 확인하세요.'
     report = json.loads(max(candidates, key=lambda p: p.stat().st_mtime).read_text())
+    if report.get('execution_performed'):
+        for stage in report.get('stages', []):
+            if not stage.get('prepared_session'):
+                continue
+            for record in sorted(Path(stage['prepared_session']).glob('placement_left_*/execution.json'), reverse=True):
+                execution = json.loads(record.read_text())
+                if execution.get('success') is False and execution.get('error'):
+                    return str(execution['error'])
+        return '분류 실행 중 중단됐습니다. execution.log를 확인하세요.'
     errors = [str(row.get('error') or '') for row in report.get('trials', []) if not row.get('success')]
     if any('Attached lift collision at 0.0:' in error for error in errors):
         return ('집기 시작 자세에서 물체 간 충돌 모델이 겹쳐 전체 순서를 만들지 못했습니다. '
@@ -276,7 +285,15 @@ def main(argv=None):
                     raise subprocess.CalledProcessError(code_value, list(map(str,command)))
 
         from run_qr_expiry_cycle import control_preflight
-        stage('장치·빈 컵 사전 확인', control_preflight)
+        def zero_demo_vacuum():
+            samples = control_preflight(zero_pressure=True)
+            result['vacuum_zero_samples'] = samples
+            message = f'흡착컵 압력 영점 확인 · diff={samples[-1]}'
+            print(message, flush=True)
+            with (trial.directory/'execution.log').open('a') as log:
+                log.write(message+'\n')
+
+        stage('장치·빈 컵 확인 및 압력 영점 보정', zero_demo_vacuum)
         t0 = time.monotonic(); intent, routing = understand(args.command)
         result.update(intent=intent, routing=routing, interpretation_seconds=time.monotonic()-t0)
         print('Gemini:', intent['reason'], flush=True)
