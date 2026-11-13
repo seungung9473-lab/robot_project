@@ -22,14 +22,32 @@ def go_home_empty():
             raise RuntimeError('HOME blocked: planning scene unavailable')
         request=GetPlanningScene.Request()
         request.components.components=PlanningSceneComponents.ROBOT_STATE_ATTACHED_OBJECTS
-        pending=scene.call_async(request)
-        rclpy.spin_until_future_complete(node,pending,timeout_sec=5)
-        if not pending.done() or pending.result() is None or pending.result().scene.robot_state.attached_collision_objects:
-            raise RuntimeError('HOME blocked: attached payload state not clear')
-        if time.monotonic()-pressure[-1][0]>.5 or any(v<=HELD_DIFF for _,v in pressure[-2:]):
-            raise RuntimeError('HOME blocked: fresh empty-cup confirmation missing')
+        for _ in range(2):
+            pending = scene.call_async(request)
+            rclpy.spin_until_future_complete(node, pending, timeout_sec=5)
+            response = pending.result() if pending.done() else None
+            if response is not None:
+                break
+            pending.cancel()
+        else:
+            raise RuntimeError('HOME 중단 · MoveIt 부착 상태 조회 응답 없음')
+        attached = response.scene.robot_state.attached_collision_objects
+        if attached:
+            ids = ', '.join(obj.object.id for obj in attached)
+            raise RuntimeError(f'HOME 중단 · MoveIt 부착 물체 남음 ({ids})')
         client=node.create_client(Trigger,'/soarm4/go_home')
         if not client.wait_for_service(timeout_sec=8):raise RuntimeError('Final HOME service unavailable')
+        checked_at = time.monotonic()
+        deadline = checked_at + 3
+        while time.monotonic() < deadline:
+            rclpy.spin_once(node, timeout_sec=.05)
+            recent = pressure[-2:]
+            if (len(recent) == 2 and recent[0][0] >= checked_at
+                    and time.monotonic() - recent[0][0] < .5
+                    and all(value > HELD_DIFF for _, value in recent)):
+                break
+        else:
+            raise RuntimeError('HOME 중단 · 최신 빈 컵 압력 확인 실패')
         future=client.call_async(Trigger.Request());rclpy.spin_until_future_complete(node,future,timeout_sec=120)
         if not future.done() or future.result() is None:raise RuntimeError('Final HOME response timeout; check robot state')
         reply=future.result();return {'success':reply.success,'message':reply.message}

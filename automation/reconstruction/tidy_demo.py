@@ -146,6 +146,9 @@ def explain_batch_failure(session):
         return '전체 경로 계획 실패. execution.log를 확인하세요.'
     report = json.loads(max(candidates, key=lambda p: p.stat().st_mtime).read_text())
     if report.get('execution_performed'):
+        final_home = report.get('final_home', {})
+        if final_home.get('status') == 'stopped' and final_home.get('error'):
+            return '물체 배치 완료 · 마지막 HOME 실패 · ' + str(final_home['error'])
         for stage in report.get('stages', []):
             if not stage.get('prepared_session'):
                 continue
