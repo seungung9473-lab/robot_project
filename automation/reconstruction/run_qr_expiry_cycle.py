@@ -74,7 +74,7 @@ def main():
   from scan_scene_reset import clear_previous_scan_scene
   stage('clear_previous_turntable_and_pad_scans')
   clear_previous_scan_scene(trial.directory);trial.attach(trial.directory/'previous_scan_reset.json');trial.attach(trial.directory/'previous_scan_reset_before.json')
-  stage('home');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
+  stage('home');run(sys.executable,Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/scripts/go_home.py')
   stage('scan_12_stopped_angles');run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*range(0,360,30),'--timeout',60,'--output',out/'scans')
   scans=[s for s in (out/'scans').iterdir() if (s/'session.json').exists()]
   if len(scans)!=1:raise RuntimeError('Ambiguous fresh scan')

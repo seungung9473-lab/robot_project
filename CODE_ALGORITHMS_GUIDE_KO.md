@@ -32,12 +32,12 @@
 | `automation/reconstruction/` | 물체 분리·형상 복원·흡착면·날짜·경로·실행·기록 |
 | `automation/reconstruction/motion/` | 공통 운동학과 이동 단계 관련 함수 |
 | `automation/er2/` | Gemini 연결·모델 대체·물체 인식 |
-| `src/soarm4_description/` | URDF, STL, 로봇 모델 설정 |
-| `src/soarm4_moveit_config/` | MoveIt 설정·충돌 검증·홈·RViz 패널 |
-| `src/soarm4_workcell/` | 테이블·카메라·패드·턴테이블 좌표와 측정 도구 |
-| `src/soarm_bridge/` | STS 모터와 ESP32 진공 장치 제어 |
-| `src/soarm_turntable/` | XL330 턴테이블 제어·정지 촬영 |
-| `src/soarm_pipeline/` | 전체 실행을 ROS 명령으로 제공하는 얇은 진입점 |
+| `src/TUMST_ARM_description/` | URDF, STL, 로봇 모델 설정 |
+| `src/TUMST_ARM_moveit_config/` | MoveIt 설정·충돌 검증·홈·RViz 패널 |
+| `src/TUMST_ARM_workcell/` | 테이블·카메라·패드·턴테이블 좌표와 측정 도구 |
+| `src/TUMST_ARM_bridge/` | STS 모터와 ESP32 진공 장치 제어 |
+| `src/TUMST_ARM_turntable/` | XL330 턴테이블 제어·정지 촬영 |
+| `src/TUMST_ARM_pipeline/` | 전체 실행을 ROS 명령으로 제공하는 얇은 진입점 |
 | `test_data/`, `automation/test_data` | 시험 기록. 연결 경로는 실제 링크 설정에 따라 같다. |
 | `build/`, `install/`, `log/` | 빌드 결과·설치 결과·ROS/빌드 로그 |
 
@@ -79,7 +79,7 @@
 
 `--execute`가 없으면 안내만 출력한다. 이 실행 파일은 브리지·카메라·MoveIt를 모두 자동 기동하는 프로그램은 아니다. 그 장치들이 먼저 준비되어 있어야 한다.
 
-`src/soarm_pipeline/scripts/expiry_sort.py`는 같은 진입점을 찾아 실행한다. 그래서 `ros2 run soarm_pipeline expiry_sort --execute`와 셸 진입점이 같은 작업으로 이어진다.
+`src/TUMST_ARM_pipeline/scripts/expiry_sort.py`는 같은 진입점을 찾아 실행한다. 그래서 `ros2 run soarm_pipeline expiry_sort --execute`와 셸 진입점이 같은 작업으로 이어진다.
 
 ### 3.2 자연어 실행
 
@@ -112,12 +112,12 @@
 
 | 파일 | 용도 |
 |---|---|
-| `src/soarm_bridge/launch/dual_d415.launch.py` | 시리얼 번호로 D415 두 대 실행. RGB·깊이·색상 정렬 깊이 발행 |
-| `src/soarm_turntable/soarm_turntable/bridge.py` | XL330 상태·각도·액션·영점 서비스 제공 |
-| `src/soarm_turntable/soarm_turntable/controller.py` | DYNAMIXEL SDK 읽기/쓰기, 토크·목표 위치·프로필 관리 |
-| `src/soarm_turntable/soarm_turntable/scan.py` | 로봇 정지 확인, 회전, 안정화, 동기화 영상 저장 |
-| `src/soarm_turntable/soarm_turntable/scan_core.py` | 정지 판정과 프레임 선택의 공통 로직 |
-| `src/soarm_turntable/soarm_turntable/environment_core.py` | 영상 ROI·배경 깊이 차이 필터 |
+| `src/TUMST_ARM_bridge/launch/dual_d415.launch.py` | 시리얼 번호로 D415 두 대 실행. RGB·깊이·색상 정렬 깊이 발행 |
+| `src/TUMST_ARM_turntable/soarm_turntable/bridge.py` | XL330 상태·각도·액션·영점 서비스 제공 |
+| `src/TUMST_ARM_turntable/soarm_turntable/controller.py` | DYNAMIXEL SDK 읽기/쓰기, 토크·목표 위치·프로필 관리 |
+| `src/TUMST_ARM_turntable/soarm_turntable/scan.py` | 로봇 정지 확인, 회전, 안정화, 동기화 영상 저장 |
+| `src/TUMST_ARM_turntable/soarm_turntable/scan_core.py` | 정지 판정과 프레임 선택의 공통 로직 |
+| `src/TUMST_ARM_turntable/soarm_turntable/environment_core.py` | 영상 ROI·배경 깊이 차이 필터 |
 
 ### 5.1 각도 계산
 
@@ -319,7 +319,7 @@ TCP 측정 도구의 `cup_goal.py`와 생산 경로의 JSON 기반 FK는 구현 
 
 ## 12. 충돌 검사와 MoveIt 경로 계획
 
-파일: `check_inclined_motion.py`, `collision_geometry.py`, `src/soarm4_moveit_config/`
+파일: `check_inclined_motion.py`, `collision_geometry.py`, `src/TUMST_ARM_moveit_config/`
 
 ### 12.1 형상 표시와 충돌 형상은 다르다
 
@@ -334,7 +334,7 @@ TCP 측정 도구의 `cup_goal.py`와 생산 경로의 JSON 기반 FK는 구현 
 
 홈 복귀는 Pilz PTP를 먼저 시도하고 실패하면 OMPL RRT-Connect를 시도한다. 일반 계획도 해당 계획 파이프라인과 상태·경로 검사를 사용한다.
 
-`src/soarm4_moveit_config/src/fine_collision_adapter.cpp`와 `scripts/fine_collision_service.py`는 모델에 따른 상세 경로 검토를 담당한다. 들고 있는 물체를 로봇에 부착한 상태와 놓은 후의 장애물도 단계에 맞춰 고려한다.
+`src/TUMST_ARM_moveit_config/src/fine_collision_adapter.cpp`와 `scripts/fine_collision_service.py`는 모델에 따른 상세 경로 검토를 담당한다. 들고 있는 물체를 로봇에 부착한 상태와 놓은 후의 장애물도 단계에 맞춰 고려한다.
 
 검사는 현재 장면에 등록된 장애물에 대해서만 유효하다. 임의로 놓은 추가 테이블·손·케이블이 장면에 없으면 충돌 검사를 통과해도 실제로 부딪힐 수 있다. 모델·좌표 보정의 오차도 남는다.
 
@@ -401,10 +401,10 @@ TCP 측정 도구의 `cup_goal.py`와 생산 경로의 JSON 기반 FK는 구현 
 
 | 파일 | 역할 |
 |---|---|
-| `src/soarm_bridge/soarm_bridge/servo_bridge.py` | ROS 궤적→STS 명령, 엔코더→joint_states, 정지·토크 서비스 |
-| `src/soarm_bridge/soarm_bridge/sts_bus.py` | STS 통신 패킷, 레지스터 읽기/쓰기, 동기 목표 전송 |
-| `src/soarm_bridge/soarm_bridge/fine_limits.py` | 미세 보정 명령도 모터·모델 한도 안으로 제한 |
-| `src/soarm_bridge/config/soarm.yaml` | 영점·부호·게인·속도·오차 허용·피드백 설정 |
+| `src/TUMST_ARM_bridge/soarm_bridge/servo_bridge.py` | ROS 궤적→STS 명령, 엔코더→joint_states, 정지·토크 서비스 |
+| `src/TUMST_ARM_bridge/soarm_bridge/sts_bus.py` | STS 통신 패킷, 레지스터 읽기/쓰기, 동기 목표 전송 |
+| `src/TUMST_ARM_bridge/soarm_bridge/fine_limits.py` | 미세 보정 명령도 모터·모델 한도 안으로 제한 |
+| `src/TUMST_ARM_bridge/config/TUMST_ARM.yaml` | 영점·부호·게인·속도·오차 허용·피드백 설정 |
 
 이곳은 AI가 아니라 로컬 실시간 제어 코드다. ROS의 rad 목표를 중심 엔코더·회전 부호·게인으로 count로 변환한다. 반대로 실제 count를 rad로 바꿔 `/joint_states`에 발행한다.
 
@@ -429,7 +429,7 @@ J3는 I=1 시험에서 홈 오차 개선이 확인되지 않아 원래 I=0·적�
 
 ## 16. 진공 장치 제어
 
-파일: `src/soarm_bridge/soarm_bridge/esp32_bridge.py`, `vacuum.py`
+파일: `src/TUMST_ARM_bridge/soarm_bridge/esp32_bridge.py`, `vacuum.py`
 
 ESP32와 직렬 통신해 펌프·솔레노이드 밸브를 제어하고 압력 diff를 발행한다.
 
@@ -448,12 +448,12 @@ ESP32와 직렬 통신해 펌프·솔레노이드 밸브를 제어하고 압력 
 
 | 파일 | 역할 |
 |---|---|
-| `src/soarm4_moveit_config/config/hardware_moveit.rviz` | MotionPlanning, 제어 패널, 작업대 MarkerArray 표시 설정 |
-| `src/soarm4_moveit_config/src/home_panel.cpp` | HOME·STOP·토크·흡착·해제·수동 경로 편집 버튼 |
-| `src/soarm4_moveit_config/scripts/home_manager.py` | 홈 요청·취소·상태 및 공통 관리 로직 |
-| `src/soarm4_moveit_config/scripts/pick_place_manager.py` | 홈 관리 기능과 저장 경로·흡착/놓기 단계 관리 연결 |
-| `src/soarm4_workcell/soarm4_workcell/scene.py` | 작업대 고정 충돌 모델·카메라/패드 마커·좌표 연결 |
-| `src/soarm4_workcell/soarm4_workcell/reconstructed_models.py` | 저장 점군을 RGB 색상으로 표시 |
+| `src/TUMST_ARM_moveit_config/config/hardware_moveit.rviz` | MotionPlanning, 제어 패널, 작업대 MarkerArray 표시 설정 |
+| `src/TUMST_ARM_moveit_config/src/home_panel.cpp` | HOME·STOP·토크·흡착·해제·수동 경로 편집 버튼 |
+| `src/TUMST_ARM_moveit_config/scripts/home_manager.py` | 홈 요청·취소·상태 및 공통 관리 로직 |
+| `src/TUMST_ARM_moveit_config/scripts/pick_place_manager.py` | 홈 관리 기능과 저장 경로·흡착/놓기 단계 관리 연결 |
+| `src/TUMST_ARM_workcell/soarm4_workcell/scene.py` | 작업대 고정 충돌 모델·카메라/패드 마커·좌표 연결 |
+| `src/TUMST_ARM_workcell/soarm4_workcell/reconstructed_models.py` | 저장 점군을 RGB 색상으로 표시 |
 
 RViz는 제어 명령을 보내는 화면이지 카메라처럼 실물을 자동 갱신하는 화면이 아니다. `reconstructed_models`는 지정한 저장 스캔을 읽어 그린다. 실물 배치를 바꿔도 새 스캔을 연결하지 않으면 이전 모습이 남는다.
 
@@ -467,12 +467,12 @@ STOP은 소프트웨어 정지 요청이다. 독립 하드웨어 비상정지 �
 
 | 파일 | 바꿀 때 생기는 영향 |
 |---|---|
-| `src/soarm4_description/urdf/soarm4.urdf` | 링크·관절·TCP·메시·리미트에 영향 |
-| `src/soarm4_description/config/model.json` | 생산 경로 FK/IK의 모델·TCP 기준 |
-| `src/soarm4_workcell/config/workcell.yaml` | 테이블↔로봇 변환, 카메라, 축, 패드, 보정 |
-| `src/soarm4_workcell/config/named_poses.yaml` | 쓰레기통 등 저장 자세와 보정 파일 지문 |
-| `src/soarm4_moveit_config/config/joint_limits.yaml` | MoveIt 속도·가속 한도 |
-| `src/soarm_bridge/config/soarm.yaml` | 모터 변환·제어 설정 |
+| `src/TUMST_ARM_description/urdf/TUMST_ARM.urdf` | 링크·관절·TCP·메시·리미트에 영향 |
+| `src/TUMST_ARM_description/config/model.json` | 생산 경로 FK/IK의 모델·TCP 기준 |
+| `src/TUMST_ARM_workcell/config/workcell.yaml` | 테이블↔로봇 변환, 카메라, 축, 패드, 보정 |
+| `src/TUMST_ARM_workcell/config/named_poses.yaml` | 쓰레기통 등 저장 자세와 보정 파일 지문 |
+| `src/TUMST_ARM_moveit_config/config/joint_limits.yaml` | MoveIt 속도·가속 한도 |
+| `src/TUMST_ARM_bridge/config/TUMST_ARM.yaml` | 모터 변환·제어 설정 |
 
 `trash_destination.py`는 저장 자세가 현재 보정 파일과 맞는지 SHA256으로 확인한다. 단순한 설명 파일로 보고 확인값을 삭제하면 안 된다. 오늘 추가한 끝점 보정 항목만 달라졌고 기존 좌표·변환·한도는 그대로였음을 비교한 후 지문을 갱신한 이력이 있다.
 
@@ -484,7 +484,7 @@ STOP은 소프트웨어 정지 요청이다. 독립 하드웨어 비상정지 �
 
 | 위치 | 용도 |
 |---|---|
-| `src/soarm4_workcell/soarm4_workcell/cup_goal.py` | URDF 기반 FK/IK와 TCP 목표 도구 |
+| `src/TUMST_ARM_workcell/soarm4_workcell/cup_goal.py` | URDF 기반 FK/IK와 TCP 목표 도구 |
 | `.../tcp_error_test.py` | 목표·실제 관절값 수집 공통 기능 |
 | `.../tcp_error_metrics.py` | 관절 오차를 TCP 위치 오차로 환산 |
 | `.../motor_limits.py` | 모터 count와 모델 각도의 공통 허용 범위 |
@@ -495,7 +495,7 @@ STOP은 소프트웨어 정지 요청이다. 독립 하드웨어 비상정지 �
 | `automation/reconstruction/run_tcp_50.py` | 50개 측정 작업 관련 실행 도구 |
 | `automation/reconstruction/j3_integral_tune.py` | J3 I/적분 한도 읽기·제한된 시험·복원 |
 
-`.../`는 이 표에서 `src/soarm4_workcell/soarm4_workcell/`을 뜻한다.
+`.../`는 이 표에서 `src/TUMST_ARM_workcell/soarm4_workcell/`을 뜻한다.
 
 기본 측정 원리:
 
@@ -555,7 +555,7 @@ Jacobian을 수치 미분하여 관절별 `J_i × 각도 오차_i`도 계산한�
 
 - `src/soarm4_live/`: 예전 별도 실시간 표시 패키지. 현재 servo_bridge와 동시에 같은 모터 포트를 열 수 있었다.
 - 그 패키지의 `build/soarm4_live`, `install/soarm4_live` 잔여물.
-- `src/soarm_bridge/test/execution_safety_test.py`: 현재 API·영점과 맞지 않는 구형 통합 모의 시험.
+- `src/TUMST_ARM_bridge/test/execution_safety_test.py`: 현재 API·영점과 맞지 않는 구형 통합 모의 시험.
 - 재생성 가능한 Python·pytest 캐시 일부.
 
 보존:

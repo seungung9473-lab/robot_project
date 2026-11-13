@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parent.parent
 def load_context(session):
     path=Path(session)/'spatial_context.json'
     if path.exists():return json.loads(path.read_text())
-    cfg=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text())['turntable']
+    cfg=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_workcell/config/workcell.yaml').read_text())['turntable']
     active=json.loads((ROOT/'camera_calibration/active.json').read_text())
     axis=np.asarray(cfg['axis_direction_table'],dtype=float)
     if not np.allclose(axis,[0,0,1],atol=1e-6):raise ValueError('Vertical-axis reconstruction required; recalibrate tilted axis')

@@ -314,7 +314,7 @@ def main(argv=None):
                     stage('턴테이블·패드 이전 스캔 초기화', lambda: clear_previous_scan_scene(trial.directory))
                     trial.attach(trial.directory/'previous_scan_reset.json')
                     trial.attach(trial.directory/'previous_scan_reset_before.json')
-                    stage('HOME', lambda: run('/usr/bin/python3', Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py'))
+                    stage('HOME', lambda: run('/usr/bin/python3', Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/scripts/go_home.py'))
                 scans = trial.directory / ('scans' if attempt==0 else 'rescan_'+str(attempt))
                 stage('듀얼 12방향 스캔·0도 복귀', lambda: run('ros2', 'run', 'soarm_turntable', 'turntable_scan', 'scan',
                       '--angles', *range(0,360,30), '--timeout', 60, '--output', scans))
@@ -370,7 +370,7 @@ def main(argv=None):
                 print('안전점검 실패: '+str(exc), flush=True)
                 trial.event('safety_check_failed', attempt=attempt, session=str(exc.session), error=str(exc))
                 if attempt>=args.max_rescans:
-                    raise RuntimeError('안전점검 실패: 재스캔 한도 도달. 자동 동작 중단') from exc
+                    raise RuntimeError(f'재스캔 한도 도달 · {exc}') from exc
                 if not retry_safe(exc.session):
                     raise RuntimeError('재스캔 중단: 집기 실행 가능성이 있어 자동 재시작 금지') from exc
                 stage('재스캔 전 빈 컵·홈 위치·정지 확인', rescan_preflight)

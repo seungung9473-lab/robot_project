@@ -15,7 +15,7 @@ try:
     from soarm4_workcell.cup_goal import Arm,tcp_point
     from soarm4_workcell.core import load,matrix
     from scipy.optimize import least_squares
-    arm=Arm();wc=load(Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml');W=matrix(wc['T_table_world']);tcp=tcp_point(wc)
+    arm=Arm();wc=load(Path.home()/'robot_ws/src/TUMST_ARM_workcell/config/workcell.yaml');W=matrix(wc['T_table_world']);tcp=tcp_point(wc)
     def fk(q):
         T=W@arm.fk(q);T[:3,3]=(T@tcp)[:3];return T
     axis=fk(seed)[:3,0];targets=[]

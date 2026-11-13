@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np,yaml
 from inclined_geometry import rotate_surface
 R=Path(__file__).resolve().parent
-p=argparse.ArgumentParser();p.add_argument('session',type=Path);p.add_argument('--execute',action='store_true');p.add_argument('--destination',choices=['pad','trash_drop'],default='pad');p.add_argument('--object',default=None);p.add_argument('--assume-placed',action='append',default=[]);p.add_argument('--virtual-placements',type=Path);p.add_argument('--option-index',type=int);p.add_argument('--lift-clearance',type=float);p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');p.add_argument('--pad',type=int,choices=[5,6],default=5);a=p.parse_args();s=a.session.resolve();report=json.loads((s/'inclined_pick_plan.json').read_text());wc=yaml.safe_load((s/'workcell_snapshot.yaml').read_text());current=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text())
+p=argparse.ArgumentParser();p.add_argument('session',type=Path);p.add_argument('--execute',action='store_true');p.add_argument('--destination',choices=['pad','trash_drop'],default='pad');p.add_argument('--object',default=None);p.add_argument('--assume-placed',action='append',default=[]);p.add_argument('--virtual-placements',type=Path);p.add_argument('--option-index',type=int);p.add_argument('--lift-clearance',type=float);p.add_argument('--placement-plan',type=Path);p.add_argument('--placement-object');p.add_argument('--pad',type=int,choices=[5,6],default=5);a=p.parse_args();s=a.session.resolve();report=json.loads((s/'inclined_pick_plan.json').read_text());wc=yaml.safe_load((s/'workcell_snapshot.yaml').read_text());current=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_workcell/config/workcell.yaml').read_text())
 if wc!=current:raise RuntimeError('Workcell changed since scan; rescan')
 options=[]
 for obj in report['objects']:
@@ -74,7 +74,7 @@ capture(str(out/'pre_rotation_observation'),1)
 manifest.update(contact_execution_mode='precomputed_prediction_only',pre_rotation_observation_time=time.time())
 (out/'session.json').write_text(json.dumps(manifest,indent=2))
 # Home completes before table motion; Scanner guards against arm motion during rotation.
-run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
+run(sys.executable,Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/scripts/go_home.py')
 import rclpy
 from soarm_turntable.scan import Scanner
 rclpy.init();n=Scanner()

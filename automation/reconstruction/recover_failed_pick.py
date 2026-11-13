@@ -44,7 +44,7 @@ for key in ['cup_tip','tool_link_cup_visual_link']:
 scene=PlanningScene();scene.is_diff=True;scene.allowed_collision_matrix=acm;apply(scene)
 result={'success':False}
 try:
- cfg=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits'];ts,qs,vs,acc=contact_samples(fk,lo,hi,q,sol[0],[float(cfg[k]['max_velocity'])*.1 for k in names],[float(cfg[k]['max_acceleration'])*.1 for k in names]);traj=RobotTrajectory();traj.joint_trajectory.joint_names=names
+ cfg=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/config/joint_limits.yaml').read_text())['joint_limits'];ts,qs,vs,acc=contact_samples(fk,lo,hi,q,sol[0],[float(cfg[k]['max_velocity'])*.1 for k in names],[float(cfg[k]['max_acceleration'])*.1 for k in names]);traj=RobotTrajectory();traj.joint_trajectory.joint_names=names
  for t,qi,v,a in zip(ts,qs,vs,acc):
   req=GetStateValidity.Request();req.group_name='arm';req.robot_state=state(qi);check=call('/check_state_validity',GetStateValidity,req);assert check.valid,str([(c.contact_body_1,c.contact_body_2) for c in check.contacts]);pt=JointTrajectoryPoint();pt.positions=list(map(float,qi));pt.velocities=list(map(float,v));pt.accelerations=list(map(float,a));ns=int(round(t*1e9));pt.time_from_start.sec=ns//10**9;pt.time_from_start.nanosec=ns%10**9;traj.joint_trajectory.points.append(pt)
  for _ in range(5):rclpy.spin_once(n,timeout_sec=.02)

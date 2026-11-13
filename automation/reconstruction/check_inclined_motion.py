@@ -108,7 +108,7 @@ try:
  # Review the approach from the current stage start at several candidate heights.
  approach=fk(qa);transit_attempts=[]
  result['transit_attempts']=transit_attempts
- limits=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
+ limits=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
  velocities=[float(limits[k]['max_velocity'])*vscale for k in names]
  accelerations=[float(limits[k]['max_acceleration'])*ascale for k in names]
  found_ik=False

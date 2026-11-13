@@ -10,7 +10,7 @@
 실행 잠금·기존 스캔 장면 정리 → 홈 → 30° 간격 정지 촬영 12방향 → 0° 복귀 → Gemini 물체 식별 → SAM2 물체 분리 → RGB-D 점군 복원 → 날짜 판독·분류 → 흡착면 탐색 → 턴테이블 정렬·IK → 모든 물체의 놓기·충돌 경로 검토 → 실제 집기·압력 확인·이동·해제 → 결과 기록.
 
 주 진입점: run_sort.sh → automation/reconstruction/run_qr_expiry_cycle.py.
-자연어 진입점: run_tidy_demo.sh. ROS 진입 패키지: src/soarm_pipeline.
+자연어 진입점: run_tidy_demo.sh. ROS 진입 패키지: src/TUMST_ARM_pipeline.
 
 ## 2. AI와 로컬 계산의 역할 분담
 
@@ -29,7 +29,7 @@ AI가 모터 엔코더 명령을 직접 생성하는 시스템은 아니다. 의
 
 ## 3. 정지 확인 후 촬영
 
-코드: src/soarm_turntable/soarm_turntable/scan.py, scan_core.py, bridge.py, controller.py.
+코드: src/TUMST_ARM_turntable/soarm_turntable/scan.py, scan_core.py, bridge.py, controller.py.
 
 회전 액션 완료 후 실제 moving·속도·위치 변화·상태 수신 시간을 확인한다. 정지 확인 후 0.5초 더 기다리고, 그 이전 프레임을 제외한 RGB·정렬 깊이·CameraInfo를 저장한다. 촬영 중 위치 변화와 로봇팔 움직임도 확인한다.
 
@@ -106,7 +106,7 @@ IK는 scipy.optimize.least_squares로 위치·방향 잔차를 최소화한다. 
 
 ## 9. 충돌 검사와 경로 계획
 
-코드: reconstruction/collision_geometry.py, check_inclined_motion.py, src/soarm4_moveit_config.
+코드: reconstruction/collision_geometry.py, check_inclined_motion.py, src/TUMST_ARM_moveit_config.
 
 대상 점군의 ConvexHull을 삼각형 충돌 메시로 만든다. 볼록 껍질은 오목한 홈을 채우므로 실제 표면과 차이가 있다. RViz 색상 점군 표시와 충돌 형상은 별개다. 일부 주변 형상은 상자로 표현한다.
 
@@ -126,7 +126,7 @@ IK는 scipy.optimize.least_squares로 위치·방향 잔차를 최소화한다. 
 
 현재 로컬 경로는 diff=-200으로 흡착·유지를 확인하고, 실패 시 초기 접촉점 기준 누적 1·2·3mm 추가 접근을 준비한다. 압력 피드백 지연이나 유지 실패 시 중단하는 로직이 있다. 펌프 ON은 흡착 성공과 다르다.
 
-진공 장치 코드: src/soarm_bridge/soarm_bridge/esp32_bridge.py, vacuum.py.
+진공 장치 코드: src/TUMST_ARM_bridge/soarm_bridge/esp32_bridge.py, vacuum.py.
 /vacuum/release는 펌프 OFF→밸브 개방→밸브 닫기다. /vacuum/off는 펌프와 밸브 OFF이므로 같은 명령이 아니다. diff 수치는 검증 없이 Pa나 kPa로 해석하지 않는다.
 
 ## 11. 날짜·QR 기반 분류
@@ -141,7 +141,7 @@ IK는 scipy.optimize.least_squares로 위치·방향 잔차를 최소화한다. 
 
 ## 12. 모터 변환·피드백 미세 보정
 
-코드: src/soarm_bridge/soarm_bridge/servo_bridge.py, config/soarm.yaml.
+코드: src/TUMST_ARM_bridge/soarm_bridge/servo_bridge.py, config/TUMST_ARM.yaml.
 
 관절 rad를 영점·방향·보정이 포함된 엔코더 목표로 변환한다. 목표 궤적과 실제 엔코더를 비교해 시작 오차·추종 오차·도착 오차·피드백 유효 시간을 검사한다.
 
@@ -176,20 +176,20 @@ IK는 scipy.optimize.least_squares로 위치·방향 잔차를 최소화한다. 
 
 | 알고리즘 | 입력 → 출력 | 핵심 코드 |
 |---|---|---|
-| 카메라 외부 보정·좌표 변환 | 마커 실측·영상 → 카메라/테이블 변환 | automation/camera_calibration/, src/soarm4_workcell/config/workcell.yaml |
+| 카메라 외부 보정·좌표 변환 | 마커 실측·영상 → 카메라/테이블 변환 | automation/camera_calibration/, src/TUMST_ARM_workcell/config/workcell.yaml |
 | 영상 의미 인식 | RGB·사용자 조건 → 물체 이름·영상 위치 | automation/er2/select_object.py |
 | 프롬프트 분할 | 영상·점·상자 → 물체 마스크 | reconstruction/apply_sam2.py, sam2_shared.py |
 | 다각도 형상 복원 | 마스크·깊이·각도 → 기준 자세 색상 점군 | reconstruction/reconstruct.py |
 | 평면 추정 | 점군 → 평면·법선·컵 지지 영역 | reconstruction/inclined_geometry.py |
 | FK·IK | 관절 ↔ TCP 위치·축 방향 | reconstruction/motion/kinematics.py, inclined_geometry.py |
-| 수평 목표 IK | 목표 XYZ → 아래 방향 관절 자세 | src/soarm4_workcell/soarm4_workcell/cup_goal.py |
+| 수평 목표 IK | 목표 XYZ → 아래 방향 관절 자세 | src/TUMST_ARM_workcell/soarm4_workcell/cup_goal.py |
 | 턴테이블 정렬 | 흡착점·법선 → 회전 각도·회전 후 접촉점 | reconstruction/plan_inclined_pick.py |
 | 평면 배치 탐색 | 물체 외곽·점유 → 패드 배치 예약 | reconstruction/tidy_pad_placement.py, pad_packing.py |
 | 순서 탐색 | 전체 후보·장면 → 작업 순서·경로 | reconstruction/batch_search.py, plan_pick_batch.py |
-| 충돌 경로 계획 | 관절 목표·충돌 모델 → 검증 궤적 | reconstruction/check_inclined_motion.py, src/soarm4_moveit_config/ |
+| 충돌 경로 계획 | 관절 목표·충돌 모델 → 검증 궤적 | reconstruction/check_inclined_motion.py, src/TUMST_ARM_moveit_config/ |
 | 접촉 보간·흡착 | 접근점·법선·피드백 → 연속 궤적·흡착 상태 | reconstruction/normal_contact_trajectory.py, verified_place_left.py |
 | 날짜 분류 | 판독 날짜·한국 날짜 → 패드/쓰레기 목적지 | reconstruction/expiry_policy.py, run_expiry_sort.py |
-| 엔코더 추종·보정 | 관절 궤적·실제 위치 → 모터 명령·오차 | src/soarm_bridge/soarm_bridge/servo_bridge.py |
+| 엔코더 추종·보정 | 관절 궤적·실제 위치 → 모터 명령·오차 | src/TUMST_ARM_bridge/soarm_bridge/servo_bridge.py |
 | 실행 기록 | 실행·센서·오류 → 시험별 원본·결과 | reconstruction/test_data_recorder.py |
 
 표의 reconstruction/은 automation/reconstruction/을 뜻한다. cup_goal.py의 solve()는 수평면용이며, 경사면 접촉은 법선 기반 solve_axis()와 사전 계산 관절값을 사용한다. 파일 공유가 곧 수평 자세 강제를 의미하지 않는다.

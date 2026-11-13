@@ -94,6 +94,7 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
     n=int(np.ceil(radius/.002));ticks=np.arange(-n,n+1)*.002
     grid=np.array([(x,y) for x in ticks for y in ticks]);grid=grid[np.argsort(np.linalg.norm(grid,axis=1),kind='stable')]
     started=time.monotonic();next_notice=started;options={};reviews=[];timed_out=False
+    missing_pick=None
     def note(message):
         nonlocal next_notice
         now=time.monotonic()
@@ -104,6 +105,8 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
         cloud=np.load(Path(entry['session'])/'analysis/cloud.npz')['points']
         hull_cloud=cloud[ConvexHull(cloud).vertices]  # exact envelope, no downsampling/shrinking
         choices=[opt for face in entry['matched_faces'] for opt in face['alignment_options']]
+        if not choices:
+            missing_pick=(key, bool(entry['matched_faces']))
         candidates=[]
         for index,option in enumerate(choices):
             note(f'{key} 집기 후보 {index+1}/{len(choices)}')
@@ -166,8 +169,14 @@ def reserve_pad(session, object_keys, pad_id, kinematics, *, occupancy=None, tim
                     'scope':'bounded placement candidates; not mathematical proof of impossibility',
                     'reviews':reviews,'occupancy_geometry_digest':occupancy['geometry_digest']}
         (session/f'pad_{pad_id}_fast_search_failed.json').write_text(json.dumps(diagnostic,ensure_ascii=False,indent=2))
-        message=f'안전점검 실패: 패드 {pad_id}에 기존 물체를 피해 놓을 후보를 확보하지 못했습니다'
-        if ids:message+=f' · 점유 물체 {ids} · 같은 장면 재스캔 반복 안 함'
+        if missing_pick:
+            key, has_shared_face=missing_pick
+            detail='도달 가능한 집기 자세가 없습니다' if has_shared_face else '두 카메라에서 공통 흡착면을 찾지 못했습니다'
+            message=f'안전점검 실패: 패드 {pad_id} 대상 {key} · {detail}'
+        elif ids:
+            message=f'안전점검 실패: 패드 {pad_id} 놓기 후보 없음 · 점유 모델 {ids} · 같은 장면 재스캔 반복 안 함'
+        else:
+            message=f'안전점검 실패: 패드 {pad_id}의 외곽과 놓기 자세 조건을 통과한 후보가 없습니다'
         if timed_out:message+=' · 배치 탐색 시간 한도 도달'
         raise StaticPlacementRejected(message,retryable=not bool(ids),reason=reason,blocked_ids=ids)
     alternatives={key:alternative_candidates(options[key],chosen[key]) for key in object_keys} if len(object_keys)==1 else {}

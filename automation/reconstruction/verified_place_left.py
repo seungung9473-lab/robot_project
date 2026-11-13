@@ -186,6 +186,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
  cache_file=session/'reviewed_trajectories.json'
  entry=json.loads(cache_file.read_text()).get(label) if cache_file.exists() else None
  reuse=compatible(entry,names,start,goal,sc,start_tolerance_deg=.25 if vertical else 1.,fixed_axis=vertical)
+ if label=='transit_above_target' and require_empty:reuse=False
  if reuse:
   trajectory=restore(entry)
   if vertical:
@@ -197,7 +198,7 @@ def move(goal,label,vertical=False,pump_target=None,pump_normal=None,speed_cap=N
   status.setdefault('reused_trajectories',[]).append(label)
  elif vertical:
   from normal_contact_trajectory import contact_samples,trajectory_from_samples
-  limits=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
+  limits=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/config/joint_limits.yaml').read_text())['joint_limits']
   velocities=[float(limits[n]['max_velocity'])*float(sc['velocity']) for n in names]
   accelerations=[float(limits[n]['max_acceleration'])*float(sc['acceleration']) for n in names]
   samples=contact_samples(fk,lo,hi,start,goal,velocities,accelerations)
@@ -274,7 +275,6 @@ wc=yaml.safe_load((session/'workcell_snapshot.yaml').read_text());arm=Arm();mani
 # Coupled payload placement: preserve 3-degree radial sag compensation while
 # placing the observed object's bottom/centre rather than assuming cup XY is its centre.
 from soarm4_workcell.cup_goal import J1_WORLD
-from placement_geometry import depth_table
 import cv2
 j1=(W@np.r_[J1_WORLD,1.])[:2]
 payload_pitch=None
@@ -286,16 +286,11 @@ def payload_goal(bottom_target,seed,L,dims):
  return result.tolist()
 
 def pad_clearance(view,pad):
- md=json.loads((view/'metadata.json').read_text());checks={}
- for cam in ['cam1','cam2']:
-  c=md['cameras'][cam];raw=cv2.imread(str(view/c['depth_file']),-1);P,valid=depth_table(raw,.001 if raw.dtype==np.uint16 else 1.,c['camera_info'],wc['cameras'][cam]['T_table_optical']);rr=np.linalg.norm(P[:,:,:2]-np.array(pad['center_table_m'])[:2],axis=2);surface=valid&(rr<.04)&(np.abs(P[:,:,2]-pad['center_table_m'][2])<.012);obstacle=valid&(rr<.048)&(P[:,:,2]>pad['center_table_m'][2]+.012)&(P[:,:,2]<.25);
-  if packing is not None:
-   from scipy.spatial import ConvexHull
-   polygon=np.array(packing['placements'][packing_key]['reserved_polygon_table_m']);hull=ConvexHull(polygon);inside=np.all(P[:,:,:2]@hull.equations[:,:2].T+hull.equations[:,2]<=.002,axis=2)
-   surface=valid&inside&(np.abs(P[:,:,2]-pad['center_table_m'][2])<.012);obstacle=obstacle&inside
-  checks[cam]={'surface_pixels':int(surface.sum()),'elevated_pixels':int(obstacle.sum())}
+ from pad_clearance_policy import pad_observation
+ polygon=packing['placements'][packing_key]['reserved_polygon_table_m'] if packing is not None else None
+ checks=pad_observation(view,pad,wc,polygon)
  from pad_clearance_policy import judge_pad
- try:status['pad_clearance_mode']=judge_pad(checks,packing is not None)
+ try:status['pad_clearance_mode']=judge_pad(checks,packing is not None and not manifest.get('pad_rechecked_at_home'))
  finally:status['pad_clearance_counts']=checks
  return checks
 
@@ -334,7 +329,7 @@ if args.resume_held is not None:
   previous=args.resume_held.resolve()
   prior=json.loads(previous.read_text())
   if previous.parent.parent!=session or prior.get('success') or not prior.get('holding') or prior.get('pad_id')!=args.pad:raise RuntimeError('Invalid held checkpoint')
-  if wc!=yaml.safe_load((Path.home()/'robot_ws/src/soarm4_workcell/config/workcell.yaml').read_text()):raise RuntimeError('Workcell changed during held stop')
+  if wc!=yaml.safe_load((Path.home()/'robot_ws/src/TUMST_ARM_workcell/config/workcell.yaml').read_text()):raise RuntimeError('Workcell changed during held stop')
   q=fresh();holding=True;wait_vacuum();q=fresh()
   end=time.monotonic()+3
   while not turn and time.monotonic()<end:rclpy.spin_once(node,timeout_sec=.05)
@@ -491,7 +486,7 @@ try:
  _check=session/'collision_plan_check.json'
  if not _check.exists() or 'transit_q_rad' not in json.loads(_check.read_text()):raise RuntimeError('Reviewed transit pose missing; replan the batch')
  qh=json.loads(_check.read_text())['transit_q_rad']
- move(qh,'transit_above_target',min_tcp_z=TRANSIT_MIN_TCP_Z_M);status['transit_q_rad']=qh
+ move(qh,'transit_above_target',min_tcp_z=TRANSIT_MIN_TCP_Z_M,require_empty=bool(manifest.get('pad_rechecked_at_home')));status['transit_q_rad']=qh
  move(qa.tolist(),'approach_3cm',True)
  restore_acm=acm_for(object_id,'tool_link_cup_visual_link');acm_for(object_id,'cup_tip')
  move(qc.tolist(),'continuous_contact_approach',True,pump_target=point,pump_normal=normal,speed_cap=SLOW_CONTACT_SCALING);status['contact_speed_scaling']={'velocity':SLOW_CONTACT_SCALING[0],'acceleration':SLOW_CONTACT_SCALING[1]}

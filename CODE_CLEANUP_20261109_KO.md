@@ -71,16 +71,16 @@
 - `automation/reconstruction/sam2_gpu.py`: `hashlib`, `contextlib`
 - `automation/reconstruction/scan_scene_reset.py`: `json`
 - `automation/reconstruction/tests/test_expiry_sort.py`: `time`
-- `src/soarm4_moveit_config/audit_tools/check_collisions.py`: `os`, `math`
-- `src/soarm4_moveit_config/audit_tools/run_scan.py`: `sys`, `hashlib`
-- `src/soarm4_moveit_config/scripts/plan_joint_goal.py`: `time`
-- `src/soarm4_workcell/soarm4_workcell/pickplace_cycle.py`: `yaml`
-- `src/soarm4_workcell/soarm4_workcell/random_tcp_plan.py`: `json`
-- `src/soarm4_workcell/soarm4_workcell/reconstructed_models.py`: `moveit_msgs.msg.PlanningScene`
-- `src/soarm4_workcell/soarm4_workcell/scene.py`: `json`, `pathlib.Path`
-- `src/soarm4_workcell/test/test_experiment.py`: `json`
-- `src/soarm_turntable/soarm_turntable/cli.py`: `json`, `time`
-- `src/soarm_turntable/soarm_turntable/scan.py`: `tempfile`
+- `src/TUMST_ARM_moveit_config/audit_tools/check_collisions.py`: `os`, `math`
+- `src/TUMST_ARM_moveit_config/audit_tools/run_scan.py`: `sys`, `hashlib`
+- `src/TUMST_ARM_moveit_config/scripts/plan_joint_goal.py`: `time`
+- `src/TUMST_ARM_workcell/soarm4_workcell/pickplace_cycle.py`: `yaml`
+- `src/TUMST_ARM_workcell/soarm4_workcell/random_tcp_plan.py`: `json`
+- `src/TUMST_ARM_workcell/soarm4_workcell/reconstructed_models.py`: `moveit_msgs.msg.PlanningScene`
+- `src/TUMST_ARM_workcell/soarm4_workcell/scene.py`: `json`, `pathlib.Path`
+- `src/TUMST_ARM_workcell/test/test_experiment.py`: `json`
+- `src/TUMST_ARM_turntable/soarm_turntable/cli.py`: `json`, `time`
+- `src/TUMST_ARM_turntable/soarm_turntable/scan.py`: `tempfile`
 
 ### 판단이 필요한 항목은 유지
 

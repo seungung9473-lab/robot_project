@@ -65,8 +65,31 @@ def main():
     if np.linalg.norm(T[:3,3]-expected_T[:3,3])>.003 or angular>math.radians(1):raise RuntimeError('Prior placed pose changed; stop before next stage')
    trial.event('stage_start',number=index+1,object=stage['object'],pad_id=stage['pad_id'],destination=stage.get('destination','pad'))
    print('BATCH STAGE',index+1,stage['object'],'-> ID',stage['pad_id'],flush=True)
-   if stage.get('destination')!='trash_drop':capture(str(prep/'pre_rotation_observation'),1)
-   manifest.update(contact_execution_mode='precomputed_prediction_only',pre_rotation_observation_time=time.time());(prep/'session.json').write_text(json.dumps(manifest,indent=2))
+   home_recheck=False
+   if stage.get('destination')!='trash_drop':
+    import shutil
+    import yaml
+    from batch_completion import go_home_empty
+    from pad_clearance_policy import PadObstructed,judge_pad,pad_observation
+    view=Path(capture(str(prep/'pre_rotation_observation'),1)[0])
+    wc=yaml.safe_load((prep/'workcell_snapshot.yaml').read_text())
+    pad=wc['pads']['pad2' if stage['pad_id']==5 else 'pad1']
+    reservation=stage.get('placement_plan')
+    polygon=json.loads(Path(reservation).read_text())['placements'][stage['object']]['reserved_polygon_table_m'] if reservation else None
+    try:
+     judge_pad(pad_observation(view,pad,wc,polygon),bool(reservation))
+    except PadObstructed:
+     print(f'패드 {stage["pad_id"]} 돌출 감지 · 빈 컵 확인 후 HOME에서 재검사',flush=True)
+     home=go_home_empty()
+     if not home['success']:raise RuntimeError('패드 재검사 HOME 실패: '+home['message'])
+     home_view=Path(capture(str(prep/'home_pad_recheck'),1)[0])
+     judge_pad(pad_observation(home_view,pad,wc,polygon),False)
+     view.rename(prep/'pre_home_pad_observation')
+     shutil.copytree(home_view,view)
+     home_recheck=True
+     trial.event('pad_rechecked_at_home',object=stage['object'],pad_id=stage['pad_id'])
+     print('HOME 패드 재검사 통과 · 실제 시작 자세 기준으로 이동 경로 재검증',flush=True)
+   manifest.update(contact_execution_mode='precomputed_prediction_only',pre_rotation_observation_time=time.time(),pad_rechecked_at_home=home_recheck);(prep/'session.json').write_text(json.dumps(manifest,indent=2))
    rclpy.init();scanner=Scanner()
    try:
     end=time.monotonic()+15
@@ -75,7 +98,7 @@ def main():
     while time.monotonic()<end:scanner.spin()
     scanner.arm_reference=list(scanner.arm[1]);
     if plan.get('finish_above'):
-     expected_q=stage['start_q_rad']
+     expected_q=[0,math.pi,-math.pi,0] if home_recheck else stage['start_q_rad']
      offset=check_wait_pose(scanner.arm[1],expected_q)
      if offset['replan_first_move']:
       print('대기 자세가 검토 시작 자세와 최대 %.1f° 다름: 이 단계 첫 이동은 현재 자세에서 다시 계획·충돌검사합니다'%offset['max_deg'],flush=True)

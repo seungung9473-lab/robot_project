@@ -12,7 +12,7 @@ runs=r/'pipeline_runs';runs.mkdir(exist_ok=True);log=runs/(datetime.datetime.now
 def save(stage):state['stage']=stage;log.write_text(json.dumps(state,indent=2)+'\n');print(stage,flush=True)
 def run(*args):subprocess.run([str(x) for x in args],check=True)
 try:
- save('home');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
+ save('home');run(sys.executable,Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/scripts/go_home.py')
  root=r/'multiview';before=set(root.iterdir());save('scan');run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*[str(-30*i) for i in range(12)],'--output',root)
  fresh=[d for d in set(root.iterdir())-before if (d/'session.json').exists()]
  if len(fresh)!=1:raise RuntimeError('Cannot identify unique new scan')

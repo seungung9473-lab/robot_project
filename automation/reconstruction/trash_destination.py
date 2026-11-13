@@ -2,7 +2,7 @@
 import hashlib,math
 from pathlib import Path
 import numpy as np,yaml
-POSE_FILE=Path.home()/'robot_ws/src/soarm4_workcell/config/named_poses.yaml'
+POSE_FILE=Path.home()/'robot_ws/src/TUMST_ARM_workcell/config/named_poses.yaml'
 
 def load_trash_pose(path=POSE_FILE):
  data=yaml.safe_load(Path(path).read_text())['poses']['trash_drop'];q=np.asarray(data['positions_rad'],float)

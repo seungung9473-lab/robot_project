@@ -5,6 +5,8 @@ from vacuum_thresholds import HELD_DIFF
 
 def go_home_empty():
     import rclpy
+    from moveit_msgs.msg import PlanningSceneComponents
+    from moveit_msgs.srv import GetPlanningScene
     from std_msgs.msg import Int32
     from std_srvs.srv import Trigger
     from rclpy.qos import qos_profile_sensor_data
@@ -15,6 +17,17 @@ def go_home_empty():
         while len(pressure)<2 and time.monotonic()<deadline:rclpy.spin_once(node,timeout_sec=.05)
         if len(pressure)<2 or time.monotonic()-pressure[-1][0]>.5 or any(v<=HELD_DIFF for _,v in pressure[-2:]):
             raise RuntimeError('Final HOME blocked: fresh empty-cup confirmation missing')
+        scene=node.create_client(GetPlanningScene,'/get_planning_scene')
+        if not scene.wait_for_service(timeout_sec=5):
+            raise RuntimeError('HOME blocked: planning scene unavailable')
+        request=GetPlanningScene.Request()
+        request.components.components=PlanningSceneComponents.ROBOT_STATE_ATTACHED_OBJECTS
+        pending=scene.call_async(request)
+        rclpy.spin_until_future_complete(node,pending,timeout_sec=5)
+        if not pending.done() or pending.result() is None or pending.result().scene.robot_state.attached_collision_objects:
+            raise RuntimeError('HOME blocked: attached payload state not clear')
+        if time.monotonic()-pressure[-1][0]>.5 or any(v<=HELD_DIFF for _,v in pressure[-2:]):
+            raise RuntimeError('HOME blocked: fresh empty-cup confirmation missing')
         client=node.create_client(Trigger,'/soarm4/go_home')
         if not client.wait_for_service(timeout_sec=8):raise RuntimeError('Final HOME service unavailable')
         future=client.call_async(Trigger.Request());rclpy.spin_until_future_complete(node,future,timeout_sec=120)

@@ -11,7 +11,7 @@ from motion.kinematics import W, joint_frames, m
 BASIS = np.array([[.85, -.53, 0], [-.24, -.39, -.89], [.47, .76, -.46]])
 PATH_COLOR = '#72a9ff'
 CONTACT_COLOR = '#ffe18a'
-MESHES = Path(__file__).resolve().parents[2]/'src/soarm4_description/meshes'
+MESHES = Path(__file__).resolve().parents[2]/'src/TUMST_ARM_description/meshes'
 STL_FACET = np.dtype([('normal', '<f4', 3), ('vertices', '<f4', (3, 3)), ('attribute', '<u2')])
 LINKS = ['electronics_base_link', m['joints'][0]['parent'], *(j['child'] for j in m['joints'])]
 

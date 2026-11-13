@@ -56,23 +56,70 @@ def scan_folder(run):
     return max(sessions, key=lambda p: p.parent.name).parent if sessions else None
 
 
-def progress_detail(run, index, pad_names):
-    if index != 3:
-        return ''
+def recent_log_lines(run):
     try:
         with (run / 'execution.log').open('rb') as stream:
-            stream.seek(max(0, stream.seek(0, 2) - 16000))
-            lines = stream.read().decode('utf-8', errors='replace').splitlines()
+            offset = max(0, stream.seek(0, 2) - 16000)
+            stream.seek(offset)
+            if offset:
+                stream.readline()
+            return stream.read().decode('utf-8', errors='replace').splitlines()
     except OSError:
+        return []
+
+
+def batch_message(line, pad_names):
+    stage, _, pad = line.partition(' -> ID ')
+    destination = '폐기' if pad == 'None' else pad_names.get(pad, '배치')
+    return stage.replace('BATCH STAGE', '집기 단계').replace('object_', '물체 ') + ' → ' + destination
+
+
+def progress_detail(lines, index, pad_names):
+    if index != 3:
         return ''
     for line in reversed(lines):
         if line.startswith('BATCH STAGE '):
-            stage, _, pad = line.partition(' -> ID ')
-            destination = '폐기' if pad == 'None' else pad_names.get(pad, '배치')
-            return stage.replace('BATCH STAGE', '집기 단계').replace('object_', '물체 ') + ' → ' + destination
+            return batch_message(line, pad_names)
         if line.startswith('계산중: object_') and '후보' in line:
             return line[:105].replace('object_', '물체 ')
     return '검토한 경로가 확보되면 집기를 시작합니다'
+
+
+def display_log(lines, pad_names):
+    phases = {
+        'transit_above_target': '집기 위치 위로 이동',
+        'approach_3cm': '흡착면 근처로 이동',
+        'continuous_contact_approach': '흡착면에 접근',
+        'grip_resting': '흡착 압력 확인',
+        'grip_retry_8mm_after_1s': '흡착 재시도 · 저속 재접근',
+        'lift_clearance_40mm': '물체 들어올리기',
+        'holding_before_transfer': '운반 전 흡착 유지 확인',
+        'transfer_to_trash_drop': '폐기 위치로 이동',
+        'release_at_trash_drop': '폐기 위치에서 흡착 해제',
+        'wait_above_destination': '배치 후 대기 자세 확인',
+    }
+    prefixes = ('계산중:', '단계 완료:', '단계 실패:', '흡착', '홈 ', '촬영 완료',
+                '안전점검 실패:', '재탐색', '전체 물체 분류 완료', '마지막 HOME')
+    pad_phases = {'transfer_to_pad_ID': '이동', 'lower_payload_to_pad_ID': '내려놓기',
+                  'release_on_pad_ID': '흡착 해제', 'empty_retreat_from_pad_ID': '후퇴'}
+    output = []
+    for line in lines:
+        if line.startswith('BATCH STAGE '):
+            output.append(batch_message(line, pad_names))
+        elif line.startswith(prefixes):
+            for pad, name in pad_names.items():
+                line = line.replace(f'패드 {pad}', f'{name} 패드')
+            output.append(line.replace('object_', '물체 ')[:250])
+        elif line.startswith('저장 완료:') and Path(line).name.startswith('view_'):
+            output.append(f'정지 촬영 저장 · {Path(line).name.removeprefix("view_")}')
+        elif line in phases:
+            output.append(phases[line])
+        else:
+            for prefix, action in pad_phases.items():
+                if line.startswith(prefix) and line[len(prefix):] in ('5', '6'):
+                    output.append(f'{pad_names.get(line[len(prefix):], "배치")} 위치 · {action}')
+                    break
+    return output[-45:]
 
 
 class LiveCamera:
@@ -134,8 +181,9 @@ class Monitor:
         self.preview_key = None
         self.preview_started = 0.0
         self.photos = []
+        self.log_key = None
         root.title('TUMST ARM · 실시간 인식과 분류')
-        root.geometry('1240x800')
+        root.geometry('1460x820')
         root.minsize(880, 580)
         root.configure(bg=BG)
         root.bind('<F11>', lambda _: root.attributes('-fullscreen', not root.attributes('-fullscreen')))
@@ -177,6 +225,20 @@ class Monitor:
             view = tk.Canvas(card, bg=CARD, highlightthickness=0)
             view.pack(fill='both', expand=True)
             self.views.append(view)
+        self.cameras.columnconfigure(2, weight=1, uniform='camera')
+        log_card = tk.Frame(self.cameras, bg=CARD)
+        log_card.grid(row=0, column=2, sticky='nsew', padx=(8, 0))
+        self.label(log_card, '시연 진행 기록', 12, bg=CARD, color=ACCENT, bold=True).pack(anchor='w', padx=12, pady=7)
+        scroll = tk.Scrollbar(log_card)
+        scroll.pack(side='right', fill='y', pady=(0, 8), padx=(0, 5))
+        self.log = tk.Text(log_card, bg='#131f30', fg=FG, font=('sans-serif', 11),
+                           width=1, height=1, wrap='word', padx=10, pady=8, spacing3=6,
+                           borderwidth=0, highlightthickness=0, yscrollcommand=scroll.set)
+        self.log.pack(fill='both', expand=True, padx=(8, 0), pady=(0, 8))
+        scroll.configure(command=self.log.yview)
+        self.log.tag_configure('error', foreground='#ffadad')
+        self.log.tag_configure('complete', foreground=ACCENT)
+        self.update_log(None, [])
         self.results = tk.Frame(root, bg=BG)
         self.results.pack(fill='x', padx=26, pady=(12, 7))
         self.result_lines = [self.label(self.results, '', 12, color=MUTED) for _ in range(4)]
@@ -188,6 +250,22 @@ class Monitor:
     def label(self, parent, text, size, bg=BG, color=FG, bold=False):
         return tk.Label(parent, text=text, bg=bg, fg=color,
                         font=('sans-serif', size, 'bold' if bold else 'normal'), anchor='w')
+
+    def update_log(self, run, lines):
+        key = (run, tuple(lines))
+        if key == self.log_key:
+            return
+        follow = self.log_key is None or self.log_key[0] != run or self.log.yview()[1] >= .98
+        top = self.log.yview()[0]
+        self.log_key = key
+        self.log.configure(state='normal')
+        self.log.delete('1.0', 'end')
+        for line in lines or ['시연 시작 대기 중']:
+            tag = ('error' if line.startswith(('중단', '단계 실패', '안전점검 실패'))
+                   else 'complete' if line.startswith(('단계 완료', '전체 소요 시간')) else '')
+            self.log.insert('end', line+'\n', tag)
+        self.log.configure(state='disabled')
+        self.log.yview_moveto(1 if follow else top)
 
     def draw_images(self, scan, view, masks, boxes, scene=None, *, live=False):
         self.live_requested = live and self.camera is not None
@@ -236,7 +314,8 @@ class Monitor:
                         self.photos.append(photo)
                         canvas.create_image(width//2, height//2, image=photo)
                         legend = 'SO-ARM 계획 자세  ·  파랑  흡착컵 경로  ·  노랑  흡착점' if paths else '색상  물체별 점군    ·    노랑  흡착 후보'
-                        canvas.create_text(12, height-13, text=legend, anchor='sw', fill=FG, font=('sans-serif', 11))
+                        canvas.create_text(12, height-13, text=legend, width=max(1, width-24),
+                                           anchor='sw', fill=FG, font=('sans-serif', 10))
                         continue
                 self.camera_titles[1].configure(text=title)
             image_path = scan / view / f'cam{index}_color.png' if scan and view else None
@@ -296,7 +375,8 @@ class Monitor:
         total = result.get('total_seconds', status.get('total_seconds', 0))
         if summary.get('outcome') == 'running':
             total = max(float(total or 0), time.time()-datetime.fromisoformat(summary['started_at']).timestamp())
-        minutes, seconds = divmod(max(0, int(total or 0)), 60)
+        elapsed = round(total or 0) if done or failed else int(total or 0)
+        minutes, seconds = divmod(max(0, elapsed), 60)
         self.clock.configure(text=f'{minutes:02d}:{seconds:02d}')
         prefix = '기록 재생  /  ' if self.replay else ''
         self.title.configure(text=prefix+('분류 완료' if done else '시연 중단' if failed else name))
@@ -315,7 +395,15 @@ class Monitor:
                 labels = {'discount_pad_id': 5, 'regular_pad_id': 6}
         pad_names = {str(labels[key]): name for key, name in
                      (('discount_pad_id', '할인'), ('regular_pad_id', '정규')) if labels.get(key) is not None}
-        detail = progress_detail(run, idx, pad_names)
+        raw_log = recent_log_lines(run)
+        entries = display_log(raw_log, pad_names)
+        if failed:
+            error = str(result.get('error') or status.get('error') or '실행이 중단됐습니다.')
+            entries.append('중단 · '+error.splitlines()[0][:220])
+        if done or failed:
+            entries.append(f'전체 소요 시간 · {minutes}분 {seconds:02d}초 ({float(total or 0):.1f}초)')
+        self.update_log(run, entries)
+        detail = progress_detail(raw_log, idx, pad_names)
         if scan:
             manifest = read_json(scan/'session.json')
             views = manifest.get('views', [])

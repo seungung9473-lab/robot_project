@@ -100,7 +100,7 @@ def table_and_rviz(enable_torque, *, zero_pressure=False, rviz_log=None):
                 if not (os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')):
                     raise RuntimeError('RViz를 열 수 있는 데스크탑 터미널에서 실행하세요')
                 print('기존 제어 유지 · RViz 다시 여는 중', flush=True)
-                config = WORKSPACE/'src/soarm4_moveit_config/config/hardware_moveit.rviz'
+                config = WORKSPACE/'src/TUMST_ARM_moveit_config/config/hardware_moveit.rviz'
                 with rviz_log.open('w') as log:
                     subprocess.Popen(
                         ['ros2', 'run', 'rviz2', 'rviz2', '-d', str(config),

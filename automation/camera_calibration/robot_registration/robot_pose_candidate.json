@@ -1,7 +1,7 @@
 {
   "status": "candidate only; not published or applied",
   "assumption": "URDF +90deg yaw relative table, giving robot base +X toward table -X; enclosure footprint 17cm along table X, 20cm along table Y",
-  "model_source": "/home/seungung9473/robot_ws/src/soarm4_description/config/model.json",
+  "model_source": "/home/seungung9473/robot_ws/src/TUMST_ARM_description/config/model.json",
   "table_enclosure_bottom_lower_left_m": [
     1.3,
     0.15,

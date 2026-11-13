@@ -15,7 +15,7 @@ def stage(name):
  status['stage']=name;log.write_text(json.dumps(status,ensure_ascii=False,indent=2)+'\n');print('\n'+name,flush=True)
 def run(*command):subprocess.run([str(x) for x in command],check=True,cwd=ROOT)
 try:
- stage('로봇 홈 이동');run(sys.executable,Path.home()/'robot_ws/src/soarm4_moveit_config/scripts/go_home.py')
+ stage('로봇 홈 이동');run(sys.executable,Path.home()/'robot_ws/src/TUMST_ARM_moveit_config/scripts/go_home.py')
  stage('30도 간격 12방향 촬영 후 0도 복귀');base=R/'multiview';before=set(base.iterdir());run('ros2','run','soarm_turntable','turntable_scan','scan','--angles',*[str(-30*i) for i in range(12)],'--output',base)
  added=[x for x in set(base.iterdir())-before if (x/'session.json').exists()]
  if len(added)!=1:raise RuntimeError('New scan session could not be identified')

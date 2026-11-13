@@ -1,6 +1,6 @@
 from pathlib import Path
 import json,struct,numpy as np,cv2
-r=Path(__file__).resolve().parents[1];src=Path('/home/seungung9473/robot_ws/src/soarm4_description');m=json.loads((src/'config/model.json').read_text());pose=json.loads((r/'robot_registration/robot_pose_candidate.json').read_text());pose['status']='Placement confirmed by user; visual preview only; no runtime transform published';pose['pending']=None;(r/'robot_registration/robot_pose_confirmed_layout.json').write_text(json.dumps(pose,ensure_ascii=False,indent=2));world=np.array(pose['candidate_T_table_urdf_world'])
+r=Path(__file__).resolve().parents[1];src=Path('/home/seungung9473/robot_ws/src/TUMST_ARM_description');m=json.loads((src/'config/model.json').read_text());pose=json.loads((r/'robot_registration/robot_pose_candidate.json').read_text());pose['status']='Placement confirmed by user; visual preview only; no runtime transform published';pose['pending']=None;(r/'robot_registration/robot_pose_confirmed_layout.json').write_text(json.dumps(pose,ensure_ascii=False,indent=2));world=np.array(pose['candidate_T_table_urdf_world'])
 def transl(p):
  T=np.eye(4);T[:3,3]=p;return T
 def rot(axis,q):
